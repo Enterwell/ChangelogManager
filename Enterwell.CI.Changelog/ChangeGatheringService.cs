@@ -22,6 +22,7 @@ namespace Enterwell.CI.Changelog
         /// Reads the changes from the changes folder in the repository on a given repository path and returns the dictionary with change type keys.
         /// </summary>
         /// <param name="repositoryPath">Path to the repository where the folder with changes is located.</param>
+        /// <exception cref="DirectoryNotFoundException">Thrown when directory containing changes does not exist.</exception>
         /// <returns>Returns the dictionary whose keys are change types and values are all the changes of the corresponding change type.</returns>
         public async Task<Dictionary<string, List<string>>> GatherChanges(string repositoryPath)
         {
@@ -31,6 +32,12 @@ namespace Enterwell.CI.Changelog
             var configuration = await LoadConfiguration(repositoryPath);
 
             var changesDirectoryPath = Path.Combine(repositoryPath, ChangesFolderName);
+
+            if (!Directory.Exists(changesDirectoryPath))
+            {
+                throw new DirectoryNotFoundException("Directory 'changes' not found.");
+            }
+
             var filesPath = Directory.GetFiles(changesDirectoryPath);
 
             foreach (string filePath in filesPath)

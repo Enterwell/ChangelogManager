@@ -43,12 +43,12 @@ namespace Enterwell.CI.Changelog
 
             Dictionary<string, List<string>> changes = await this.changeGatheringService.GatherChanges(inputs.repositoryPath);
 
-            var changelogSectionToInsert = this.markdownTextService.BuildChangelogSection(inputs.semanticVersion, changes);
-            Console.WriteLine(changelogSectionToInsert);
+            var newChangelogSection = this.markdownTextService.BuildChangelogSection(inputs.semanticVersion, changes);
+            Console.WriteLine(newChangelogSection);
 
             var elementToInsertBefore = this.markdownTextService.ToH2(string.Empty);
 
-            await this.fileWriterService.WriteToChangelog(changelogSectionToInsert, inputs.repositoryPath,
+            await this.fileWriterService.WriteToChangelog(newChangelogSection, inputs.repositoryPath,
                 elementToInsertBefore);
             
             this.changeGatheringService.EmptyChangesFolder(inputs.repositoryPath);

@@ -18,7 +18,8 @@ namespace Enterwell.CI.Changelog
         /// <param name="textToWrite">Text to write to the changelog file.</param>
         /// <param name="repositoryPath">Path to the repository that contains the changelog file.</param>
         /// <param name="insertBefore">Text before which the method will insert <code>textToWrite</code>.</param>
-        /// <exception cref="AggregateException">Thrown when arguments are not valid.</exception>
+        /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when changelog file does not exist in the repository.</exception>
         /// <returns></returns>
         public async Task WriteToChangelog(string textToWrite, string repositoryPath, string insertBefore)
         {
@@ -33,7 +34,7 @@ namespace Enterwell.CI.Changelog
             var changelogPath = Path.Combine(repositoryPath, ChangelogFileName);
 
             if (!File.Exists(changelogPath))
-                throw new FileNotFoundException($"Changelog file: '{ChangelogFileName}' is not found.");
+                throw new FileNotFoundException("Changelog file is not found.");
 
             var changelogText = (await File.ReadAllLinesAsync(changelogPath)).ToList();
 

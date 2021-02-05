@@ -8,15 +8,18 @@ namespace Enterwell.CI.Changelog.Tests
         protected readonly string TemporaryDirectoryPath = Path.GetTempPath();
         protected readonly string TestFolderName = "Testing";
         protected readonly string ChangesFolderName = "changes";
-        
 
+        protected readonly string ChangelogFileName = "Changelog.md";
+        
         protected readonly string TestFolderPath;
         protected readonly string ChangesFolderPath;
+        protected readonly string ChangelogFilePath;
 
         public TestBase()
         {
             TestFolderPath = Path.Combine(TemporaryDirectoryPath, TestFolderName);
             ChangesFolderPath = Path.Combine(TestFolderPath, ChangesFolderName);
+            ChangelogFilePath = Path.Combine(TestFolderPath, ChangelogFileName);
 
             Directory.CreateDirectory(TestFolderPath);
         }
@@ -75,6 +78,24 @@ namespace Enterwell.CI.Changelog.Tests
             {
                 CreateFile(Path.Combine(ChangesFolderPath, file));
             }
+        }
+
+        protected void CreateChangelog()
+        {
+            CreateFile(ChangelogFilePath);
+
+            string changelogContent = @"# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2018-08-13
+### Changed
+- Migrated from .NET Framework 4.5 to .NET Standard 2.0
+";
+
+            WriteToFile(ChangelogFilePath, changelogContent);
         }
 
         public void Dispose()
