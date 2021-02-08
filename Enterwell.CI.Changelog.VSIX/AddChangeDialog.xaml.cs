@@ -1,26 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using EnvDTE80;
 using Newtonsoft.Json;
-using ComboBox = System.Windows.Controls.ComboBox;
-using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace Enterwell.CI.Changelog.VSIX
 {
@@ -36,7 +20,7 @@ namespace Enterwell.CI.Changelog.VSIX
 
         public string ChangeType => TypeComboBox.Text;
         public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text;
-        public string ChangeDescription => DescriptionTextBox.Text;
+        public string ChangeDescription => DescriptionTextBox.Text.Trim();
 
         public AddChangeDialog(string solutionPath)
         {
@@ -97,6 +81,20 @@ namespace Enterwell.CI.Changelog.VSIX
             }
 
             return null;
+        }
+
+        private void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var descriptionTextBox = sender as TextBox;
+
+            if (string.IsNullOrWhiteSpace(descriptionTextBox?.Text))
+            {
+                AddChangeBtn.IsEnabled = false;
+            }
+            else
+            {
+                AddChangeBtn.IsEnabled = true;
+            }
         }
     }
 }

@@ -2,11 +2,13 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Enterwell.CI.Changelog.VSIX"
+             xmlns:rules="clr-namespace:Enterwell.CI.Changelog.VSIX.ValidationRules"
              xmlns:helpers="clr-namespace:Enterwell.CI.Changelog.VSIX.Helpers"
              helpers:VsTheme.UseVsTheme="True"
              WindowStartupLocation="CenterScreen"
-             Title="Add Change" Height="220" Width="500" ResizeMode="NoResize"
+             Title="Add Change" Height="220" Width="550" ResizeMode="NoResize"
              Name="AddChangeControl">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"/>
@@ -25,17 +27,25 @@
         </Grid.RowDefinitions>
         
         <Label Grid.Row="1" Grid.Column="1" Content="Change Type:" FontWeight="Bold" Margin="0 10"/>
-        <ComboBox Grid.Row="1" Grid.Column="2" Name="TypeComboBox" Margin="0 10" />
+        <ComboBox Grid.Row="1" Grid.Column="2" Name="TypeComboBox" Margin="5 10 0 10" />
 
         <Label Grid.Row="2" Grid.Column="1" Content="Change Category:" FontWeight="Bold" Margin="0 10"/>
-        <ComboBox Grid.Row="2" Grid.Column="2" Name="CategoryComboBox" Margin="0 10"/>
-        <TextBox Grid.Row="2" Grid.Column="2" Name="CategoryTextBox" Margin="0 10" Visibility="Hidden"/>
+        <ComboBox Grid.Row="2" Grid.Column="2" Name="CategoryComboBox" Margin="5 10 0 10"/>
+        <TextBox Grid.Row="2" Grid.Column="2" Name="CategoryTextBox" Margin="5 10 0 10" Visibility="Hidden"/>
 
         <Label Grid.Row="3" Grid.Column="1" Content="Change Description:" FontWeight="Bold" Margin="0 10"/>
-        <TextBox Grid.Row="3" Grid.Column="2" Name="DescriptionTextBox" Margin="0 10"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Name="DescriptionTextBox" Margin="5 10 0 10" TextChanged="DescriptionTextBox_OnTextChanged">
+            <TextBox.Text>
+                <Binding RelativeSource="{RelativeSource Self}" Path="Tag" Mode="OneWayToSource" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <rules:NonEmptyDescriptionRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
 
         <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Add Change" Name="AddChangeBtn" Padding="5" Margin="5 0" Click="AddChangeBtn_Click"/>
+            <Button Content="Add Change" Name="AddChangeBtn" Padding="5" Margin="5 0" Click="AddChangeBtn_Click" IsEnabled="False"/>
             <Button Content="Cancel Change" Name="CancelBtn" Padding="5" Margin="5 0" Click="CancelBtn_Click"/>
         </StackPanel>
     </Grid>
