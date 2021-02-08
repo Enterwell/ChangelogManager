@@ -1,0 +1,41 @@
+﻿<Window x:Class="Enterwell.CI.Changelog.VSIX.AddChangeDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Enterwell.CI.Changelog.VSIX"
+             xmlns:helpers="clr-namespace:Enterwell.CI.Changelog.VSIX.Helpers"
+             helpers:VsTheme.UseVsTheme="True"
+             WindowStartupLocation="CenterScreen"
+             Title="Add Change" Height="220" Width="500" ResizeMode="NoResize"
+             Name="AddChangeControl">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Row="1" Grid.Column="1" Content="Change Type:" FontWeight="Bold" Margin="0 10"/>
+        <ComboBox Grid.Row="1" Grid.Column="2" Name="TypeComboBox" Margin="0 10" />
+
+        <Label Grid.Row="2" Grid.Column="1" Content="Change Category:" FontWeight="Bold" Margin="0 10"/>
+        <ComboBox Grid.Row="2" Grid.Column="2" Name="CategoryComboBox" Margin="0 10"/>
+
+        <Label Grid.Row="3" Grid.Column="1" Content="Change Description:" FontWeight="Bold" Margin="0 10"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Name="DescriptionBox" Margin="0 10"/>
+
+        <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Add Change" Name="AddChangeBtn" Padding="5" Margin="5 0" Click="AddChangeBtn_Click"/>
+            <Button Content="Cancel Change" Name="CancelBtn" Padding="5" Margin="5 0" Click="CancelBtn_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
