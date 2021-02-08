@@ -29,9 +29,10 @@
 
         <Label Grid.Row="2" Grid.Column="1" Content="Change Category:" FontWeight="Bold" Margin="0 10"/>
         <ComboBox Grid.Row="2" Grid.Column="2" Name="CategoryComboBox" Margin="0 10"/>
+        <TextBox Grid.Row="2" Grid.Column="2" Name="CategoryTextBox" Margin="0 10" Visibility="Hidden"/>
 
         <Label Grid.Row="3" Grid.Column="1" Content="Change Description:" FontWeight="Bold" Margin="0 10"/>
-        <TextBox Grid.Row="3" Grid.Column="2" Name="DescriptionBox" Margin="0 10"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Name="DescriptionTextBox" Margin="0 10"/>
 
         <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Add Change" Name="AddChangeBtn" Padding="5" Margin="5 0" Click="AddChangeBtn_Click"/>

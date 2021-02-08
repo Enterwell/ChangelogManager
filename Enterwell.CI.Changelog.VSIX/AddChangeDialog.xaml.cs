@@ -35,8 +35,8 @@ namespace Enterwell.CI.Changelog.VSIX
         private const string ConfigurationFileName = ".changelog.json";
 
         public string ChangeType => TypeComboBox.Text;
-        public string ChangeCategory => CategoryComboBox.Text;
-        public string ChangeDescription => DescriptionBox.Text;
+        public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text;
+        public string ChangeDescription => DescriptionTextBox.Text;
 
         public AddChangeDialog(string solutionPath)
         {
@@ -46,8 +46,6 @@ namespace Enterwell.CI.Changelog.VSIX
             InitializeChangeTypes();
             InitializeChangeCategories();
         }
-
-        
 
         private void InitializeChangeTypes()
         {
@@ -66,9 +64,9 @@ namespace Enterwell.CI.Changelog.VSIX
             }
             else
             {
-                CategoryComboBox.IsEnabled = false;
+                CategoryComboBox.Visibility = Visibility.Hidden;
+                CategoryTextBox.Visibility = Visibility.Visible;
             }
-
         }
 
         private void AddChangeBtn_Click(object sender, RoutedEventArgs e)
