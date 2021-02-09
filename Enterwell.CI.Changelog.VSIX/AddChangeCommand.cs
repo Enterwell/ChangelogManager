@@ -15,20 +15,24 @@ namespace Enterwell.CI.Changelog.VSIX
     /// </summary>
     internal sealed class AddChangeCommand
     {
-        /// <summary>
-        /// Command ID.
-        /// </summary>
-        public const int CommandId = 0x0100;
-
-        public DTE2 dte;
-
         private readonly string solutionPath;
         private const string ChangesFolderName = "changes";
 
         /// <summary>
+        /// Command ID.
+        /// </summary>
+        public const int CommandId = PackageIds.AddChangeCommandId;
+
+        /// <summary>
+        /// Top-level object in the Visual Studio automation object model.
+        /// In this class used to get access to the current Solution's path.
+        /// </summary>
+        private DTE2 dte;
+
+        /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("e2a9d4e5-33a0-4e98-ad0a-cda0dbae0af4");
+        public static readonly Guid CommandSet = PackageGuids.guidVSIXPackageCmdSet;
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -37,21 +41,23 @@ namespace Enterwell.CI.Changelog.VSIX
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddChangeCommand"/> class.
-        /// Adds our command handlers for menu (commands must exist in the command table file)
+        /// Adds our command handlers for menu (commands must exist in the command table file) and gets current Solution's path.
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
+        /// <param name="dte">Object used to get the Solution's path, not null.</param>
+        /// <exception cref="ArgumentNullException">Thrown if argument is null.</exception>
         private AddChangeCommand(AsyncPackage package, OleMenuCommandService commandService, DTE2 dte)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+            this.dte = dte ?? throw new ArgumentNullException(nameof(dte));
 
-            this.dte = dte;
             var solutionFolder = new DirectoryInfo(Path.Combine(dte.Solution.FullName)).Parent;
             this.solutionPath = solutionFolder?.FullName;
 
-            var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            var menuCommandId = new CommandID(CommandSet, CommandId);
+            var menuItem = new MenuCommand(this.Execute, menuCommandId);
             commandService.AddCommand(menuItem);
         }
 
@@ -85,7 +91,7 @@ namespace Enterwell.CI.Changelog.VSIX
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             var dte2 = await package.GetServiceAsync(typeof(DTE)) as DTE2;
 
             Instance = new AddChangeCommand(package, commandService, dte2);
@@ -106,18 +112,24 @@ namespace Enterwell.CI.Changelog.VSIX
 
             if (result == string.Empty)
             {
-                await StatusBarLogAsync(false);
+                await StatusBarLogAsync(false, "Cancelled By User");
                 return;
             }
             
             EnsureChangesDirectoryExist();
 
-            CreateFile(Path.Combine(this.solutionPath, ChangesFolderName, result));
+            var creationResult = CreateFile(Path.Combine(this.solutionPath, ChangesFolderName, result));
 
-            await StatusBarLogAsync(true);
+            await StatusBarLogAsync(creationResult.isSuccessfull, creationResult.reason);
         }
 
-        private async Task StatusBarLogAsync(bool changeCreated)
+        /// <summary>
+        /// Uses the environment's status bar to notify the user if the change file was successfully created and added. 
+        /// </summary>
+        /// <param name="changeCreated"><see cref="bool"/> that is used to determine if the file was created or not.</param>
+        /// <param name="reason"><see cref="string"/> that specifies the reason if the file was not created.</param>
+        /// <returns>An awaitable.</returns>
+        private async Task StatusBarLogAsync(bool changeCreated, string reason)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -126,17 +138,16 @@ namespace Enterwell.CI.Changelog.VSIX
             if (statusBar != null)
             {
                 // Making sure the status bar is not frozen.
-                int frozen;
+                statusBar.IsFrozen(out int frozen);
 
-                statusBar.IsFrozen(out frozen);
-
-                // If the status bar is frozen, unfreeze it.
+                // If the status bar is frozen, defrost it.
                 if (frozen != 0)
                 {
                     statusBar.FreezeOutput(0);
                 }
 
-                var statusBarText = changeCreated ? "Change added successfully" : "Adding change cancelled";
+                var statusBarText =
+                    changeCreated ? "Change Added Successfully" : $"Adding Change Failed. Reason: {reason}";
 
                 statusBar.SetText(statusBarText);
 
@@ -145,6 +156,10 @@ namespace Enterwell.CI.Changelog.VSIX
             }
         }
 
+        /// <summary>
+        /// Displays the dialog asking the user to specify what change he would like to add.
+        /// </summary>
+        /// <returns>Fully named change ready to be created as a file if the user accepted the dialog or <see cref="string.Empty"/> if the user refused.</returns>
         private string ShowDialogForAddingChange()
         {
             var dialog = new AddChangeDialog(this.solutionPath);
@@ -163,6 +178,9 @@ namespace Enterwell.CI.Changelog.VSIX
             }
         }
 
+        /// <summary>
+        /// Used to ensure that the changes directory exists. If it does not exist, the directory is created.
+        /// </summary>
         private void EnsureChangesDirectoryExist()
         {
             var changesDirectoryPath = Path.Combine(solutionPath, ChangesFolderName);
@@ -173,10 +191,25 @@ namespace Enterwell.CI.Changelog.VSIX
             }
         }
 
-        private void CreateFile(string filePath)
+        /// <summary>
+        /// Creates the file on the given file path.
+        /// </summary>
+        /// <param name="filePath">File path to the file that needs to be created.</param>
+        /// <returns>A value <see cref="Tuple"/> with 2 components. A <see cref="bool"/> that represents if the file was successfully created and a
+        /// <see cref="string"/> that specifies the reason if not.</returns>
+        private (bool isSuccessfull, string reason) CreateFile(string filePath)
         {
-            var file = File.Create(filePath);
-            file.Close();
+            try
+            {
+                var file = File.Create(filePath);
+                file.Close();
+
+                return (true, string.Empty);
+            }
+            catch (Exception e)
+            {
+                return (false, e.Message);
+            }
         }
     }
 }

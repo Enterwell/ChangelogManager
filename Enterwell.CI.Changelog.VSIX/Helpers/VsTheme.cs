@@ -7,10 +7,15 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Enterwell.CI.Changelog.VSIX.Helpers
 {
+
+    /// <summary>
+    /// Class used to help with theming the extension. By default, Visual Studio does not handle theming well.
+    /// For example, try changing the Visual Studio theme from Dark to Blue with and without this class.
+    /// </summary>
     public static class VsTheme
     {
-        private static Dictionary<UIElement, bool> _isUsingVsTheme = new Dictionary<UIElement, bool>();
-        private static Dictionary<UIElement, object> _originalBackgrounds = new Dictionary<UIElement, object>();
+        private static Dictionary<UIElement, bool> _isUsingVsTheme = new();
+        private static Dictionary<UIElement, object> _originalBackgrounds = new();
 
         public static DependencyProperty UseVsThemeProperty = DependencyProperty.RegisterAttached("UseVsTheme", typeof(bool), typeof(VsTheme), new PropertyMetadata(false, UseVsThemePropertyChanged));
 

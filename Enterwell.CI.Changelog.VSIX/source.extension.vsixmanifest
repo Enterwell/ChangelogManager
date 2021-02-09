@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="fbb23368-981a-4001-80ee-d3d3f930ed85" Version="1.0" Language="en-US" Publisher="Enterwell" />
-        <DisplayName>Enterwell.CI.Changelog.VSIX</DisplayName>
+        <DisplayName>Enterwell Changelog Adder</DisplayName>
         <Description xml:space="preserve">This extension helps developers make easy notes on changes made to the their codebase.</Description>
     </Metadata>
     <Installation>

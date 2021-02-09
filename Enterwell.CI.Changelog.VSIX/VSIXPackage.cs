@@ -24,15 +24,11 @@ namespace Enterwell.CI.Changelog.VSIX
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(VSIXPackage.PackageGuidString)]
+    [InstalledProductRegistration(Vsix.Name, Vsix.Description, Vsix.Version)]
+    [Guid(PackageGuids.guidVSIXPackageString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class VSIXPackage : AsyncPackage
     {
-        /// <summary>
-        /// Enterwell.CI.Changelog.VSIXPackage GUID string.
-        /// </summary>
-        public const string PackageGuidString = "6af01837-13a8-43a7-862a-d81edb897f4d";
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -45,7 +41,7 @@ namespace Enterwell.CI.Changelog.VSIX
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            await Enterwell.CI.Changelog.VSIX.AddChangeCommand.InitializeAsync(this);
+            await AddChangeCommand.InitializeAsync(this);
         }
     }
 }

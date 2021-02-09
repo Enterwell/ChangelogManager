@@ -8,7 +8,7 @@ namespace Enterwell.CI.Changelog.VSIX
     internal sealed partial class Vsix
     {
         public const string Id = "fbb23368-981a-4001-80ee-d3d3f930ed85";
-        public const string Name = "Enterwell.CI.Changelog.VSIX";
+        public const string Name = "Enterwell Changelog Adder";
         public const string Description = @"This extension helps developers make easy notes on changes made to the their codebase.";
         public const string Language = "en-US";
         public const string Version = "1.0";
