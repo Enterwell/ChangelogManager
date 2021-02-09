@@ -28,7 +28,7 @@ namespace Enterwell.CI.Changelog.VSIX
         /// Gets the text from the Change Category dropdown or from the Change Category text box if the changelog configuration
         /// does not exist and therefore the dropdown is not visible.
         /// </summary>
-        public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text;
+        public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text.Trim();
 
         /// <summary>
         /// Gets the text from the Change Description text box.
