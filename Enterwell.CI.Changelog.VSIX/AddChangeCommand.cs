@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 using Task = System.Threading.Tasks.Task;
 
@@ -97,17 +98,51 @@ namespace Enterwell.CI.Changelog.VSIX
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        private void Execute(object sender, EventArgs e)
+        private async void Execute(object sender, EventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             var result = ShowDialogForAddingChange();
 
-            if (result == string.Empty) return;
+            if (result == string.Empty)
+            {
+                await StatusBarLogAsync(false);
+                return;
+            }
             
             EnsureChangesDirectoryExist();
 
             CreateFile(Path.Combine(this.solutionPath, ChangesFolderName, result));
+
+            await StatusBarLogAsync(true);
+        }
+
+        private async Task StatusBarLogAsync(bool changeCreated)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            IVsStatusbar statusBar = (IVsStatusbar) await ServiceProvider.GetServiceAsync(typeof(SVsStatusbar));
+
+            if (statusBar != null)
+            {
+                // Making sure the status bar is not frozen.
+                int frozen;
+
+                statusBar.IsFrozen(out frozen);
+
+                // If the status bar is frozen, unfreeze it.
+                if (frozen != 0)
+                {
+                    statusBar.FreezeOutput(0);
+                }
+
+                var statusBarText = changeCreated ? "Change added successfully" : "Adding change cancelled";
+
+                statusBar.SetText(statusBarText);
+
+                // Freeze the status bar.
+                statusBar.FreezeOutput(1);
+            }
         }
 
         private string ShowDialogForAddingChange()

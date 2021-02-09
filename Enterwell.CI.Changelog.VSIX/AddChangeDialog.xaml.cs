@@ -59,8 +59,6 @@ namespace Enterwell.CI.Changelog.VSIX
             Close();
         }
 
-        
-
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

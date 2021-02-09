@@ -33,16 +33,6 @@
     group; your package should define its own command set in order to avoid collisions
     with command ids defined by other packages. -->
 
-    <!-- In this section you can define new menu groups. A menu group is a container for
-         other menus or buttons (commands); from a visual point of view you can see the
-         group as the part of a menu contained between two lines. The parent of a group
-         must be a menu. -->
-    <Groups>
-      <Group guid="guidVSIXPackageCmdSet" id="MyMenuGroup" priority="0xFFFF">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_PROJWIN"/>
-      </Group>
-    </Groups>
-
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -55,12 +45,13 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidVSIXPackageCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_RESOLVE" />
         <Icon guid="ImageCatalogGuid" id="Add" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Add Change To Changelog</ButtonText>
+          <CommandName>AddChangeToChangelog</CommandName>
         </Strings>
       </Button>
     </Buttons>
@@ -70,13 +61,17 @@
     <VisibilityItem guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
   </VisibilityConstraints>
 
+  <KeyBindings>
+    <KeyBinding guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" editor="guidVSStd97" key1="C" mod1="C" mod2="S"/>
+  </KeyBindings>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidVSIXPackage" value="{6af01837-13a8-43a7-862a-d81edb897f4d}" />
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidVSIXPackageCmdSet" value="{e2a9d4e5-33a0-4e98-ad0a-cda0dbae0af4}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="MenuGroup" value="0x1020" />
       <IDSymbol name="AddChangeCommandId" value="0x0100" />
     </GuidSymbol>
   </Symbols>

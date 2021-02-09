@@ -56,17 +56,24 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Helpers\VsTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidationRules\NonEmptyDescriptionRule.cs" />
-    <Compile Include="VSIXPackage.cs" />
-    <Compile Include="VSIXPackage1.cs">
+    <Compile Include="source.extension.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>VSIXPackage.vsct</DependentUpon>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
+    <Compile Include="ValidationRules\NonEmptyDescriptionRule.cs" />
+    <Compile Include="VSIXPackage.cs" />
+    <Compile Include="VSCommandTable.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSCommandTable.vsct</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
+      <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -87,14 +94,11 @@
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.8.3038" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="VSIXPackage.vsct">
+    <VSCTCompile Include="VSCommandTable.vsct">
       <Generator>VsctGenerator</Generator>
       <ResourceName>Menus.ctmenu</ResourceName>
-      <LastGenOutput>VSIXPackage1.cs</LastGenOutput>
+      <LastGenOutput>VSCommandTable.cs</LastGenOutput>
     </VSCTCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\AddChangeCommand.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="AddChangeDialog.xaml">

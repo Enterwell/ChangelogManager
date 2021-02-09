@@ -23,7 +23,7 @@ namespace Enterwell.CI.Changelog.VSIX
     /// </summary>
     internal sealed partial class PackageIds
     {
-        public const int MyMenuGroup = 0x1020;
+        public const int MenuGroup = 0x1020;
         public const int AddChangeCommandId = 0x0100;
     }
 }
