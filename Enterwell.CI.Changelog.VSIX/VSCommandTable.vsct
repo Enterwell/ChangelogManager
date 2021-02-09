@@ -51,7 +51,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Add Change To Changelog</ButtonText>
-          <CommandName>AddChangeToChangelog</CommandName>
+          <LocCanonicalName>.Enterwell.AddChangeToChangelog</LocCanonicalName>
         </Strings>
       </Button>
     </Buttons>
@@ -62,7 +62,7 @@
   </VisibilityConstraints>
 
   <KeyBindings>
-    <KeyBinding guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" editor="guidVSStd97" key1="C" mod1="C" mod2="S"/>
+    <KeyBinding guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" mod1="Control Shift" key1="C" editor="guidVSStd97"/>
   </KeyBindings>
 
   <Symbols>
@@ -71,7 +71,6 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidVSIXPackageCmdSet" value="{e2a9d4e5-33a0-4e98-ad0a-cda0dbae0af4}">
-      <IDSymbol name="MenuGroup" value="0x1020" />
       <IDSymbol name="AddChangeCommandId" value="0x0100" />
     </GuidSymbol>
   </Symbols>
