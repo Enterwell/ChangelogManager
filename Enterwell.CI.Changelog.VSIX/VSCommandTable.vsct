@@ -57,13 +57,13 @@
     </Buttons>
   </Commands>
 
+  <KeyBindings>
+    <KeyBinding guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" editor="guidVSStd97" key1="C" mod1="ALT"/>
+  </KeyBindings>
+
   <VisibilityConstraints>
     <VisibilityItem guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
   </VisibilityConstraints>
-
-  <KeyBindings>
-    <KeyBinding guid="guidVSIXPackageCmdSet" id="AddChangeCommandId" mod1="Control Shift" key1="C" editor="guidVSStd97"/>
-  </KeyBindings>
 
   <Symbols>
     <!-- This is the package guid. -->

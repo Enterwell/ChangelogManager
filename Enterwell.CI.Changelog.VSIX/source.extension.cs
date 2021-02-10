@@ -11,7 +11,7 @@ namespace Enterwell.CI.Changelog.VSIX
         public const string Name = "Enterwell Changelog Adder";
         public const string Description = @"This extension helps developers make easy notes on changes made to the their codebase.";
         public const string Language = "en-US";
-        public const string Version = "1.0.1";
+        public const string Version = "1.0.2";
         public const string Author = "Enterwell";
         public const string Tags = "";
     }
