@@ -1,20 +1,56 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+`Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the `Changelog` project in order to fill out the `CHANGELOG.md` file.
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+In order to be able to run this code on your machine, you need to have:
+1. [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) or newer
+2. Visual Studio extension development toolset from the Visual Studio Installer
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+   ![](./img/dependency.png)
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+# Installation
+
+To be able to install the extension to your own machine, you need to build it and run the generated `Enterwell.CI.Changelog.VSIX.vsix` file in the `bin\(Debug|Release)` folder. 
+
+Installer will pop up showing the extension name asking to which installed Visual Studio product you want to install the extension to.
+
+![](./img/installer.png)
+
+# Usage
+
+Extension will only show up if you have open Solution in the editor.
+
+You can trigger the extension by using the `ALT + C` shortcut or by right-clicking on the Solution and selecting the `Add Change to Changelog` option.
+
+One of the following dialog boxes will show up:
+
++ Changelog configuration (explained later) exists:
+
+  ![](./img/dialog_withConfig.png)
+
+  `Change Category` is a drop-down list containing all of the valid categories for the changelog that are defined in the aforementioned Changelog configuration.
+
++ Changelog configuration does not exists:
+
+  ![](./img/dialog_withoutConfig.png)
+
+  `Change Category` is a text-box accepting any user input as the change category. (Input can be an empty value).
+
+In both cases `Change Description` is a text-box that can accept any non-empty user input which is used to describe the changes made by the user. **Add Change** button is disabled if the `Change Description` is invalid (empty), and enabled otherwise.
+
+Extension uses the Visual Studio Status bar in order to log the results:
+
++ User pressed the **Cancel Change** button:
+
+  ![](./img/statusBar_cancelled.png)
+
+  This is the same behaviour as in the case of an exception. Only the *Reason* part of the message will show the exception message.
+
++ User pressed the **Add Change** button:
+
+  ![](./img/statusBar_added.png)
+
+# Result / Output
+
+If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our `Enterwell.CI.Changelog` project.
