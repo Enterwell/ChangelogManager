@@ -43,6 +43,23 @@ Extension uses the Visual Studio Status bar in order to log the results:
 
   ![](../img/statusBar_added.png)
 
+# Configuration file
+`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the solution root along with the **changes** folder and the appropriate `CHANGELOG.md` file.
+
+If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
+
+```
+{
+  "categories": [
+    "API",
+    "FE",
+    "BE"
+  ]
+}
+```
+
+If the configuration exist, application will ignore every change in the **changes** folder which does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+
 # Result / Output
 
 If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our `Enterwell.CI.Changelog` project.
