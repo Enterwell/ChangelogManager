@@ -21,6 +21,8 @@ Arguments:
       + Removed
       + Fixed
       + Security
+      + each of the previous entries can be specified using their first letters also;
+   + Acceptable entries are case-insensitive.
 + change_description:
    + Change description that describes the changes made.
 
@@ -54,7 +56,4 @@ If we wanted to allow only 3 different change categories: API, FE (Frontend) and
 If the configuration exist, application will ignore every change in the **changes** folder which does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
 # Result / Output
-
-If **changes** directory or `CHANGELOG.md` file does not exist in the solution root, application will log the error to the Console Error output and stop with the execution.
-
-Otherwise, appropriate section will be inserted in the `CHANGELOG.md` file and the **changes** folder will be cleared empty to be ready for the next iteration.
+If the change was added successfully, **changes** folder is created in the directory developer is calling the CLI from if one did not exist already, with the correct file and naming used by our [`Enterwell.CI.Changelog`](../Enterwell.CI.Changelog) project.
