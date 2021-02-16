@@ -13,7 +13,7 @@ namespace Enterwell.CI.Changelog.CLI
         /// <summary>
         /// Only changes with these categories are accepted. 
         /// </summary>
-        public string[] Categories { get; set; } = new string[0];
+        public string[] Categories { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Validates a change based on Configuration object properties.
@@ -23,7 +23,7 @@ namespace Enterwell.CI.Changelog.CLI
         public bool IsValid(string changeCategory)
         {
             if (Categories.Length == 0) return true;
-            
+
             return Categories.Contains(changeCategory);
         }
     }

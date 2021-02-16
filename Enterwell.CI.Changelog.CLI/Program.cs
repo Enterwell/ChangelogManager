@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Enterwell.CI.Changelog.CLI.ValidationRules;
+using McMaster.Extensions.CommandLineUtils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using Enterwell.CI.Changelog.CLI.ValidationRules;
-using McMaster.Extensions.CommandLineUtils;
+using System.Linq;
 
 namespace Enterwell.CI.Changelog.CLI
 {
@@ -21,93 +20,103 @@ namespace Enterwell.CI.Changelog.CLI
         /// <returns></returns>
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
+        /// <summary>
+        /// First argument to the CLI application representing the change type. Required. Checking for allowed values.
+        /// </summary>
         [Argument(0, "Change Type", "Change type following the 'Keep a Changelog' guiding principle.", ShowInHelpText = true)]
         [Required]
         [AllowedValues(StringComparison.InvariantCultureIgnoreCase,
-            "added", "a", "changed", "c", "deprecated", "d", "removed", "r", "fixed", "f", "security", "s",
+            "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s",
             IgnoreCase = true)]
         public string Type { get; set; }
 
+        /// <summary>
+        /// Second argument to the CLI application representing the change description. Required.
+        /// </summary>
         [Argument(1, "Change Description", "Change description that describes the changes made.", ShowInHelpText = true)]
         [Required]
         public string Description { get; set; }
 
+        /// <summary>
+        /// Option parameter to the CLI application representing the change category. Required only if the configuration file exists.
+        /// </summary>
         [Option(Description = "One of the valid change categories determined in the configuration file, or arbitrary if configuration does not exist.", ShowInHelpText = true)]
         [ValidCategory]
         public string Category { get; set; }
 
-        public List<string> CLIAllowedTypes = new() {"added", "a", "changed", "c", "deprecated", "d", "removed", "r", "fixed", "f", "security", "s"};
+        /// <summary>
+        /// Allowed types of changes. Used in the program for linking the one-letter versions to their whole-word equivalents.
+        /// </summary>
+        // Not sure about this. Now we have 2 sources of truth, in AllowedValues attribute and here. But the attribute is nice because it helps generate nice -h | --help and 
+        // documentation about this CLI application
+        public List<string> AllowedTypes = new() { "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s" };
 
         /// <summary>
-        /// Method that runs when the arguments are provided and they pass "initial" validation.
+        /// Method that runs when the arguments are provided and they pass their "initial" validation.
         /// </summary>
         private void OnExecute()
         {
+            var logger = new ConsoleLogger();
+
             // Because 'ValidCategory' attribute validation only fires IF user passed in something for the category option, we have to manually validate 
             // it in the case category was not assigned, but should have been assigned.
-            ValidateCategory();
+            ValidateCategory(logger);
 
-            EnsureChangesDirectoryExist();
+            EnsureChangesDirectoryExists();
 
-            string fileName;
-
-            string type = Type;
-
-            if (type.Length == 1)
-            {
-                var typeIndex = CLIAllowedTypes.FindIndex(s => s == Type.ToLower());
-
-                type = CLIAllowedTypes[typeIndex - 1];
-                type = char.ToUpper(type[0]) + type[1..];
-            }
-
-            var description = Description.Trim();
-            var category = Category.Trim();
-
-            if (string.IsNullOrWhiteSpace(Category))
-            {
-                fileName = $"{type} {description}";
-            }
-            else
-            {
-                fileName = $"{type} [{category}] {description}";
-            }
+            var inputType = FormatTypeCorrectly();
+            var fileName = ConstructFileName(inputType);
 
             var creationResult = CreateFile(Path.Combine(Directory.GetCurrentDirectory(), "changes", fileName));
 
-            LogResult(creationResult.isSuccessfull, creationResult.reason);
+            logger.LogResult(creationResult.isSuccessfull, creationResult.reason);
         }
 
-        private void LogResult(bool changeCreated, string reason)
+        /// <summary>
+        /// Formats the type entered by the user so that it is correctly spelled and saved as a file later.
+        /// </summary>
+        /// <returns></returns>
+        private string FormatTypeCorrectly()
         {
-            var statusText = changeCreated ? "Change Added Successfully" : $"Adding Change Failed. Reason: {reason}";
-
-            if (!changeCreated)
+            // If the input type is only one word, replace it with its fully named equivalent.
+            string inputType = Type;
+            if (inputType.Length == 1)
             {
-                LogError(statusText);
+                var inputTypeIndex = AllowedTypes.IndexOf(inputType);
+
+                inputType = AllowedTypes[inputTypeIndex - 1];
+            }
+
+            // Ensure that the first letter is upper case and the rest are lower case.
+            return inputType.First().ToString().ToUpper() + inputType[1..].ToLower();
+        }
+
+        /// <summary>
+        /// Constructs the file name using the arguments passed in by the user to the CLI application and the manually formatted change type.
+        /// </summary>
+        /// <param name="inputType">Manually formatted change type so that it is spelled correctly.</param>
+        /// <returns>Name of the file to be saved in the folder where changes are stored.</returns>
+        private string ConstructFileName(string inputType)
+        {
+            var description = Description.Trim();
+
+            var category = Category.Trim();
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                return $"{inputType} {description}";
             }
             else
             {
-                LogSuccess(statusText);
+                return $"{inputType} [{category}] {description}";
             }
-
         }
 
-        private void LogSuccess(string statusText)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Error.WriteLine(statusText);
-            Console.ForegroundColor = ConsoleColor.Gray;
-        }
-
-        private void LogError(string statusText)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(statusText);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Error.WriteLine("Specify --help for a list of available options and commands");
-        }
-
+        /// <summary>
+        /// Creates the file on the given file path.
+        /// </summary>
+        /// <param name="filePath">Path to the file that needs to be created.</param>
+        /// <returns>A value <see cref="Tuple"/> with 2 components. A <see cref="bool"/> that represents if the file was successfully created and a
+        /// <see cref="string"/> that specifies the reason if not.</returns>
         private (bool isSuccessfull, string reason) CreateFile(string filePath)
         {
             try
@@ -123,7 +132,10 @@ namespace Enterwell.CI.Changelog.CLI
             }
         }
 
-        private void EnsureChangesDirectoryExist()
+        /// <summary>
+        /// Used to ensure that the changes directory exists. If it does not exist, the directory is created.
+        /// </summary>
+        private void EnsureChangesDirectoryExists()
         {
             var changesDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "changes");
 
@@ -136,11 +148,11 @@ namespace Enterwell.CI.Changelog.CLI
         /// <summary>
         /// Validating <see cref="Category"/> property in the case user did not specify it, but should have because the configuration file with allowed categories exists.
         /// </summary>
-        private void ValidateCategory()
+        private void ValidateCategory(ConsoleLogger logger)
         {
             if (string.IsNullOrWhiteSpace(Category) && ConfigurationExists())
             {
-                LogError("The --category field is required.");
+                logger.LogError("The -c|--category field is required.");
                 Environment.Exit(1);
             }
         }
@@ -154,7 +166,7 @@ namespace Enterwell.CI.Changelog.CLI
             var pathToConfig = Path.Combine(Directory.GetCurrentDirectory(), Configuration.ConfigurationName);
 
             if (File.Exists(pathToConfig)) return true;
-            
+
             return false;
         }
     }
