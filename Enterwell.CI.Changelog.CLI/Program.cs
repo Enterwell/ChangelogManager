@@ -1,4 +1,5 @@
 ﻿using Enterwell.CI.Changelog.CLI.ValidationRules;
+using Enterwell.CI.Changelog.Shared;
 using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.Collections.Generic;
@@ -62,12 +63,14 @@ namespace Enterwell.CI.Changelog.CLI
             // it in the case category was not assigned, but should have been assigned.
             ValidateCategory(logger);
 
-            EnsureChangesDirectoryExists();
+            FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
 
             var inputType = FormatTypeCorrectly();
-            var fileName = ConstructFileName(inputType);
+            var fileName = FileSystemHelper.ConstructFileName(inputType, Category, Description);
 
-            var creationResult = CreateFile(Path.Combine(Directory.GetCurrentDirectory(), "changes", fileName));
+            var creationResult = FileSystemHelper.CreateFile(Path.Combine
+                (Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName)
+            );
 
             logger.LogResult(creationResult.isSuccessfull, creationResult.reason);
         }
@@ -90,84 +93,19 @@ namespace Enterwell.CI.Changelog.CLI
             // Ensure that the first letter is upper case and the rest are lower case.
             return inputType.First().ToString().ToUpper() + inputType[1..].ToLower();
         }
-
-        /// <summary>
-        /// Constructs the file name using the arguments passed in by the user to the CLI application and the manually formatted change type.
-        /// </summary>
-        /// <param name="inputType">Manually formatted change type so that it is spelled correctly.</param>
-        /// <returns>Name of the file to be saved in the folder where changes are stored.</returns>
-        private string ConstructFileName(string inputType)
-        {
-            var description = Description.Trim();
-
-            var category = Category.Trim();
-            if (string.IsNullOrWhiteSpace(category))
-            {
-                return $"{inputType} {description}";
-            }
-            else
-            {
-                return $"{inputType} [{category}] {description}";
-            }
-        }
-
-        /// <summary>
-        /// Creates the file on the given file path.
-        /// </summary>
-        /// <param name="filePath">Path to the file that needs to be created.</param>
-        /// <returns>A value <see cref="Tuple"/> with 2 components. A <see cref="bool"/> that represents if the file was successfully created and a
-        /// <see cref="string"/> that specifies the reason if not.</returns>
-        private (bool isSuccessfull, string reason) CreateFile(string filePath)
-        {
-            try
-            {
-                var file = File.Create(filePath);
-                file.Close();
-
-                return (true, string.Empty);
-            }
-            catch (Exception e)
-            {
-                return (false, e.Message);
-            }
-        }
-
-        /// <summary>
-        /// Used to ensure that the changes directory exists. If it does not exist, the directory is created.
-        /// </summary>
-        private void EnsureChangesDirectoryExists()
-        {
-            var changesDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "changes");
-
-            if (!Directory.Exists(changesDirectoryPath))
-            {
-                Directory.CreateDirectory(changesDirectoryPath);
-            }
-        }
-
+        
         /// <summary>
         /// Validating <see cref="Category"/> property in the case user did not specify it, but should have because the configuration file with allowed categories exists.
         /// </summary>
         private void ValidateCategory(ConsoleLogger logger)
         {
-            if (string.IsNullOrWhiteSpace(Category) && ConfigurationExists())
+            var config = Configuration.LoadConfiguration(Directory.GetCurrentDirectory());
+
+            if (string.IsNullOrWhiteSpace(Category) && config != null && !config.IsEmpty())
             {
                 logger.LogError("The -c|--category field is required.");
                 Environment.Exit(1);
             }
-        }
-
-        /// <summary>
-        /// Checks to see if the configuration file exists in the current directory.
-        /// </summary>
-        /// <returns>A <see cref="bool"/> representing the if the configuration file exists or not.</returns>
-        private bool ConfigurationExists()
-        {
-            var pathToConfig = Path.Combine(Directory.GetCurrentDirectory(), Configuration.ConfigurationName);
-
-            if (File.Exists(pathToConfig)) return true;
-
-            return false;
         }
     }
 }

@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enterwell.CI.Changelog.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enterwell.CI.Changelog.VSIX", "Enterwell.CI.Changelog.VSIX\Enterwell.CI.Changelog.VSIX.csproj", "{50289145-B79F-4B49-8404-AFF66249DF59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enterwell.CI.Changelog.CLI", "Enterwell.CI.Changelog.CLI\Enterwell.CI.Changelog.CLI.csproj", "{D479FEFF-6573-496B-8B3A-71696D3865C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enterwell.CI.Changelog.CLI", "Enterwell.CI.Changelog.CLI\Enterwell.CI.Changelog.CLI.csproj", "{D479FEFF-6573-496B-8B3A-71696D3865C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enterwell.CI.Changelog.Shared", "Enterwell.CI.Changelog.Shared\Enterwell.CI.Changelog.Shared.csproj", "{652D5A56-2881-4696-8440-5D9D8BED35C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D479FEFF-6573-496B-8B3A-71696D3865C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D479FEFF-6573-496B-8B3A-71696D3865C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D479FEFF-6573-496B-8B3A-71696D3865C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{652D5A56-2881-4696-8440-5D9D8BED35C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{652D5A56-2881-4696-8440-5D9D8BED35C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{652D5A56-2881-4696-8440-5D9D8BED35C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{652D5A56-2881-4696-8440-5D9D8BED35C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
+using Enterwell.CI.Changelog.Shared;
 
 namespace Enterwell.CI.Changelog.CLI.ValidationRules
 {
@@ -16,17 +16,10 @@ namespace Enterwell.CI.Changelog.CLI.ValidationRules
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var pathToConfig = Path.Combine(Directory.GetCurrentDirectory(), Configuration.ConfigurationName);
-
-            Configuration config = null;
-
-            if (File.Exists(pathToConfig))
-            {
-                config = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(pathToConfig));
-            }
-
-            // Any input data is valid if the configuration file does not exist.
-            if (config == null)
+            var config = Configuration.LoadConfiguration(Directory.GetCurrentDirectory());
+            
+            // Any input data is valid if the configuration file does not exist or if its empty.
+            if (config == null || config.IsEmpty())
             {
                 return ValidationResult.Success;
             }
