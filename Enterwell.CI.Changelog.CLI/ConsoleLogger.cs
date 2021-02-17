@@ -6,15 +6,13 @@ namespace Enterwell.CI.Changelog.CLI
     {
         public void LogResult(bool changeCreated, string reason)
         {
-            var statusText = changeCreated ? "Change Added Successfully" : $"Adding Change Failed. Reason: {reason}";
-
             if (!changeCreated)
             {
-                LogError(statusText);
+                LogError($"Adding Change Failed. Reason: {reason}");
             }
             else
             {
-                LogSuccess(statusText);
+                LogSuccess("Change Added Successfully");
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Enterwell.CI.Changelog.Shared;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
-using Enterwell.CI.Changelog.Shared;
 
 namespace Enterwell.CI.Changelog.CLI.ValidationRules
 {
@@ -17,7 +17,7 @@ namespace Enterwell.CI.Changelog.CLI.ValidationRules
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var config = Configuration.LoadConfiguration(Directory.GetCurrentDirectory());
-            
+
             // Any input data is valid if the configuration file does not exist or if its empty.
             if (config == null || config.IsEmpty())
             {

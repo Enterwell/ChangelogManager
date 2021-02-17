@@ -65,14 +65,14 @@ namespace Enterwell.CI.Changelog.CLI
 
             FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
 
-            var inputType = FormatTypeCorrectly();
-            var fileName = FileSystemHelper.ConstructFileName(inputType, Category, Description);
+            string inputType = FormatTypeCorrectly();
+            string fileName = FileSystemHelper.ConstructFileName(inputType, Category, Description);
 
-            var creationResult = FileSystemHelper.CreateFile(Path.Combine
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine
                 (Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName)
             );
 
-            logger.LogResult(creationResult.isSuccessfull, creationResult.reason);
+            logger.LogResult(isSuccessful, reason);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Enterwell.CI.Changelog.CLI
             // Ensure that the first letter is upper case and the rest are lower case.
             return inputType.First().ToString().ToUpper() + inputType[1..].ToLower();
         }
-        
+
         /// <summary>
         /// Validating <see cref="Category"/> property in the case user did not specify it, but should have because the configuration file with allowed categories exists.
         /// </summary>
