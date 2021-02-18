@@ -108,17 +108,17 @@ namespace Enterwell.CI.Changelog.VSIX
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var result = ShowDialogForAddingChange();
-            if (result == string.Empty)
+            string fileName = ShowDialogForAddingChange();
+            if (fileName == string.Empty)
             {
                 await StatusBarLogAsync(false, "Cancelled By User");
                 return;
             }
             
             FileSystemHelper.EnsureChangesDirectoryExists(this.solutionPath);
-            var creationResult = FileSystemHelper.CreateFile(Path.Combine(this.solutionPath, FileSystemHelper.ChangeDirectoryName, result));
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(this.solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
 
-            await StatusBarLogAsync(creationResult.isSuccessfull, creationResult.reason);
+            await StatusBarLogAsync(isSuccessful, reason);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Enterwell.CI.Changelog.VSIX
         private string ShowDialogForAddingChange()
         {
             var dialog = new AddChangeDialog(this.solutionPath);
-            var result = dialog.ShowDialog();
+            bool? result = dialog.ShowDialog();
 
             if (result.HasValue && result.Value)
             {
