@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
 namespace Enterwell.CI.Changelog.Tests
 {
+    /// <summary>
+    /// Test suite that inherits from the <see cref="TestBase"/> and contains high-level integration tests of the application.
+    /// Only the inputs and outputs are tested, without testing each and every service.
+    /// </summary>
     public class FilingChangelogServiceTests : TestBase
     {
         private const string ValidVersion = "1.2.3";
@@ -14,6 +17,9 @@ namespace Enterwell.CI.Changelog.Tests
 
         private readonly FillingChangelogService changelogService;
 
+        /// <summary>
+        /// Initializes the test with services that are needed.
+        /// </summary>
         public FilingChangelogServiceTests()
         {
             var parseInputService = new ParseInputService();
@@ -25,6 +31,9 @@ namespace Enterwell.CI.Changelog.Tests
                 markdownTextService, fileWriterService);
         }
 
+        /// <summary>
+        /// Testing the application when no inputs are passed. <see cref="ArgumentException"/> should be thrown with correct message.
+        /// </summary>
         [Fact]
         public void FillingChangelogService_NoInputs_ThrowsArgumentExceptionWithCorrectMessage()
         {
@@ -38,6 +47,9 @@ namespace Enterwell.CI.Changelog.Tests
             act.Should().ThrowExactly<ArgumentException>().WithMessage("Correct usage: <version[major.minor.patch]> <repository location>");
         }
 
+        /// <summary>
+        /// Testing the application when wrong inputs are passed. <see cref="ArgumentException"/> should be thrown with correct message.
+        /// </summary>
         [Fact]
         public void FillingChangelogService_WrongInputs_ThrowsArgumentExceptionWithCorrectMessage()
         {
@@ -52,6 +64,10 @@ namespace Enterwell.CI.Changelog.Tests
                 $"Expected input format: <major.minor.patch>. Got: '{InvalidVersion}'. Check your separation dots!");
         }
 
+        /// <summary>
+        /// Testing the application when valid inputs are passed, but the solution root does not contain 'changes' directory.
+        /// <see cref="DirectoryNotFoundException"/> should be thrown with correct message.
+        /// </summary>
         [Fact]
         public void FillingChangelogService_ValidInputWithNoChangesDirectory_ThrowsDirectoryNotFoundExceptionWithCorrectMessage()
         {
@@ -65,6 +81,10 @@ namespace Enterwell.CI.Changelog.Tests
             act.Should().ThrowExactly<DirectoryNotFoundException>().WithMessage("Directory 'changes' not found.");
         }
 
+        /// <summary>
+        /// Testing the application when valid inputs are passed, the solution root contains 'changes' directory, but it doesn't contain a 'Changelog.md' file.
+        /// <see cref="FileNotFoundException"/> should be thrown with correct message.
+        /// </summary>
         [Fact]
         public void FillingChangelogService_ValidInputWithChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
         {
@@ -79,6 +99,10 @@ namespace Enterwell.CI.Changelog.Tests
             act.Should().ThrowExactly<FileNotFoundException>().WithMessage("Changelog file is not found.");
         }
 
+        /// <summary>
+        /// Testing the application when valid inputs are passed and the solution root contains 'changes' directory and a 'Changelog.md' file.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section.
+        /// </summary>
         [Fact]
         public async void FillingChangelogService_ValidInputWithChangesDirectoryAndChangelog_ActsAsExpected()
         {
