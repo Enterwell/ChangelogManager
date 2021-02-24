@@ -41,8 +41,10 @@ const createChanges = () => {
     const changesPath = path.join(testRoot, "changes");
     fs.mkdirSync(changesPath);
 
-    fs.writeFileSync(path.join(changesPath, "Added [FE] First Change"), "");
-    fs.writeFileSync(path.join(changesPath, "Removed [API] First Deletion"), "");
+    fs.writeFileSync(path.join(changesPath, "Added [FE       ] First Change"), "");
+    fs.writeFileSync(path.join(changesPath, "Removed [      API      ] First Deletion"), "");
+    fs.writeFileSync(path.join(changesPath, "Removed [API      ] First Deletion2"), "");
+    fs.writeFileSync(path.join(changesPath, "Removed [API] First Deletion3"), "");
 }
 
 /**
@@ -68,7 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  * Describes a Test Suite (root of our tests).
  */
 describe("Merge Changelog Test Suite", function() {
-    this.timeout(1000);
+    this.timeout(60000);
 
     /**
      * Runs before each individual test in our suite.
@@ -112,7 +114,7 @@ describe("Merge Changelog Test Suite", function() {
          * Testing the task when valid inputs are passed but the changelog file does not exist.
          */
         it("should fail if changelog.md does not exist", (done: Mocha.Done) => {
-            this.timeout(1000);
+            this.timeout(5000);
     
             // Arrange
             createChanges();
@@ -137,7 +139,7 @@ describe("Merge Changelog Test Suite", function() {
          * Testing the task when valid inputs are passed but the changes directory does not exist.
          */
         it("should fail if changes directory does not exist", (done: Mocha.Done) => {
-            this.timeout(1000);
+            this.timeout(5000);
     
             // Arrange
             createChangelogFile();
@@ -162,7 +164,7 @@ describe("Merge Changelog Test Suite", function() {
          * Testing the task when valid inputs are passed and everything exists in the repository location.
          */
         it("should succeed when everything is at its place", (done: Mocha.Done) => {
-            this.timeout(1000);
+            this.timeout(5000);
 
             // Arrange
             createChanges();
@@ -219,7 +221,7 @@ describe("Merge Changelog Test Suite", function() {
          * Testing the task when invalid semantic version is passed in.
          */
         it("should fail if input semantic version is not correct format", (done: Mocha.Done) => {
-            this.timeout(1000);
+            this.timeout(5000);
     
             // Arrange
             createChanges();

@@ -59,7 +59,7 @@ namespace Enterwell.CI.Changelog
                 changeDescription = Regex.Replace(changeDescription, @"\s+", " ");
                 
                 // Remove all the whitespaces inside the [ ] angle brackets.
-                changeDescription = Regex.Replace(changeDescription, @"\[\s+(\w+)\s+\]", "[$1]");
+                changeDescription = Regex.Replace(changeDescription, @"\[\s*(\w+)\s*\]", "[$1]");
 
                 // If configuration exists and our change is not valid, ignore the change file. Else just ignore all validation.
                 if (configuration != null && !configuration.IsValid(changeDescription)) continue;
