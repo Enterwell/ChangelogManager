@@ -82,7 +82,7 @@ namespace Enterwell.CI.Changelog.CLI
         private string FormatTypeCorrectly()
         {
             // If the input type is only one word, replace it with its fully named equivalent.
-            string inputType = Type;
+            string inputType = Type.ToLower();
             if (inputType.Length == 1)
             {
                 var inputTypeIndex = AllowedTypes.IndexOf(inputType);

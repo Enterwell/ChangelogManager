@@ -1,0 +1,39 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "fd8800ae-13a1-4faf-a126-185bd26705d4",
+    "name": "MergeChangelog",
+    "friendlyName": "Merge Changelog",
+    "description": "Compiles the changes into Changelog.md if one exists.",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "Enterwell",
+    "version": {
+        "Major": 0,
+        "Minor": 5,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Merging Changelog",
+    "inputs": [
+        {
+            "name": "semanticVersion",
+            "type": "string",
+            "label": "Semantic Version",
+            "required": true,
+            "helpMarkDown": "Version of the repository: MAJOR.MINOR.PATCH",
+            "defaultValue": ""
+        },
+        {
+            "name": "repositoryLocation",
+            "type": "filePath",
+            "label": "Repository Location",
+            "defaultValue": "$(Build.SourcesDirectory)",
+            "required": true,
+            "helpMarkDown": "Location of the repository that contains Changelog.md and 'changes' folder."
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}
