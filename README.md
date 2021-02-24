@@ -10,3 +10,5 @@ This repository containes:
 + [`Changelog.CLI`](../Enterwell.CI.Changelog.CLI) Console App project using .NET 5 which servers as a CLI version of VSIX project, helping developers automatically create needed files from the command line / terminal.
 
 + [`Changelog.Shared`](../Enterwell.CI.Changelog.Shared) class library project which holds all the shared logic between [`Changelog.CLI`](../Enterwell.CI.Changelog.CLI) and [`Changelog.VSIX`](../Enterwell.CI.Changelog.VSIX) projects that helps with file creation and checking for configuration.
+
++ [`Changelog.DevOpsTask`](../Enterwell.CI.Changelog.DevOpsTask) project that contains the extension developed for the Azure DevOps containing one task. Task to merge changes into a changelog file.
