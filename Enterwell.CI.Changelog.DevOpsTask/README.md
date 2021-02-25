@@ -10,7 +10,7 @@ Repository or the directory on the automation agent where the task executes need
 
 ### **Changelog file**
 
-The task also needs to be able to find `Changelog.md` file in the root directory in order to not throw and stop executing.
+The task also needs to be able to find `Changelog.md` file (naming is case-insensitive) in the root directory in order to not throw and stop executing.
 
 # Task inputs
 Task takes two inputs:
@@ -37,5 +37,5 @@ In order to be able to run this code and its tests on your machine, you need to:
 
 1. Position yourself into the **task** directory with `cd task`.
 2. Run `npm install` to install all the dependencies used in the project.
-3. Run `tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
+3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.
