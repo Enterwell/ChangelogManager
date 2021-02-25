@@ -10,7 +10,7 @@ Repository or the directory on the automation agent where the task executes need
 
 ### **Changelog file**
 
-The task also needs to be able to find `Changelog.md` file (naming is case-insensitive) in the root directory in order to not throw and stop executing.
+The task also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive) in the root directory in order to not throw and stop executing.
 
 # Task inputs
 Task takes two inputs:
