@@ -30,7 +30,7 @@ Example of a task call in `.yml` pipeline file:
 # Result / Output
 If **changes** directory or `CHANGELOG.md` file does not exist in the directory, task will log the error to the pipeline output and set its status to **FAILED**.
 
-Otherwise, task executes [`our Changelog application`](../Enterwell.CI.Changelog) which inserts appropriate section in the `CHANGELOG.md` file and delets all the contents of the **changes** folder.
+Otherwise, task executes [our Changelog application](../Enterwell.CI.Changelog) which inserts appropriate section in the `CHANGELOG.md` file and delets all the contents of the **changes** folder.
 
 # Development
 In order to be able to run this code and its tests on your machine, you need to:
