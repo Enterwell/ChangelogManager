@@ -19,6 +19,11 @@ Task takes two inputs:
 + the directory root/location with the **changes** folder and the `CHANGELOG.md` file itself:
   + default value is $(Build.SourcesDirectory).
 
+# Tasks assistant menu
+After installing the extension from the Marketplace, you can find the task in the assistant menu when editing pipeline `.yml` file.
+
+![](../img/DevOpsTask.png)
+
 # YAML pipeline task definition
 Example of a task call in `.yml` pipeline file:
 
