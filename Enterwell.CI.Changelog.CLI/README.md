@@ -24,11 +24,11 @@ Arguments:
       + each of the previous entries can be specified using their first letters also;
    + Acceptable entries are case-insensitive.
 + change_description:
-   + Change description that describes the changes made.
+   + Quoted change description that describes the changes made.
 
 Options:
 + -c | --category <change_category>:
-   + One of the valid change categories determined in the configuration file (explained later), or arbitrary if configuration does not exist or is empty.
+   + One of the valid change categories determined in the configuration file (explained later), or arbitrary if configuration does not exist or is empty. Needs to be quoted if its longer than one word.
 + -? | -h | --help:
    + Shows help information.
 

@@ -34,14 +34,14 @@ namespace Enterwell.CI.Changelog.CLI
         /// <summary>
         /// Second argument to the CLI application representing the change description. Required.
         /// </summary>
-        [Argument(1, "Change Description", "Change description that describes the changes made.", ShowInHelpText = true)]
+        [Argument(1, "Change Description", "Quoted change description that describes the changes made.", ShowInHelpText = true)]
         [Required]
         public string Description { get; set; }
 
         /// <summary>
         /// Option parameter to the CLI application representing the change category. Required only if the configuration file exists.
         /// </summary>
-        [Option(Description = "One of the valid change categories determined in the configuration file, or arbitrary if configuration does not exist.", ShowInHelpText = true)]
+        [Option(Description = "One of the valid change categories determined in the configuration file, or arbitrary if configuration does not exist. Needs to be quoted if the name is longer than one word.", ShowInHelpText = true)]
         [ValidCategory]
         public string Category { get; set; }
 
