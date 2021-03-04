@@ -1,5 +1,5 @@
 # Introduction 
-`Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the `Changelog` project in order to fill out the `CHANGELOG.md` file.
+`Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the [`Changelog`](../Enterwell.CI.Changelog) project in order to fill out the `CHANGELOG.md` file.
 
 # Installation
 
@@ -62,7 +62,7 @@ If the configuration exist, application will ignore every change in the **change
 
 # Result / Output
 
-If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our `Enterwell.CI.Changelog` project.
+If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our [`Enterwell.CI.Changelog`](../Enterwell.CI.Changelog) project.
 
 # Development
 

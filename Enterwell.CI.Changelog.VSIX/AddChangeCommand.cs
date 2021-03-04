@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.IO;
+using Enterwell.CI.Changelog.Shared;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -16,7 +17,6 @@ namespace Enterwell.CI.Changelog.VSIX
     internal sealed class AddChangeCommand
     {
         private readonly string solutionPath;
-        private const string ChangesFolderName = "changes";
 
         /// <summary>
         /// Command ID.
@@ -108,19 +108,17 @@ namespace Enterwell.CI.Changelog.VSIX
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var result = ShowDialogForAddingChange();
-
-            if (result == string.Empty)
+            string fileName = ShowDialogForAddingChange();
+            if (fileName == string.Empty)
             {
                 await StatusBarLogAsync(false, "Cancelled By User");
                 return;
             }
             
-            EnsureChangesDirectoryExist();
+            FileSystemHelper.EnsureChangesDirectoryExists(this.solutionPath);
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(this.solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
 
-            var creationResult = CreateFile(Path.Combine(this.solutionPath, ChangesFolderName, result));
-
-            await StatusBarLogAsync(creationResult.isSuccessfull, creationResult.reason);
+            await StatusBarLogAsync(isSuccessful, reason);
         }
 
         /// <summary>
@@ -163,52 +161,16 @@ namespace Enterwell.CI.Changelog.VSIX
         private string ShowDialogForAddingChange()
         {
             var dialog = new AddChangeDialog(this.solutionPath);
-            var result = dialog.ShowDialog();
+            bool? result = dialog.ShowDialog();
 
             if (result.HasValue && result.Value)
             {
-                if (string.IsNullOrWhiteSpace(dialog.ChangeCategory))
-                    return $"{dialog.ChangeType} {dialog.ChangeDescription}";
-
-                return $"{dialog.ChangeType} [{dialog.ChangeCategory}] {dialog.ChangeDescription}";
+                return FileSystemHelper.ConstructFileName(dialog.ChangeType, dialog.ChangeCategory,
+                    dialog.ChangeDescription);
             }
             else
             {
                 return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Used to ensure that the changes directory exists. If it does not exist, the directory is created.
-        /// </summary>
-        private void EnsureChangesDirectoryExist()
-        {
-            var changesDirectoryPath = Path.Combine(solutionPath, ChangesFolderName);
-
-            if (!Directory.Exists(changesDirectoryPath))
-            {
-                Directory.CreateDirectory(changesDirectoryPath);
-            }
-        }
-
-        /// <summary>
-        /// Creates the file on the given file path.
-        /// </summary>
-        /// <param name="filePath">File path to the file that needs to be created.</param>
-        /// <returns>A value <see cref="Tuple"/> with 2 components. A <see cref="bool"/> that represents if the file was successfully created and a
-        /// <see cref="string"/> that specifies the reason if not.</returns>
-        private (bool isSuccessfull, string reason) CreateFile(string filePath)
-        {
-            try
-            {
-                var file = File.Create(filePath);
-                file.Close();
-
-                return (true, string.Empty);
-            }
-            catch (Exception e)
-            {
-                return (false, e.Message);
             }
         }
     }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using Enterwell.CI.Changelog.VSIX.Helpers;
-using Newtonsoft.Json;
-using Path = System.IO.Path;
+using Enterwell.CI.Changelog.Shared;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace Enterwell.CI.Changelog.VSIX
@@ -17,7 +14,6 @@ namespace Enterwell.CI.Changelog.VSIX
         private readonly string solutionPath;
 
         private readonly string[] changeTypes = {"Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"};
-        private const string ConfigurationFileName = ".changelog.json";
 
         /// <summary>
         /// Gets the text from the Change Type dropdown.
@@ -28,12 +24,12 @@ namespace Enterwell.CI.Changelog.VSIX
         /// Gets the text from the Change Category dropdown or from the Change Category text box if the changelog configuration
         /// does not exist and therefore the dropdown is not visible.
         /// </summary>
-        public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text.Trim();
+        public string ChangeCategory => CategoryComboBox.Text != string.Empty ? CategoryComboBox.Text : CategoryTextBox.Text;
 
         /// <summary>
         /// Gets the text from the Change Description text box.
         /// </summary>
-        public string ChangeDescription => DescriptionTextBox.Text.Trim();
+        public string ChangeDescription => DescriptionTextBox.Text;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddChangeDialog"/> class and therefore initializes the component.
@@ -67,17 +63,17 @@ namespace Enterwell.CI.Changelog.VSIX
         /// </summary>
         private void InitializeChangeCategories()
         {
-            var configuration = LoadConfiguration(this.solutionPath);
+            var configuration = Configuration.LoadConfiguration(this.solutionPath);
 
-            if (configuration != null)
-            {
-                CategoryComboBox.ItemsSource = configuration.Categories;
-                CategoryComboBox.SelectedIndex = 0;
-            }
-            else
+            if (configuration == null || configuration.IsEmpty())
             {
                 CategoryComboBox.Visibility = Visibility.Hidden;
                 CategoryTextBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CategoryComboBox.ItemsSource = configuration.Categories;
+                CategoryComboBox.SelectedIndex = 0;
             }
         }
 
@@ -103,29 +99,6 @@ namespace Enterwell.CI.Changelog.VSIX
         {
             DialogResult = false;
             Close();
-        }
-
-        
-        /// <summary>
-        /// Loads the configuration from the solution root.
-        /// </summary>
-        /// <param name="solutionPath">Path to the solution where the changelog configuration file should be located.</param>
-        /// <returns><see cref="Configuration"/> object deserialized from the changelog configuration file.</returns>
-        /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
-        private Configuration LoadConfiguration(string? solutionPath)
-        {
-            if (string.IsNullOrWhiteSpace(solutionPath))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(solutionPath));
-
-            var configurationFilePath = Path.Combine(solutionPath, ConfigurationFileName);
-
-            // First check to see if the configuration file exists.
-            if (File.Exists(configurationFilePath))
-            {
-                return JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configurationFilePath));
-            }
-
-            return null;
         }
 
         /// <summary>
