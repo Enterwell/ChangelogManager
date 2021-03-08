@@ -1,5 +1,5 @@
 /**
- * File that mocks task runner and sets up valid inputs.
+ * File that mocks task runner and sets up invalid changes location input.
  */
 
 import tmrm = require("azure-pipelines-task-lib/mock-run");
@@ -12,7 +12,7 @@ const testRoot: string = path.join(__dirname, "test_structure");
 
 tmr.setInput("semanticVersion", "1.2.0");
 tmr.setInput("changelogLocation", testRoot);
-tmr.setInput("changesInDifferentLocation", "false");
-tmr.setInput("changesLocation", testRoot);
+tmr.setInput("changesInDifferentLocation", "true");
+tmr.setInput("changesLocation", "something that's invalid");
 
 tmr.run(true);

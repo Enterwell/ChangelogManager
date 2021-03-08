@@ -8,32 +8,37 @@ import fs = require("fs");
 import { execFileSync } from "child_process";
 
 /**
- * Prints the contents of the repository at the repository location passed to the task.
+ * Prints the contents of the changelog and changes location passed to the task.
  * 
- * @param repoLocation Path to the repository.
+ * @param changelogLocation Path to the directory where "Changelog.md" is located.
+ * @param changesLocation Path to the 'changes' directory.
  */
-function printContents(repoLocation: string) {
+function printContents(changelogLocation: string, changesLocation: string) {
 
-  // Print the folder contents 
-  var folderFiles = fs.readdirSync(repoLocation, {encoding: "utf-8"});
-
-  let changelogName: string = "Changelog.md";
-
-  console.log("=======FOLDER CONTENTS=======");
-  folderFiles.forEach((file) => {
-
-    if (file.toLowerCase() === "changelog.md") {
-      changelogName = file;
-    }
-
-    console.log(file);
-  })
-
-  // Print the folder changes contents 
-  let changesPath = path.join(repoLocation, "changes");
+  // Print the contents of the directory that should contain "Changelog.md".
+  let changelogName: string;
 
   try {
-    let changesFiles = fs.readdirSync(changesPath, {encoding: "utf-8"});
+    var folderFiles = fs.readdirSync(changelogLocation, {encoding: "utf-8"});
+
+    changelogName = "changelog.md";
+
+    console.log("=======FOLDER CONTENTS=======");
+    folderFiles.forEach((file) => {
+
+      if (file.toLowerCase() === changelogName) {
+        changelogName = file;
+      }
+
+      console.log(file);
+  })
+  } catch(err) {
+    throw new Error("Error occurred while reading changelog directory.\n" + err);
+  }
+
+  // Print the contents of the 'changes' directory.
+  try {
+    let changesFiles = fs.readdirSync(changesLocation, {encoding: "utf-8"});
 
     console.log("=======CHANGES CONTENTS=======");
     changesFiles.forEach((file) => {
@@ -44,7 +49,7 @@ function printContents(repoLocation: string) {
   }
 
   // Print the changelog.md contents
-  let changelogPath = path.join(repoLocation, changelogName);
+  let changelogPath = path.join(changelogLocation, changelogName);
 
   try {
     var changelogFile = fs.readFileSync(changelogPath, {encoding: "utf-8"});
@@ -54,7 +59,6 @@ function printContents(repoLocation: string) {
   } catch (err){
     throw new Error("Error occurred while reading changelog file.\n" + err);
   }
-  
 }
 
 /**
@@ -65,19 +69,33 @@ async function run() {
 
     // Get inputs.
     let input_semanticVersion: string = tl.getInput("semanticVersion", true) || "";
-    let input_repoLocation: string = tl.getPathInput("repositoryLocation", true, true) || "";
+    let input_changelogLocation: string = tl.getPathInput("changelogLocation", true, true) || "";
+    let input_differentLocation: boolean = tl.getBoolInput("changesInDifferentLocation");
+    let input_changesLocation: string;
+
+    if (!input_differentLocation) {
+      input_changesLocation = path.join(input_changelogLocation, "changes");
+    } else {
+      input_changesLocation = tl.getPathInput("changesLocation", true, true) || "";
+    }
 
     console.log("Input semantic version: " + input_semanticVersion);
-    console.log("Input repository location: " + input_repoLocation);
+    console.log("Input changelog location: " + input_changelogLocation);
+    console.log("Input different location: " + input_differentLocation);
+    console.log("Input changes location: " + input_changesLocation);
 
+    if (!input_changesLocation.endsWith("\\changes")){
+      throw new Error("Insert correct changes location!");
+    }
+    
     console.log("=============================================BEFORE EXECUTION=============================================");
-    printContents(input_repoLocation);
+    printContents(input_changelogLocation, input_changesLocation);
 
     // Run the executable.
     let executablePath = path.join(__dirname, "cl.exe");
 
     try {
-      let executableOutput = execFileSync(executablePath, [input_semanticVersion, input_repoLocation], {encoding: "utf-8"});
+      let executableOutput = execFileSync(executablePath, [input_semanticVersion, input_changelogLocation, input_changesLocation], {encoding: "utf-8"});
       console.log("=======EXECUTABLE OUTPUT=======");
       console.log(executableOutput);
     } catch (err) {
@@ -85,7 +103,7 @@ async function run() {
     }
 
     console.log("=============================================AFTER EXECUTION=============================================");
-    printContents(input_repoLocation);
+    printContents(input_changelogLocation, input_changesLocation);
 
   } catch (err) {
     tl.setResult(tl.TaskResult.Failed, err.message);

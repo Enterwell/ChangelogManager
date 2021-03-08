@@ -9,36 +9,28 @@ using Newtonsoft.Json;
 namespace Enterwell.CI.Changelog
 {
     /// <summary>
-    /// Service that gathers changes from the repository and returns them to the user.
+    /// Service that gathers changes from the changes directory and returns them to the user.
     /// </summary>
     public class ChangeGatheringService
     {
-        private const string ChangesFolderName = "changes";
         private const string ConfigurationFileName = ".changelog.json";
 
         private readonly string[] acceptableChanges = { "added", "changed", "deprecated", "removed", "fixed", "security" };
 
         /// <summary>
-        /// Reads the changes from the changes folder in the repository on a given repository path and returns the dictionary with change type keys.
+        /// Reads the changes from the changes folder in the repository on a given changes location and returns the dictionary with change type keys.
         /// </summary>
-        /// <param name="repositoryPath">Path to the repository where the folder with changes is located.</param>
-        /// <exception cref="DirectoryNotFoundException">Thrown when directory containing changes does not exist.</exception>
+        /// <param name="changelogLocation">Path to directory containing the changelog file.</param>
+        /// <param name="changesLocation">Path to the changes directory.</param>
         /// <returns>Returns the dictionary whose keys are change types and values are all the changes of the corresponding change type.</returns>
-        public async Task<Dictionary<string, List<string>>> GatherChanges(string repositoryPath)
+        public async Task<Dictionary<string, List<string>>> GatherChanges(string changelogLocation, string changesLocation)
         {
             var changes = new Dictionary<string, List<string>>();
-
+            
             // Load user configuration.
-            var configuration = await LoadConfiguration(repositoryPath);
-
-            var changesDirectoryPath = Path.Combine(repositoryPath, ChangesFolderName);
-
-            if (!Directory.Exists(changesDirectoryPath))
-            {
-                throw new DirectoryNotFoundException("Directory 'changes' not found.");
-            }
-
-            var filesPath = Directory.GetFiles(changesDirectoryPath);
+            var configuration = await LoadConfiguration(changelogLocation);
+            
+            var filesPath = Directory.GetFiles(changesLocation);
 
             foreach (string filePath in filesPath)
             {
@@ -79,35 +71,32 @@ namespace Enterwell.CI.Changelog
         }
 
         /// <summary>
-        /// Deletes all the change files from the changes folder in the repository.
+        /// Deletes all the change files from the changes directory.
         /// </summary>
-        /// <param name="repositoryPath">Path to the repository where the folder with changes is located.</param>
-        public void EmptyChangesFolder(string repositoryPath)
+        /// <param name="changesLocation">Path to the changes directory.</param>
+        public void EmptyChangesFolder(string changesLocation)
         {
-            var changesDirectoryPath = Path.Combine(repositoryPath, ChangesFolderName);
-
-            var changesDirectory = new DirectoryInfo(changesDirectoryPath);
+            var changesDirectory = new DirectoryInfo(changesLocation);
 
             foreach (FileInfo file in changesDirectory.GetFiles())
             {
                 file.Delete();
             }
-
         }
 
         /// <summary>
-        /// Loads the configuration from the repository root.
+        /// Loads the configuration from the changelog location.
         /// </summary>
-        /// <param name="repositoryPath">Path to the repository where the configuration file is located.</param>
-        /// <returns>Returns the <code>Configuration</code> object deserialized from the configuration file in repository root.</returns>
-        /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
-        private async Task<Configuration?> LoadConfiguration(string repositoryPath)
+        /// <param name="changelogLocation">Path to the directory where the configuration file is located.</param>
+        /// <returns>Returns the <code>Configuration</code> object deserialized from the configuration file.</returns>
+        /// <exception cref="ArgumentException">Thrown when argument is not valid.</exception>
+        private async Task<Configuration?> LoadConfiguration(string changelogLocation)
         {
-            if (string.IsNullOrWhiteSpace(repositoryPath))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(repositoryPath));
+            if (string.IsNullOrWhiteSpace(changelogLocation))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
 
 
-            var configurationFilePath = Path.Combine(repositoryPath, ConfigurationFileName);
+            var configurationFilePath = Path.Combine(changelogLocation, ConfigurationFileName);
 
             // First check to see if the configuration file exists.
             if (File.Exists(configurationFilePath))
@@ -117,7 +106,5 @@ namespace Enterwell.CI.Changelog
 
             return null;
         }
-
-        
     }
 }

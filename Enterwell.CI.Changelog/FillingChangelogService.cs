@@ -18,7 +18,7 @@ namespace Enterwell.CI.Changelog
         /// Initializes FillingChangelogService object.
         /// </summary>
         /// <param name="parseInputService">Service that knows how to parse input arguments.</param>
-        /// <param name="changeGatheringService">Service that knows how to gather changes from the repository.</param>
+        /// <param name="changeGatheringService">Service that knows how to gather changes from the changes location.</param>
         /// <param name="markdownTextService">Service that knows how to format changes into text for writing.</param>
         /// <param name="fileWriterService">Service that knows how to write changelog section into a file.</param>
         public FillingChangelogService(
@@ -39,19 +39,19 @@ namespace Enterwell.CI.Changelog
         /// <param name="inputArguments">Input arguments passed by the user to the application.</param>
         public async Task Run(string[] inputArguments)
         {
-            (string semanticVersion, string repositoryPath) inputs = this.parseInputService.ParseInputs(inputArguments);
+            (string semanticVersion, string changelogLocation, string changesLocation) = this.parseInputService.ParseInputs(inputArguments);
 
-            Dictionary<string, List<string>> changes = await this.changeGatheringService.GatherChanges(inputs.repositoryPath);
+            Dictionary<string, List<string>> changes = await this.changeGatheringService.GatherChanges(changelogLocation, changesLocation);
 
-            var newChangelogSection = this.markdownTextService.BuildChangelogSection(inputs.semanticVersion, changes);
+            var newChangelogSection = this.markdownTextService.BuildChangelogSection(semanticVersion, changes);
             Console.WriteLine(newChangelogSection);
 
-            var elementToInsertBefore = this.markdownTextService.ToH2(string.Empty);
+            var elementToInsertChangelogSectionBefore = this.markdownTextService.ToH2(string.Empty);
 
-            await this.fileWriterService.WriteToChangelog(newChangelogSection, inputs.repositoryPath,
-                elementToInsertBefore);
+            await this.fileWriterService.WriteToChangelog(newChangelogSection, changelogLocation,
+                elementToInsertChangelogSectionBefore);
             
-            this.changeGatheringService.EmptyChangesFolder(inputs.repositoryPath);
+            this.changeGatheringService.EmptyChangesFolder(changesLocation);
         }
     }
 }

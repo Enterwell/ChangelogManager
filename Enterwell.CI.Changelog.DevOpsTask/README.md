@@ -6,18 +6,22 @@ The following pre-requisites need to be fulfilled in order for the task to work 
 
 ### **Changes folder**
 
-Repository or the directory on the automation agent where the task executes needs to have a **changes** folder containing files created with our helper applications [`Changelog.VSIX`](../Enterwell.CI.Changelog.VSIX) and/or [`Changelog.CLI`](../Enterwell.CI.Changelog.CLI). If the folder does not exist, task will throw an error.
+Automation agent where the task executes needs to have a **changes** folder containing files created with our helper applications [`Changelog.VSIX`](../Enterwell.CI.Changelog.VSIX) and/or [`Changelog.CLI`](../Enterwell.CI.Changelog.CLI). If the folder does not exist, task will throw an error.
 
 ### **Changelog file**
 
-The task also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive) in the root directory in order to not throw and stop executing.
+The task also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive) in order to not throw and stop executing.
 
 # Task inputs
-Task takes two inputs:
-+ semantic version:
-  + can be a string (ex. major.minor.patch) or an environmental variable (ex. $(semanticVersion)).
-+ the directory root/location with the **changes** folder and the `CHANGELOG.md` file itself:
-  + default value is $(Build.SourcesDirectory).
+Task takes four inputs:
++ semantic version (required):
+  + can be a string (ex. major.minor.patch) or an environmental variable (ex. `$(semanticVersion)`).
++ directory location containing the `CHANGELOG.md` file (optional):
+  + default value is `$(Build.SourcesDirectory)`.
++ boolean representing that the 'changes' directory exists in a different location than the `CHANGELOG.md` file (optional):
+  + default value is `false`.
++ **changes** folder location that contains all of the changes to be compiled into the `CHANGELOG.md` (required if previous boolean is set to `true`):
+  + if the boolean is set to `false` changes location is set to `<location containing the CHANGELOG.md>\changes`.
 
 # Tasks assistant menu
 After installing the extension from the Marketplace, you can find the task in the assistant menu when editing pipeline `.yml` file.
@@ -30,12 +34,16 @@ Example of a task call in `.yml` pipeline file:
 > task: MergeChangelog@<version_identifier> \
 > inputs: \
 > &nbsp; &nbsp; semanticVersion: <major.minor.patch> | environmental variable \
-> &nbsp; &nbsp; repositoryLocation: path | environmental variable
+> &nbsp; &nbsp; changelogLocation: path | environmental variable \
+> &nbsp; &nbsp; changesInDifferentLocation: boolean \
+> &nbsp; &nbsp; changesLocation: path | environmental variable
 
 # Result / Output
-If **changes** directory or `CHANGELOG.md` file does not exist in the directory, task will log the error to the pipeline output and set its status to **FAILED**.
+During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
 
-Otherwise, task executes [our Changelog application](../Enterwell.CI.Changelog) which inserts appropriate section to the `CHANGELOG.md` file and deletes all the contents of the **changes** folder.
+If **changes** directory or `CHANGELOG.md` file does not exist at respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
+
+Otherwise, task executes [Changelog application](../Enterwell.CI.Changelog) which inserts appropriate section to the `CHANGELOG.md` file and deletes all the contents of the **changes** folder.
 
 # Development
 In order to be able to run this code and its tests on your machine, you need to:

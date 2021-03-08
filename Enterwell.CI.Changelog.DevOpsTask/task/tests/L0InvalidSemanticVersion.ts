@@ -11,6 +11,8 @@ let tmr: tmrm.TaskMockRunner = new tmrm.TaskMockRunner(taskPath);
 const testRoot: string = path.join(__dirname, "test_structure");
 
 tmr.setInput("semanticVersion", "1.2");
-tmr.setInput("repositoryLocation", testRoot);
+tmr.setInput("changelogLocation", testRoot);
+tmr.setInput("changesInDifferentLocation", "false");
+tmr.setInput("changesLocation", testRoot);
 
 tmr.run(true);

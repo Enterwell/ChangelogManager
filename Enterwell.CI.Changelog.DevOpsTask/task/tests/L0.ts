@@ -161,7 +161,7 @@ describe("Merge Changelog Test Suite", function() {
         });
 
         /**
-         * Testing the task when valid inputs are passed and everything exists in the repository location.
+         * Testing the task when valid inputs are passed and everything exists.
          */
         it("should succeed when everything is at its place", (done: Mocha.Done) => {
             this.timeout(5000);
@@ -192,9 +192,9 @@ describe("Merge Changelog Test Suite", function() {
     describe("invalid inputs", function() {
 
         /**
-         * Testing the task when invalid repository location is passed in.
+         * Testing the task when invalid changelog location is passed in.
          */
-        it("should fail if input repository location does not exist", (done: Mocha.Done) => {
+        it("should fail if input changelog location does not exist", (done: Mocha.Done) => {
             this.timeout(1000);
     
             // Arrange
@@ -202,7 +202,7 @@ describe("Merge Changelog Test Suite", function() {
             createChangelogFile();
     
             // Act 
-            let tp: string = path.join(__dirname, "L0InvalidRepoLocation.js");
+            let tp: string = path.join(__dirname, "L0InvalidChangelogLocation.js");
             let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
     
             tr.run();
@@ -212,7 +212,59 @@ describe("Merge Changelog Test Suite", function() {
              assert(tr.failed, "should have failed");
              assert.strictEqual(tr.warningIssues.length, 0, "should have no warnings");
              assert.strictEqual(tr.errorIssues.length, 1, "should have 1 error issue");
-             assert(tr.errorIssues[0].startsWith("Not found repositoryLocation"), "should have correct message");
+             assert(tr.errorIssues[0].startsWith("Not found changelogLocation"), "should have correct message");
+            }, 
+            tr, done);
+        });
+
+        /**
+         * Testing the task when invalid changes location is passed in.
+         */
+         it("should fail if input changes location does not exist", (done: Mocha.Done) => {
+            this.timeout(1000);
+    
+            // Arrange
+            createChanges();
+            createChangelogFile();
+    
+            // Act 
+            let tp: string = path.join(__dirname, "L0InvalidChangesLocation.js");
+            let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+    
+            tr.run();
+    
+            // Assert
+            runValidations(() => {
+             assert(tr.failed, "should have failed");
+             assert.strictEqual(tr.warningIssues.length, 0, "should have no warnings");
+             assert.strictEqual(tr.errorIssues.length, 1, "should have 1 error issue");
+             assert(tr.errorIssues[0].startsWith("Not found changesLocation"), "should have correct message");
+            }, 
+            tr, done);
+        });
+
+        /**
+         * Testing the task when changes location is an empty string.
+         */
+         it("should fail if input changes location is an empty string", (done: Mocha.Done) => {
+            this.timeout(1000);
+    
+            // Arrange
+            createChanges();
+            createChangelogFile();
+    
+            // Act 
+            let tp: string = path.join(__dirname, "L0EmptyChangesLocation.js");
+            let tr: ttm.MockTestRunner = new ttm.MockTestRunner(tp);
+    
+            tr.run();
+    
+            // Assert
+            runValidations(() => {
+             assert(tr.failed, "should have failed");
+             assert.strictEqual(tr.warningIssues.length, 0, "should have no warnings");
+             assert.strictEqual(tr.errorIssues.length, 1, "should have 1 error issue");
+             assert(tr.errorIssues[0].startsWith("Input required"), "should have correct message");
             }, 
             tr, done);
         });
