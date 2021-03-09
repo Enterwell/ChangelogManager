@@ -44,7 +44,7 @@ namespace Enterwell.CI.Changelog.Tests
             Func<Task> act = async () => await changelogService.Run(inputs);
 
             // Assert
-            act.Should().ThrowExactly<ArgumentException>().WithMessage("Correct usage: <version[major.minor.patch]> <repository location>");
+            act.Should().ThrowExactly<ArgumentException>().WithMessage("Correct usage: <version[major.minor.patch]> <changelog location> <changes location>");
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Enterwell.CI.Changelog.Tests
         public void FillingChangelogService_WrongInputs_ThrowsArgumentExceptionWithCorrectMessage()
         {
             // Arrange
-            string[] inputs = {InvalidVersion, TestFolderPath};
+            string[] inputs = {InvalidVersion, TestFolderPath, ChangesFolderPath};
             
             // Act
             Func<Task> act = async () => await changelogService.Run(inputs);
@@ -65,31 +65,31 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed, but the solution root does not contain 'changes' directory.
-        /// <see cref="DirectoryNotFoundException"/> should be thrown with correct message.
+        /// Testing the application when valid version and changelog location are passed, but the changes directory input is invalid and does not exist.
+        /// <see cref="ArgumentException"/> should be thrown with correct message.
         /// </summary>
         [Fact]
-        public void FillingChangelogService_ValidInputWithNoChangesDirectory_ThrowsDirectoryNotFoundExceptionWithCorrectMessage()
+        public void FillingChangelogService_ValidInputWithNoChangesDirectory_ThrowsArgumentExceptionWithCorrectMessage()
         {
             // Arrange
-            string[] inputs = { ValidVersion, TestFolderPath };
+            string[] inputs = { ValidVersion, TestFolderPath, ChangesFolderPath };
 
             // Act
             Func<Task> act = async () => await changelogService.Run(inputs);
 
             // Assert
-            act.Should().ThrowExactly<DirectoryNotFoundException>().WithMessage("Directory 'changes' not found.");
+            act.Should().ThrowExactly<ArgumentException>().WithMessage($"Changes location does not exist on path: {ChangesFolderPath}");
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed, the solution root contains 'changes' directory, but it doesn't contain a 'Changelog.md' file.
+        /// Testing the application when changelog location does not contain a 'Changelog.md' file.
         /// <see cref="FileNotFoundException"/> should be thrown with correct message.
         /// </summary>
         [Fact]
         public void FillingChangelogService_ValidInputWithChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
         {
             // Arrange
-            string[] inputs = { ValidVersion, TestFolderPath };
+            string[] inputs = { ValidVersion, TestFolderPath, ChangesFolderPath };
             CreateChanges();
 
             // Act
@@ -100,14 +100,14 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and the solution root contains 'changes' directory and a 'Changelog.md' file.
+        /// Testing the application when valid inputs are passed.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section.
         /// </summary>
         [Fact]
         public async void FillingChangelogService_ValidInputWithChangesDirectoryAndChangelog_ActsAsExpected()
         {
             // Arrange
-            string[] inputs = { ValidVersion, TestFolderPath };
+            string[] inputs = { ValidVersion, TestFolderPath, ChangesFolderPath };
             CreateChanges();
             CreateChangelog();
             
