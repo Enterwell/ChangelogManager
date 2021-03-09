@@ -52,3 +52,9 @@ In order to be able to run this code and its tests on your machine, you need to:
 2. Run `npm install` to install all the dependencies used in the project.
 3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.
+
+# Packaging extension for publish to Marketplace
+In order to package extension for publishing, you need to use [Node CLI for Azure DevOps](https://github.com/microsoft/tfs-cli). You can install it by using `npm` by running `npm install -g tfx-cli`.
+
+After having installed the CLI tool, you can follow the [Step 4 and Step 5](https://docs.microsoft.com/en-us/azure/devops/extend/develop/add-build-task?view=azure-devops#step-4-package-your-extension) of the official documentation on how to package and publish a custom task.
+
