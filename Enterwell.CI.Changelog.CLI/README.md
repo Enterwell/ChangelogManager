@@ -9,7 +9,9 @@ Application takes two arguments and one optional input:
 
 Example of a call:
 
-> cc [options] <change_type> <change_description>
+```
+cc [options] <change_type> <change_description>
+```
 
 Arguments:
 + change_type: 
@@ -34,7 +36,9 @@ Options:
 
 Changes in the **changes** folder are just files with the following naming scheme:
 
-> <change_type> <[change_category]> <change_description>
+```
+<change_type> <[change_category]> <change_description>
+```
 
 `<[change_category]>` part of the naming is controlled and validated using the `.changelog.json` configuration file.
 

@@ -31,12 +31,14 @@ After installing the extension from the Marketplace, you can find the task in th
 # YAML pipeline task definition
 Example of a task call in `.yml` pipeline file:
 
-> task: MergeChangelog@<version_identifier> \
-> inputs: \
-> &nbsp; &nbsp; semanticVersion: <major.minor.patch> | environmental variable \
-> &nbsp; &nbsp; changelogLocation: path | environmental variable \
-> &nbsp; &nbsp; changesInDifferentLocation: boolean \
-> &nbsp; &nbsp; changesLocation: path | environmental variable
+```
+task: MergeChangelog@<version_identifier>
+inputs:
+  semanticVersion: <major.minor.patch> | environmental variable
+  changelogLocation: path | environmental variable
+  changesInDifferentLocation: boolean
+  changesLocation: path | environmental variable
+```
 
 # Result / Output
 During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
