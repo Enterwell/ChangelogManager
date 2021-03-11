@@ -2,8 +2,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using EnvDTE;
-using EnvDTE80;
 using Task = System.Threading.Tasks.Task;
 
 namespace Enterwell.CI.Changelog.VSIX

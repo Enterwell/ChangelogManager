@@ -16,22 +16,22 @@ namespace Enterwell.CI.Changelog
         /// Method that writes to changelog file.
         /// </summary>
         /// <param name="textToWrite">Text to write to the changelog file.</param>
-        /// <param name="repositoryPath">Path to the repository that contains the changelog file.</param>
+        /// <param name="changelogLocation">Path to the directory containing the changelog file.</param>
         /// <param name="insertBefore">Text before which the method will insert <code>textToWrite</code>.</param>
         /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when changelog file does not exist in the repository.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when changelog file does not exist at the <see cref="changelogLocation"/>.</exception>
         /// <returns></returns>
-        public async Task WriteToChangelog(string textToWrite, string repositoryPath, string insertBefore)
+        public async Task WriteToChangelog(string textToWrite, string changelogLocation, string insertBefore)
         {
             if (string.IsNullOrWhiteSpace(textToWrite))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(textToWrite));
-            if (string.IsNullOrWhiteSpace(repositoryPath))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(repositoryPath));
+            if (string.IsNullOrWhiteSpace(changelogLocation))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
             if (string.IsNullOrWhiteSpace(insertBefore))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(insertBefore));
             
             // Path to the changelog file.
-            var changelogPath = Path.Combine(repositoryPath, ChangelogFileName);
+            var changelogPath = Path.Combine(changelogLocation, ChangelogFileName);
 
             if (!File.Exists(changelogPath))
                 throw new FileNotFoundException("Changelog file is not found.");

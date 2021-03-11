@@ -15,18 +15,19 @@ namespace Enterwell.CI.Changelog
         /// <returns></returns>
         /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <code>NULL</code> is passed instead of input arguments.</exception>
-        public (string semanticVersion, string repositoryPath) ParseInputs(string[] inputArguments)
+        public (string semanticVersion, string changelogLocation, string changesLocation) ParseInputs(string[] inputArguments)
         {
             if (inputArguments == null) throw new ArgumentNullException(nameof(inputArguments));
 
-            // Checking for exactly two inputs (semantic version and repo directory).
-            if (inputArguments.Length != 2)
+            // Checking for exactly three inputs (semantic version, changelog location and changes location).
+            if (inputArguments.Length != 3)
             {
-                throw new ArgumentException("Correct usage: <version[major.minor.patch]> <repository location>");
+                throw new ArgumentException("Correct usage: <version[major.minor.patch]> <changelog location> <changes location>");
             }
 
             var semanticVersion = inputArguments[0].Trim();
-            var repositoryPath = inputArguments[1].Trim();
+            var changelogPath = inputArguments[1].Trim();
+            var changesPath = inputArguments[2].Trim();
 
             // Checking if all three components are present in the version input.
             if (semanticVersion.Split('.').Length != 3)
@@ -34,13 +35,19 @@ namespace Enterwell.CI.Changelog
                 throw new ArgumentException($"Expected input format: <major.minor.patch>. Got: '{semanticVersion}'. Check your separation dots!");
             }
 
-            // Checking if repository directory exists.
-            if (!Directory.Exists(repositoryPath))
+            // Checking if changelog directory exists.
+            if (!Directory.Exists(changelogPath))
             {
-                throw new ArgumentException($"Repository does not exist on path: {repositoryPath}");
+                throw new ArgumentException($"Changelog location does not exist on path: {changelogPath}");
             }
 
-            return (semanticVersion, repositoryPath);
+            // Checking if changes directory exists.
+            if (!Directory.Exists(changesPath))
+            {
+                throw new ArgumentException($"Changes location does not exist on path: {changesPath}");
+            }
+
+            return (semanticVersion, changelogPath, changesPath);
         }
     }
 }

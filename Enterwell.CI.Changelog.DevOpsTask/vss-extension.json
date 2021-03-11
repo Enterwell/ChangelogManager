@@ -1,0 +1,36 @@
+{
+    "manifestVersion": 1,
+    "id": "merge-changelog",
+    "name": "Merge Changelog Task",
+    "version": "0.8.0",
+    "publisher": "Enterwell",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Tool for merging changes to the changelog file.",
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/extension-icon.png"        
+    },
+    "files": [
+        {
+            "path": "task"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "merge-changelog",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "task"
+            }
+        }
+    ]
+}
