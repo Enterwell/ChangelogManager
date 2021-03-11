@@ -31,7 +31,7 @@ After installing the extension from the Marketplace, you can find the task in th
 ## YAML pipeline task definition
 Example of a task call in `.yml` pipeline file:
 
-```
+```yml
 task: MergeChangelog@<version_identifier>
 inputs:
   semanticVersion: <major.minor.patch> | environmental variable

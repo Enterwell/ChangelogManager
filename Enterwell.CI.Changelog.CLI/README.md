@@ -47,7 +47,7 @@ Changes in the **changes** folder are just files with the following naming schem
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
-```
+```json
 {
   "categories": [
     "API",

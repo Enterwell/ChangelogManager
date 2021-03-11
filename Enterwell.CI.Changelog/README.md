@@ -40,7 +40,7 @@ To avoid incorrect naming and to ease this file creation process on the develope
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
-```
+```json
 {
   "categories": [
     "API",

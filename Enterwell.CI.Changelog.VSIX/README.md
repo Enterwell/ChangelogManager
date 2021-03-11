@@ -49,7 +49,7 @@ Extension uses the Visual Studio Status bar in order to log the results:
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
-```
+```json
 {
   "categories": [
     "API",
