@@ -12,15 +12,16 @@ namespace Enterwell.CI.Changelog.CLI
         /// </summary>
         /// <param name="changeCreated"><see cref="bool"/> that is used to determine if the file was created or not.</param>
         /// <param name="reason"><see cref="string"/> that specifies the reason if the file was not created.</param>
-        public void LogResult(bool changeCreated, string reason)
+        /// <param name="filePath"><see cref="string"/> that specifies the path on which the file was created or tried to be created.</param>
+        public void LogResult(bool changeCreated, string reason, string filePath)
         {
             if (!changeCreated)
             {
-                LogError($"Adding Change Failed. Reason: {reason}");
+                LogError($"Adding Change Failed. Reason: {reason}\nTried to add change file to: {filePath}");
             }
             else
             {
-                LogSuccess("Change Added Successfully");
+                LogSuccess($"Change Added Successfully\nPath: {filePath}");
             }
         }
 

@@ -63,16 +63,29 @@ namespace Enterwell.CI.Changelog.CLI
             // it in the case category was not assigned, but should have been assigned.
             ValidateCategory(logger);
 
-            FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
+            var changesDirectory = FileSystemHelper.FindNearestChangesFolder();
 
+            if (string.IsNullOrWhiteSpace(changesDirectory))
+            {
+                FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
+            }
+            
             string inputType = FormatTypeCorrectly();
             string fileName = FileSystemHelper.ConstructFileName(inputType, Category, Description);
 
-            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine
-                (Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName)
-            );
+            string filePath;
+            if (!string.IsNullOrWhiteSpace(changesDirectory))
+            {
+                filePath = Path.Combine(changesDirectory, fileName);
+            }
+            else
+            {
+                filePath = Path.Combine(Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName);
+            }
+            
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(filePath);
 
-            logger.LogResult(isSuccessful, reason);
+            logger.LogResult(isSuccessful, reason, filePath);
         }
 
         /// <summary>

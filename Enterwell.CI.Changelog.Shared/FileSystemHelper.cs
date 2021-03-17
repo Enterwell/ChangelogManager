@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Enterwell.CI.Changelog.Shared
@@ -65,6 +66,52 @@ namespace Enterwell.CI.Changelog.Shared
 
                 return $"{inputType} [{category}] {description}";
             }
+        }
+
+        /// <summary>
+        /// Tries to find the nearest `changes` folder around users current path.
+        /// </summary>
+        /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
+        public static string FindNearestChangesFolder()
+        {
+            var currentDirectory = Path.Combine(Directory.GetCurrentDirectory());
+            var splits = currentDirectory.Split(Path.DirectorySeparatorChar);
+            var currentDirectoryDepth = splits.Length;
+
+            var directoriesToCheck = new List<string>();
+
+            // Adding all the upper directories for checking
+            string builderDirectory = "";
+            foreach (var pathSection in splits)
+            {
+                builderDirectory = Path.Combine(builderDirectory, pathSection);
+                
+                directoriesToCheck.Add(Path.Combine(builderDirectory, ChangeDirectoryName));
+            }
+
+            // Adding all the inner directories for checking
+            directoriesToCheck.AddRange(Directory.GetDirectories(currentDirectory, "changes", SearchOption.AllDirectories));
+
+            // Checking directories
+            var depthDifference = int.MaxValue;
+            var closestPath = "";
+            for(var i = 0; i < directoriesToCheck.Count; i++)
+            {
+                var depth = directoriesToCheck[i].Split(Path.DirectorySeparatorChar).Length - 1;
+
+                if (Directory.Exists(directoriesToCheck[i]))
+                {
+                    var difference = Math.Abs(currentDirectoryDepth - depth);
+
+                    if (difference < depthDifference)
+                    {
+                        depthDifference = difference;
+                        closestPath = directoriesToCheck[i];
+                    }
+                }
+            }
+
+            return closestPath;
         }
     }
 }
