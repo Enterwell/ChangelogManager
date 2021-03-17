@@ -1,16 +1,17 @@
 # Introduction 
 `Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the [`Changelog`](../Enterwell.CI.Changelog) project in order to fill out the `CHANGELOG.md` file.
 
-# Installation
+## Installation
 
-To be able to install the extension to your own machine, you need to build it and run the generated `Enterwell.CI.Changelog.VSIX.vsix` file in the `bin\(Debug|Release)` folder. 
-
-Installer will pop up showing the extension name asking to which installed Visual Studio product you want to install the extension to.
+You can get the extension either by downloading and installing it manually from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Enterwell.EnterwellChangelogVsix)
 
 ![](../img/installer.png)
 
-# Usage
+or by searching for it in the Visual Studio Extension Manager.
 
+![](../img/extensionManager.png)
+
+## Usage
 Extension will only show up if you have open Solution in the editor.
 
 You can trigger the extension by using the `ALT + C` shortcut or by right-clicking on the Solution and selecting the `Add Change to Changelog` option.
@@ -43,12 +44,12 @@ Extension uses the Visual Studio Status bar in order to log the results:
 
   ![](../img/statusBar_added.png)
 
-# Configuration file
+## Configuration file
 `.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the solution root along with the **changes** folder and the appropriate `CHANGELOG.md` file.
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
-```
+```json
 {
   "categories": [
     "API",
@@ -60,11 +61,11 @@ If we wanted to allow only 3 different change categories: API, FE (Frontend) and
 
 If the configuration exist, application will ignore every change in the **changes** folder which does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
-# Result / Output
+## Result / Output
 
 If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our [`Enterwell.CI.Changelog`](../Enterwell.CI.Changelog) project.
 
-# Development
+## Development
 
 In order to be able to run this code on your machine, you need to have:
 1. [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) or newer
