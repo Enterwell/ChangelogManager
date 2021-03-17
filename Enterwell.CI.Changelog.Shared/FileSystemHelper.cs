@@ -74,7 +74,7 @@ namespace Enterwell.CI.Changelog.Shared
         /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
         public static string FindNearestChangesFolder()
         {
-            var currentDirectory = Path.Combine(Directory.GetCurrentDirectory());
+            var currentDirectory = Directory.GetCurrentDirectory();
             var splits = currentDirectory.Split(Path.DirectorySeparatorChar);
             var currentDirectoryDepth = splits.Length;
 
