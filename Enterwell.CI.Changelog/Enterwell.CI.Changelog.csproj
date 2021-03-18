@@ -10,7 +10,6 @@
 		<PublishedTrimmed>true</PublishedTrimmed>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<nullable>enable</nullable>
-
 	</PropertyGroup>
 
 	<ItemGroup>
