@@ -12,6 +12,11 @@ Automation agent where the task executes needs to have a **changes** folder cont
 
 The task also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive) in order to not throw and stop executing.
 
+*Important note*. As it currently stands, the application is inserting the newly compiled section above the latest changelog entry. So, the `CHANGELOG.md` file needs to contain **atleast** 
+```
+## [Unreleased]
+```
+
 ## Task inputs
 Task takes four inputs:
 + semantic version (required):

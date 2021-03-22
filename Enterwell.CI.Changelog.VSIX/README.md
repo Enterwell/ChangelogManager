@@ -45,7 +45,7 @@ Extension uses the Visual Studio Status bar in order to log the results:
   ![](../img/statusBar_added.png)
 
 ## Configuration file
-`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the solution root along with the **changes** folder and the appropriate `CHANGELOG.md` file.
+`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
