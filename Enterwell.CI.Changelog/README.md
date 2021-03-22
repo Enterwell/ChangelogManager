@@ -1,7 +1,5 @@
 # Introduction 
-`Changelog` is a Console App project using .NET 5 that uses files in the **changes** folder to fill out the `CHANGELOG.md` file. 
-
-## Usage
+`Changelog` is a Console App project using .NET 5 that uses files in the **changes** folder to fill out the `CHANGELOG.md` file.
 
 Application takes three inputs: 
 + semantic version, 
