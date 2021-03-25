@@ -43,7 +43,7 @@ Changes in the **changes** folder are just files with the following naming schem
 `<[change_category]>` part of the naming is controlled and validated using the `.changelog.json` configuration file.
 
 ## Configuration file
-`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the solution root along with the **changes** folder and the appropriate `CHANGELOG.md` file.
+`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
 
 If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
 
