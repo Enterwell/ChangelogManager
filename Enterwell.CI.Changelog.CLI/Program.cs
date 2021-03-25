@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Enterwell.CI.Changelog.CLI
 {
     /// <summary>
     /// Entry point to the CLI application.
     /// </summary>
+    [Command(Name = "cc", FullName = "Changelog CLI Tool", Description = "A CLI tool to be used for creating `changes` files.", ShowInHelpText = true)]
+    [VersionOptionFromMember(MemberName = "GetVersion")]
     class Program
     {
         /// <summary>
@@ -106,6 +109,18 @@ namespace Enterwell.CI.Changelog.CLI
                 logger.LogError("The -c|--category field is required.");
                 Environment.Exit(1);
             }
+        }
+
+        /// <summary>
+        /// Reads an application version from the .csproj file.
+        /// </summary>
+        /// <returns><see cref="string"/> representing the application version.</returns>
+        private string GetVersion()
+        {
+            return typeof(Program)
+                .Assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
         }
     }
 }
