@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Enterwell.CI.Changelog.Shared
 {
@@ -69,49 +70,20 @@ namespace Enterwell.CI.Changelog.Shared
         }
 
         /// <summary>
-        /// Tries to find the nearest `changes` folder around users current path.
+        /// Tries to find the nearest `changes` folder.
         /// </summary>
         /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
         public static string FindNearestChangesFolder()
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var splits = currentDirectory.Split(Path.DirectorySeparatorChar);
-            var currentDirectoryDepth = splits.Length;
-
-            var directoriesToCheck = new List<string>();
-
-            // Adding all the upper directories for checking
-            string builderDirectory = "";
-            foreach (var pathSection in splits)
+            var currentDir = Directory.GetParent(Assembly.GetEntryAssembly()?.Location);
+            while (currentDir != null)
             {
-                builderDirectory = Path.Combine(builderDirectory, pathSection);
-                
-                directoriesToCheck.Add(Path.Combine(builderDirectory, ChangeDirectoryName));
+                if (currentDir.EnumerateDirectories("changes").Any())
+                    return Path.Combine(currentDir.FullName, "changes");
+                currentDir = currentDir.Parent;
             }
 
-            // Adding all the inner directories for checking
-            directoriesToCheck.AddRange(Directory.GetDirectories(currentDirectory, "changes", SearchOption.AllDirectories));
-
-            // Checking directories
-            var depthDifference = int.MaxValue;
-            var closestPath = "";
-            for(var i = 0; i < directoriesToCheck.Count; i++)
-            {
-                var depth = directoriesToCheck[i].Split(Path.DirectorySeparatorChar).Length - 1;
-
-                if (Directory.Exists(directoriesToCheck[i]))
-                {
-                    var difference = Math.Abs(currentDirectoryDepth - depth);
-
-                    if (difference < depthDifference)
-                    {
-                        depthDifference = difference;
-                        closestPath = directoriesToCheck[i];
-                    }
-                }
-            }
-
-            return closestPath;
+            return string.Empty;
         }
     }
 }
