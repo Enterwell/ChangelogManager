@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Enterwell.CI.Changelog.Shared
 {
@@ -65,6 +67,23 @@ namespace Enterwell.CI.Changelog.Shared
 
                 return $"{inputType} [{category}] {description}";
             }
+        }
+
+        /// <summary>
+        /// Tries to find the nearest `changes` folder.
+        /// </summary>
+        /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
+        public static string FindNearestChangesFolder()
+        {
+            var currentDir = Directory.GetParent(Assembly.GetEntryAssembly()?.Location);
+            while (currentDir != null)
+            {
+                if (currentDir.EnumerateDirectories("changes").Any())
+                    return Path.Combine(currentDir.FullName, "changes");
+                currentDir = currentDir.Parent;
+            }
+
+            return string.Empty;
         }
     }
 }
