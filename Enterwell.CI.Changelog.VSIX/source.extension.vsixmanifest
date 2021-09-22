@@ -1,19 +1,25 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-    <Metadata>
-        <Identity Id="fbb23368-981a-4001-80ee-d3d3f930ed85" Version="1.0.3" Language="en-US" Publisher="Enterwell" />
-        <DisplayName>Changelog Manager</DisplayName>
-        <Description xml:space="preserve">This extension helps developers make easy notes on changes made to the their codebase.</Description>
-    </Metadata>
-    <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
-    </Installation>
-    <Dependencies>
-    </Dependencies>
-    <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,17.0)" DisplayName="Visual Studio core editor" />
-    </Prerequisites>
-    <Assets>
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-    </Assets>
+	<Metadata>
+		<Identity Id="fbb23368-981a-4001-80ee-d3d3f930ed85" Version="1.1.0" Language="en-US" Publisher="Enterwell" />
+		<DisplayName>Changelog Manager</DisplayName>
+		<Description xml:space="preserve">This extension helps developers make easy notes on changes made to the their codebase.</Description>
+		<MoreInfo>https://github.com/Enterwell/ChangelogManager</MoreInfo>
+		<Icon>Resources\enterwellBlack.png</Icon>
+		<PreviewImage>Resources\enterwellBlack.png</PreviewImage>
+	</Metadata>
+	<Installation>
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)" >
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+	</Installation>
+	<Dependencies>
+	</Dependencies>
+	<Prerequisites>
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,)" DisplayName="Visual Studio core editor" />
+	</Prerequisites>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+	</Assets>
 </PackageManifest>
