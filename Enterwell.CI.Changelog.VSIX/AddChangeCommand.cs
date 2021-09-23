@@ -16,8 +16,6 @@ namespace Enterwell.CI.Changelog.VSIX
     /// </summary>
     internal sealed class AddChangeCommand
     {
-        private readonly string solutionPath;
-
         /// <summary>
         /// Command ID.
         /// </summary>
@@ -27,7 +25,7 @@ namespace Enterwell.CI.Changelog.VSIX
         /// Top-level object in the Visual Studio automation object model.
         /// In this class used to get access to the current Solution's path.
         /// </summary>
-        private DTE2 dte;
+        private readonly DTE2 dte;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -45,16 +43,13 @@ namespace Enterwell.CI.Changelog.VSIX
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        /// <param name="dte">Object used to get the Solution's path, not null.</param>
+        /// <param name="dte">Visual Studio automation object model, not null.</param>
         /// <exception cref="ArgumentNullException">Thrown if argument is null.</exception>
         private AddChangeCommand(AsyncPackage package, OleMenuCommandService commandService, DTE2 dte)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             this.dte = dte ?? throw new ArgumentNullException(nameof(dte));
-
-            var solutionFolder = new DirectoryInfo(Path.Combine(dte.Solution.FullName)).Parent;
-            this.solutionPath = solutionFolder?.FullName;
 
             var menuCommandId = new CommandID(CommandSet, CommandId);
             var menuItem = new MenuCommand(this.Execute, menuCommandId);
@@ -108,15 +103,18 @@ namespace Enterwell.CI.Changelog.VSIX
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            string fileName = ShowDialogForAddingChange();
+            var solutionFolder = new DirectoryInfo(Path.Combine(dte.Solution.FullName)).Parent;
+            var solutionPath = solutionFolder?.FullName;
+
+            string fileName = ShowDialogForAddingChange(solutionPath);
             if (fileName == string.Empty)
             {
                 await StatusBarLogAsync(false, "Cancelled By User");
                 return;
             }
             
-            FileSystemHelper.EnsureChangesDirectoryExists(this.solutionPath);
-            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(this.solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
+            FileSystemHelper.EnsureChangesDirectoryExists(solutionPath);
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
 
             await StatusBarLogAsync(isSuccessful, reason);
         }
@@ -157,10 +155,11 @@ namespace Enterwell.CI.Changelog.VSIX
         /// <summary>
         /// Displays the dialog asking the user to specify what change he would like to add.
         /// </summary>
+        /// <param name="solutionPath">Path to the solution.</param>
         /// <returns>Fully named change ready to be created as a file if the user accepted the dialog or <see cref="string.Empty"/> if the user refused.</returns>
-        private string ShowDialogForAddingChange()
+        private string ShowDialogForAddingChange(string solutionPath)
         {
-            var dialog = new AddChangeDialog(this.solutionPath);
+            var dialog = new AddChangeDialog(solutionPath);
             bool? result = dialog.ShowDialog();
 
             if (result.HasValue && result.Value)
