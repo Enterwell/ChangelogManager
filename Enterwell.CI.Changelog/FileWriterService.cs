@@ -29,13 +29,9 @@ namespace Enterwell.CI.Changelog
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
             if (string.IsNullOrWhiteSpace(insertBefore))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(insertBefore));
-            
+
             // Path to the changelog file.
             var changelogPath = Path.Combine(changelogLocation, ChangelogFileName);
-
-            if (!File.Exists(changelogPath))
-                throw new FileNotFoundException("Changelog file is not found.");
-
             var changelogText = (await File.ReadAllLinesAsync(changelogPath)).ToList();
 
             // Get the index of a line before H2 with older version.
@@ -46,7 +42,6 @@ namespace Enterwell.CI.Changelog
             changelogText.Insert(index, textToWrite);
 
             await File.WriteAllLinesAsync(changelogPath, changelogText);
-
         }
     }
 }

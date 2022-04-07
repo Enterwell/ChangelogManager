@@ -1,5 +1,18 @@
 # Introduction 
+
 `Changelog.DevOpsTask` is a project that contains the extension developed for the Azure DevOps containing one task called **Merge Changelog**. Task to merge changes into a changelog file.
+
+## Table of contents
+
++ [Pre-requisites for the task](#pre-requisites-for-the-task)
+  + [Changes folder](#changes-folder)
+  + [Changelog file](#changelog-file)
++ [Task inputs](#task-inputs)
++ [Tasks assistant menu](#tasks-assistant-menu)
++ [YAML pipeline task definition](#yaml-pipeline-task-definition)
++ [Result / Output](#result--output)
++ [Development](#development)
++ [Packaging extension for publish to Marketplace](#packaging-extension-for-publish-to-marketplace)
 
 ## Pre-requisites for the task
 The following pre-requisites need to be fulfilled in order for the task to work properly:
@@ -21,6 +34,7 @@ The task also needs to be able to find `CHANGELOG.md` file (naming is case-insen
 Task takes four inputs:
 + semantic version (required):
   + can be a string (ex. major.minor.patch) or an environmental variable (ex. `$(semanticVersion)`).
+  **IMPORTANT NOTE: This input is removed in the latest (v2) version of the task because the latest version of the application automatically bumps the semantic version.**
 + directory location containing the `CHANGELOG.md` file (optional):
   + default value is `$(Build.SourcesDirectory)`.
 + boolean representing that the 'changes' directory exists in a different location than the `CHANGELOG.md` file (optional):
@@ -31,7 +45,7 @@ Task takes four inputs:
 ## Tasks assistant menu
 After installing the extension from the Marketplace, you can find the task in the assistant menu when editing pipeline `.yml` file.
 
-![](../img/DevOpsTask.png)
+![](../img/devOpsTask.png)
 
 ## YAML pipeline task definition
 Example of a task call in `.yml` pipeline file:
@@ -39,7 +53,7 @@ Example of a task call in `.yml` pipeline file:
 ```yml
 task: MergeChangelog@<version_identifier>
 inputs:
-  semanticVersion: <major.minor.patch> | environmental variable
+  semanticVersion: <major.minor.patch> | environmental variable (removed in the v2)
   changelogLocation: path | environmental variable
   changesInDifferentLocation: boolean
   changesLocation: path | environmental variable
@@ -56,6 +70,7 @@ Otherwise, task executes [Changelog application](../Enterwell.CI.Changelog) whic
 In order to be able to run this code and its tests on your machine, you need to:
 
 1. Position yourself into the **task** directory with `cd task`.
+2. Position yourself into either `taskV1` or `taskV2` depending on which version of the task you want to develop in.
 2. Run `npm install` to install all the dependencies used in the project.
 3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.

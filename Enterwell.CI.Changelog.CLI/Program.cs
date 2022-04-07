@@ -72,7 +72,7 @@ namespace Enterwell.CI.Changelog.CLI
             {
                 FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
             }
-            
+
             string inputType = FormatTypeCorrectly();
             string fileName = FileSystemHelper.ConstructFileName(inputType, Category, Description);
 
@@ -85,7 +85,7 @@ namespace Enterwell.CI.Changelog.CLI
             {
                 filePath = Path.Combine(Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName);
             }
-            
+
             (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(filePath);
 
             logger.LogResult(isSuccessful, reason, filePath);
@@ -113,6 +113,7 @@ namespace Enterwell.CI.Changelog.CLI
         /// <summary>
         /// Validating <see cref="Category"/> property in the case user did not specify it, but should have because the configuration file with allowed categories exists.
         /// </summary>
+        /// <param name="logger">The console logger.</param>
         private void ValidateCategory(ConsoleLogger logger)
         {
             var config = Configuration.LoadConfiguration(Directory.GetCurrentDirectory());

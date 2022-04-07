@@ -1,7 +1,6 @@
 /**
  * File containing all the logic of our task.
  */
-
 import path = require("path");
 import tl = require("azure-pipelines-task-lib/task");
 import fs = require("fs");
@@ -68,7 +67,6 @@ async function run() {
   try {
 
     // Get inputs.
-    let input_semanticVersion: string = tl.getInput("semanticVersion", true) || "";
     let input_changelogLocation: string = tl.getPathInput("changelogLocation", true, true) || "";
     let input_differentLocation: boolean = tl.getBoolInput("changesInDifferentLocation");
     let input_changesLocation: string;
@@ -79,7 +77,6 @@ async function run() {
       input_changesLocation = tl.getPathInput("changesLocation", true, true) || "";
     }
 
-    console.log("Input semantic version: " + input_semanticVersion);
     console.log("Input changelog location: " + input_changelogLocation);
     console.log("Input different location: " + input_differentLocation);
     console.log("Input changes location: " + input_changesLocation);
@@ -95,7 +92,7 @@ async function run() {
     let executablePath = path.join(__dirname, "cl.exe");
 
     try {
-      let executableOutput = execFileSync(executablePath, [input_semanticVersion, input_changelogLocation, input_changesLocation], {encoding: "utf-8"});
+      let executableOutput = execFileSync(executablePath, [input_changelogLocation, input_changesLocation], {encoding: "utf-8"});
       console.log("=======EXECUTABLE OUTPUT=======");
       console.log(executableOutput);
     } catch (err) {
@@ -105,7 +102,7 @@ async function run() {
     console.log("=============================================AFTER EXECUTION=============================================");
     printContents(input_changelogLocation, input_changesLocation);
 
-  } catch (err) {
+  } catch (err: any) {
     tl.setResult(tl.TaskResult.Failed, err.message);
   }
 }

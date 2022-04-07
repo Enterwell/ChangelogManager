@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Enterwell.CI.Changelog
+namespace Enterwell.CI.Changelog.Models
 {
     /// <summary>
     /// Class that is used for Json to Deserialize configuration file to.
@@ -11,13 +11,18 @@ namespace Enterwell.CI.Changelog
         /// <summary>
         /// Only changes with these categories are accepted. 
         /// </summary>
-        public string[] Categories { get; set; } = new string[0];
+        public string[] Categories { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Custom rules with which to bump the application's semantic version.
+        /// </summary>
+        public BumpingRule? BumpingRule { get; set; }
 
         /// <summary>
         /// Validates a change based on Configuration object properties.
         /// </summary>
         /// <param name="changeDescription">Description of user change.</param>
-        /// <returns>Returns true if the change description is valid and false otherwise.</returns>
+        /// <returns>Returns <c>true</c> if the change description is valid and <c>false</c> otherwise.</returns>
         public bool IsValid(string changeDescription)
         {
             // If there are no validation categories think of it as true.

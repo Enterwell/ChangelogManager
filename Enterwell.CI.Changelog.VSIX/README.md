@@ -1,5 +1,14 @@
 # Introduction 
+
 `Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the [`Changelog`](../Enterwell.CI.Changelog) project in order to fill out the `CHANGELOG.md` file.
+
+## Table of contents
+
++ [Installation](#installation)
++ [Usage](#usage)
++ [Configuration file](#configuration-file)
++ [Result / Output](#result--output)
++ [Development](#development)
 
 ## Installation
 
@@ -15,6 +24,8 @@ or by searching for it in the Visual Studio Extension Manager.
 Extension will only show up if you have open Solution in the editor.
 
 You can trigger the extension by using the `ALT + C` shortcut or by right-clicking on the Solution and selecting the `Add Change to Changelog` option.
+
+![](../img/contextMenu.png)
 
 One of the following dialog boxes will show up:
 
@@ -45,9 +56,9 @@ Extension uses the Visual Studio Status bar in order to log the results:
   ![](../img/statusBar_added.png)
 
 ## Configuration file
-`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) which is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
+`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) that is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
 
-If we wanted to allow only 3 different change categories: API, FE (Frontend) and BE (Backend), the configuration would look like:
+If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend) and `BE` (Backend), the configuration would look like:
 
 ```json
 {
@@ -59,7 +70,9 @@ If we wanted to allow only 3 different change categories: API, FE (Frontend) and
 }
 ```
 
-If the configuration exist, application will ignore every change in the **changes** folder which does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+If the configuration exists, application will ignore every change in the **changes** folder that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+
+For more features that can be configured with the configuration file, see [Enterwell.CI.Changelog README](../Enterwell.CI.Changelog/README.md/#configuration-file).
 
 ## Result / Output
 

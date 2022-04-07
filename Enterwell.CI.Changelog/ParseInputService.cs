@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Enterwell.CI.Changelog.Models;
 
 namespace Enterwell.CI.Changelog
 {
@@ -9,31 +10,24 @@ namespace Enterwell.CI.Changelog
     public class ParseInputService
     {
         /// <summary>
-        /// Method that parses application input arguments and returns them to the caller.
+        /// Method that parses application input arguments.
         /// </summary>
-        /// <param name="inputArguments">Input arguments passed to the application.</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
-        /// <exception cref="ArgumentNullException">Thrown when <code>NULL</code> is passed instead of input arguments.</exception>
-        public (string semanticVersion, string changelogLocation, string changesLocation) ParseInputs(string[] inputArguments)
+        /// <exception cref="ArgumentNullException">Thrown when <c>null</c> is passed instead of input arguments.</exception>
+        /// <param name="inputArguments">Input arguments passed to the application.</param>
+        /// <returns>An <see cref="Inputs"/> instance.</returns>
+        public Inputs ParseInputs(string[] inputArguments)
         {
             if (inputArguments == null) throw new ArgumentNullException(nameof(inputArguments));
 
-            // Checking for exactly three inputs (semantic version, changelog location and changes location).
-            if (inputArguments.Length != 3)
+            // Checking for exactly all inputs (changelog location and changes location).
+            if (inputArguments.Length != typeof(Inputs).GetProperties().Length)
             {
-                throw new ArgumentException("Correct usage: <version[major.minor.patch]> <changelog location> <changes location>");
+                throw new ArgumentException("Correct usage: <changelog location> <changes location>");
             }
 
-            var semanticVersion = inputArguments[0].Trim();
-            var changelogPath = inputArguments[1].Trim();
-            var changesPath = inputArguments[2].Trim();
-
-            // Checking if all three components are present in the version input.
-            if (semanticVersion.Split('.').Length != 3)
-            {
-                throw new ArgumentException($"Expected input format: <major.minor.patch>. Got: '{semanticVersion}'. Check your separation dots!");
-            }
+            var changelogPath = inputArguments[0].Trim();
+            var changesPath = inputArguments[1].Trim();
 
             // Checking if changelog directory exists.
             if (!Directory.Exists(changelogPath))
@@ -47,7 +41,7 @@ namespace Enterwell.CI.Changelog
                 throw new ArgumentException($"Changes location does not exist on path: {changesPath}");
             }
 
-            return (semanticVersion, changelogPath, changesPath);
+            return new Inputs(changelogPath, changesPath);
         }
     }
 }

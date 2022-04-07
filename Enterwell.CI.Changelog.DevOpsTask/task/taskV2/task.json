@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "fd8800ae-13a1-4faf-a126-185bd26705d4",
+    "name": "MergeChangelog",
+    "friendlyName": "Merge Changelog",
+    "description": "Compiles the changes into Changelog.md if one exists.",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "Enterwell",
+    "version": {
+        "Major": 2,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Merging Changelog",
+    "inputs": [
+        {
+            "name": "changelogLocation",
+            "type": "filePath",
+            "label": "Changelog Location",
+            "defaultValue": "$(Build.SourcesDirectory)",
+            "helpMarkDown": "Location of the directory that contains Changelog.md."
+        },
+        {
+            "name": "changesInDifferentLocation",
+            "type": "boolean",
+            "label": "Different location of the 'changes' directory",
+            "defaultValue": false,
+            "helpMarkDown": "Mark this as true if the 'changes' directory exists somewhere else than on the changelog location."
+        },
+        {
+            "name": "changesLocation",
+            "type": "filePath",
+            "label": "Changes Location",
+            "required": true,
+            "helpMarkDown": "Location of the 'changes' directory.",
+            "visibleRule": "changesInDifferentLocation = true"
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}
