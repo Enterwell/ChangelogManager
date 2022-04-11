@@ -96,7 +96,7 @@ async function run() {
       console.log("=============================================AFTER EXECUTION=============================================");  
 
       newlyBumpedVersion = newlyBumpedVersion.trim();
-      console.log('Newly bumped version got from the task: ', newlyBumpedVersion);
+      console.log('Newly bumped version got from the executable:', newlyBumpedVersion);
 
       if (!(/\d+.\d+.\d+/.test(newlyBumpedVersion))) {
         throw new Error("Executable output is not in the correct format.");
