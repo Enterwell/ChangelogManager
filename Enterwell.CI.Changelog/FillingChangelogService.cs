@@ -42,9 +42,9 @@ namespace Enterwell.CI.Changelog
             var inputs = this.parseInputService.ParseInputs(inputArguments);
 
             var versionInformation = await this.changeGatheringService.GatherVersionInformation(inputs.ChangelogLocation, inputs.ChangesLocation);
+            Console.WriteLine(versionInformation.SemanticVersion);
 
             var newChangelogSection = this.markdownTextService.BuildChangelogSection(versionInformation);
-            Console.WriteLine(newChangelogSection);
 
             var elementToInsertChangelogSectionBefore = this.markdownTextService.ToH2(string.Empty);
 

@@ -15,7 +15,7 @@ namespace Enterwell.CI.Changelog.Models
         public Inputs(string changelogLocation, string changesLocation)
         {
             this.ChangelogLocation = changelogLocation ?? throw new ArgumentNullException(nameof(changelogLocation));
-            this.ChangesLocation = changesLocation ?? throw new ArgumentNullException(nameof(changesLocation));
+            this.ChangesLocation = changesLocation ?? throw new ArgumentNullException(nameof(changesLocation));    
         }
 
         /// <summary>

@@ -62,9 +62,11 @@ inputs:
 ## Result / Output
 During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
 
-If **changes** directory or `CHANGELOG.md` file does not exist at respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
+If the **changes** directory or `CHANGELOG.md` file does not exist at their respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
 
-Otherwise, task executes [Changelog application](../Enterwell.CI.Changelog) which inserts appropriate section to the `CHANGELOG.md` file and deletes all the contents of the **changes** folder.
+Otherwise, task executes the [Changelog application](../Enterwell.CI.Changelog) which inserts appropriate section to the `CHANGELOG.md` file and deletes all the contents of the **changes** folder.
+
+Task sets a newly bumped semantic version to an [output variable](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#use-output-variables-from-tasks) called `bumpedSemanticVersion` which you can then consume in downstream steps, jobs and stages.
 
 ## Development
 In order to be able to run this code and its tests on your machine, you need to:

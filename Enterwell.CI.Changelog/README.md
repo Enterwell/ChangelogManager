@@ -152,3 +152,5 @@ This `bumpingRule` configuration is equivalent to the default rule.
 If the **changes** directory or `CHANGELOG.md` file does not exist, application will log the error to the Console Error output and stop with the execution.
 
 Otherwise, appropriate section will be inserted in the `CHANGELOG.md` file and the **changes** folder will be cleared empty to be ready for the next iteration.
+
+Application logs the newly bumped semantic version to the Console Standard output.

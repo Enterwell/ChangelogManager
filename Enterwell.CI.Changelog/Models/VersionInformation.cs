@@ -11,17 +11,22 @@ namespace Enterwell.CI.Changelog.Models
         /// <summary>
         /// Major version number.
         /// </summary>
-        public int Major { get; set; }
+        private int Major { get; set; }
 
         /// <summary>
         /// Minor version number.
         /// </summary>
-        public int Minor { get; set; }
+        private int Minor { get; set; }
 
         /// <summary>
         /// Patch version number.
         /// </summary>
-        public int Patch { get; set; }
+        private int Patch { get; set; }
+
+        /// <summary>
+        /// String representing the semantic version.
+        /// </summary>
+        public string SemanticVersion => $"{Major}.{Minor}.{Patch}";
 
         /// <summary>
         /// Changes being made in the current version.

@@ -92,14 +92,22 @@ async function run() {
     let executablePath = path.join(__dirname, "cl.exe");
 
     try {
-      let executableOutput = execFileSync(executablePath, [input_changelogLocation, input_changesLocation], {encoding: "utf-8"});
-      console.log("=======EXECUTABLE OUTPUT=======");
-      console.log(executableOutput);
+      let newlyBumpedVersion = execFileSync(executablePath, [input_changelogLocation, input_changesLocation], {encoding: "utf-8"});
+      console.log("=============================================AFTER EXECUTION=============================================");  
+
+      newlyBumpedVersion = newlyBumpedVersion.trim();
+      console.log('Newly bumped version got from the task: ', newlyBumpedVersion);
+
+      if (!(/\d+.\d+.\d+/.test(newlyBumpedVersion))) {
+        throw new Error("Executable output is not in the correct format.");
+      }
+
+      // Set variable with a given name, given value, that is not a secret, but an output variable
+      tl.setVariable('bumpedSemanticVersion', newlyBumpedVersion, false, true);
     } catch (err) {
       throw new Error("Error occurred while running executable.\n" + err);
     }
-
-    console.log("=============================================AFTER EXECUTION=============================================");
+    
     printContents(input_changelogLocation, input_changesLocation);
 
   } catch (err: any) {

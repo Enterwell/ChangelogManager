@@ -50,7 +50,7 @@ namespace Enterwell.CI.Changelog
             var builder = new StringBuilder();
 
             builder.AppendLine();
-            builder.AppendLine(ToH2($"[{versionInformation.Major}.{versionInformation.Minor}.{versionInformation.Patch}] - {DateTime.Now:yyyy-MM-dd}"));
+            builder.AppendLine(ToH2($"[{versionInformation.SemanticVersion}] - {DateTime.Now:yyyy-MM-dd}"));
 
             var orderedChanges = versionInformation.Changes.OrderBy(c => c.Key).ToList();
 
