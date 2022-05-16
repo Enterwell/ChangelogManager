@@ -4,7 +4,6 @@
     "name": "MergeChangelog",
     "friendlyName": "Merge Changelog",
     "description": "Compiles the changes into Changelog.md if one exists.",
-    "helpMarkDown": "",
     "category": "Utility",
     "author": "Enterwell",
     "version": {

@@ -1,6 +1,6 @@
 # Introduction 
 
-`Changelog.DevOpsTask` is a project that contains the extension developed for the Azure DevOps containing one task called **Merge Changelog**. Task to merge changes into a changelog file.
+`Changelog.DevOpsExtension` is a project that contains the extension developed for the Azure DevOps containing one task called **Merge Changelog**. Task to merge changes into a changelog file.
 
 ## Table of contents
 
@@ -71,8 +71,8 @@ Task sets a newly bumped semantic version to an [output variable](https://docs.m
 ## Development
 In order to be able to run this code and its tests on your machine, you need to:
 
-1. Position yourself into the **task** directory with `cd task`.
-2. Position yourself into either `taskV1` or `taskV2` depending on which version of the task you want to develop in.
+1. Position yourself into the **MergeChangelogTask** directory with `cd MergeChangelogTask`.
+2. Position yourself into either `MergeChangelogTaskV1` or `MergeChangelogTaskV2` depending on which version of the task you want to develop in.
 2. Run `npm install` to install all the dependencies used in the project.
 3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.

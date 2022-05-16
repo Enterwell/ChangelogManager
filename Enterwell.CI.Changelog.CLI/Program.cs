@@ -30,7 +30,7 @@ namespace Enterwell.CI.Changelog.CLI
         [Argument(0, "Change Type", "Change type following the 'Keep a Changelog' guiding principle.", ShowInHelpText = true)]
         [Required]
         [AllowedValues(StringComparison.InvariantCultureIgnoreCase,
-            "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s",
+            Program.
             IgnoreCase = true)]
         public string Type { get; set; }
 
@@ -53,7 +53,7 @@ namespace Enterwell.CI.Changelog.CLI
         /// </summary>
         // Not sure about this. Now we have 2 sources of truth, in AllowedValues attribute and here. But the attribute is nice because it helps generate nice -h | --help and 
         // documentation about this CLI application
-        public List<string> AllowedTypes = new() { "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s" };
+        public STATIC List<string> AllowedTypes = new() { "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s" };
 
         /// <summary>
         /// Method that runs when the arguments are provided and they pass their "initial" validation.
