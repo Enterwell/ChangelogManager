@@ -84,7 +84,7 @@ async function run() {
     console.log("Input different location: " + input_differentLocation);
     console.log("Input changes location: " + input_changesLocation);
 
-    if (!input_changesLocation.endsWith("\\changes")){
+    if (!input_changesLocation.endsWith("changes")) {
       throw new Error("Insert correct changes location!");
     }
     

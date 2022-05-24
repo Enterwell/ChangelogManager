@@ -32,7 +32,7 @@ namespace Enterwell.CI.Changelog.Models
         /// Changes being made in the current version.
         /// Dictionary whose keys are the change types and their values are all the changes of the corresponding change type.
         /// </summary>
-        public Dictionary<string, List<string>> Changes { get; set; }
+        public Dictionary<string, List<ChangeInfo>> Changes { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <c>VersionInformation</c> class.
@@ -42,7 +42,7 @@ namespace Enterwell.CI.Changelog.Models
         /// <param name="patch">Patch version number.</param>
         /// <param name="changes">Changes being made in the current version.</param>
         /// <param name="bumpingRule">User's custom bumping application's version rule.</param>
-        public VersionInformation(int major, int minor, int patch, Dictionary<string, List<string>> changes, BumpingRule? bumpingRule)
+        public VersionInformation(int major, int minor, int patch, Dictionary<string, List<ChangeInfo>> changes, BumpingRule? bumpingRule)
         {
             this.Major = major;
             this.Minor = minor;

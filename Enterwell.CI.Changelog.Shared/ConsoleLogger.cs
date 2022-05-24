@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Enterwell.CI.Changelog.CLI
+namespace Enterwell.CI.Changelog.Shared
 {
     /// <summary>
     /// Class used to log to the console with appropriate foreground colors.
@@ -41,10 +41,10 @@ namespace Enterwell.CI.Changelog.CLI
         /// Logs a success to the console using the appropriate foreground color.
         /// </summary>
         /// <param name="statusText"><see cref="string"/> to log to the console.</param>
-        private void LogSuccess(string statusText)
+        public void LogSuccess(string statusText)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Error.WriteLine(statusText);
+            Console.WriteLine(statusText);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
     }

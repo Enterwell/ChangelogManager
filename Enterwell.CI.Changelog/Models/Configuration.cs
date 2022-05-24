@@ -4,7 +4,7 @@ using System.Linq;
 namespace Enterwell.CI.Changelog.Models
 {
     /// <summary>
-    /// Class that is used for Json to Deserialize configuration file to.
+    /// Class used for Json to deserialize the configuration file into.
     /// </summary>
     public class Configuration
     {
@@ -21,19 +21,19 @@ namespace Enterwell.CI.Changelog.Models
         /// <summary>
         /// Validates a change based on Configuration object properties.
         /// </summary>
-        /// <param name="changeDescription">Description of user change.</param>
+        /// <param name="changeDescription">User change description.</param>
         /// <returns>Returns <c>true</c> if the change description is valid and <c>false</c> otherwise.</returns>
         public bool IsValid(string changeDescription)
         {
             // If there are no validation categories think of it as true.
-            if (Categories.Length == 0) return true;
+            if (this.Categories.Length == 0) return true;
 
             var descriptionSplit = changeDescription.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
-            // Removing the [ and ] around change type. Ex. [API] --> API
+            // Removing [ and ] around the change type. Ex. [API] --> API
             var categoryType = descriptionSplit[0][1..^1];
 
-            return Categories.Contains(categoryType);
+            return this.Categories.Contains(categoryType);
         }
     }
 }

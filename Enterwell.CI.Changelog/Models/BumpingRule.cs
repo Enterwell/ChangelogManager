@@ -3,7 +3,7 @@
 namespace Enterwell.CI.Changelog.Models
 {
     /// <summary>
-    /// Class representing the version bumping rules in the configuration file.
+    /// Class representing the version bumping rule in the configuration file.
     /// </summary>
     public class BumpingRule
     {

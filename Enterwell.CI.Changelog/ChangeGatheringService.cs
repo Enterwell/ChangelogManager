@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Enterwell.CI.Changelog.Models;
+using Enterwell.CI.Changelog.Shared;
 using Newtonsoft.Json;
+using Configuration = Enterwell.CI.Changelog.Models.Configuration;
 
 namespace Enterwell.CI.Changelog
 {
@@ -46,8 +48,8 @@ namespace Enterwell.CI.Changelog
             if (string.IsNullOrWhiteSpace(changelogLocation))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
 
-            // Path to the changelog file.
-            var changelogFilePath = Path.Combine(changelogLocation, ChangelogFileName);
+            // Correctly-cased path for a changelog file 
+            var changelogFilePath = FileSystemHelper.GetFilePathCaseInsensitive(Path.Combine(changelogLocation, ChangelogFileName));
 
             if (!File.Exists(changelogFilePath))
             {
@@ -75,9 +77,9 @@ namespace Enterwell.CI.Changelog
         /// <param name="configuration">User changelog manager configuration.</param>
         /// <param name="changesLocation">Path to the changes directory.</param>
         /// <returns>Returns the dictionary whose keys are change types and values are all the changes of the corresponding change type.</returns>
-        private Dictionary<string, List<string>> GatherChanges(Configuration? configuration, string changesLocation)
+        private Dictionary<string, List<ChangeInfo>> GatherChanges(Configuration? configuration, string changesLocation)
         {
-            var changes = new Dictionary<string, List<string>>();
+            var changes = new Dictionary<string, List<ChangeInfo>>();
 
             var filesPath = Directory.GetFiles(changesLocation);
 
@@ -110,26 +112,26 @@ namespace Enterwell.CI.Changelog
 
                 if (!changes.ContainsKey(changeKey))
                 {
-                    changes.Add(changeKey, new List<string>());
+                    changes.Add(changeKey, new List<ChangeInfo>());
                 }
 
-                changes[changeKey].Add(changeDescription);
+                changes[changeKey].Add(new ChangeInfo(changeDescription, filePath));
             }
 
             return changes;
         }
 
         /// <summary>
-        /// Deletes all the change files from the changes directory.
+        /// Deletes all accepted change files.
         /// </summary>
-        /// <param name="changesLocation">Path to the changes directory.</param>
-        public void EmptyChangesFolder(string changesLocation)
+        /// <param name="acceptedChanges">Changes being made in the current version.</param>
+        public void RemoveAcceptedChanges(Dictionary<string, List<ChangeInfo>> acceptedChanges)
         {
-            var changesDirectory = new DirectoryInfo(changesLocation);
+            var allChangeInfos = acceptedChanges.SelectMany(c => c.Value);
 
-            foreach (FileInfo file in changesDirectory.GetFiles())
+            foreach (var changeInfo in allChangeInfos)
             {
-                file.Delete();
+                File.Delete(changeInfo.ChangeFilePath);
             }
         }
 

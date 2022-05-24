@@ -1,6 +1,6 @@
-# Introduction 
+# Changelog Create extension for Visual Studio
 
-`Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) Extension which creates files in the solution folder that are used by the [`Changelog`](../Enterwell.CI.Changelog) project in order to fill out the `CHANGELOG.md` file.
+`Changelog.VSIX` is a VSIX project that contains the [Visual Studio](https://visualstudio.microsoft.com/vs/) extension helping developers automatically create needed files in the **changes** directory that are used by the [`Changelog Manager`](../Enterwell.CI.Changelog) tool in order to fill out the `CHANGELOG.md` file.
 
 ## Table of contents
 
@@ -21,7 +21,9 @@ or by searching for it in the Visual Studio Extension Manager.
 ![](../img/extensionManager.png)
 
 ## Usage
-Extension will only show up if you have open Solution in the editor.
+If you're unfamiliar with the `Changelog Manager` tool, it is highly recommended that you read through the `Changelog Manager's` [README](../Enterwell.CI.Changelog/README.md) to understand why would you need this helper Visual Studio extension.
+
+Extension will only show up if you have an open Solution in the editor.
 
 You can trigger the extension by using the `ALT + C` shortcut or by right-clicking on the Solution and selecting the `Add Change to Changelog` option.
 
@@ -29,7 +31,7 @@ You can trigger the extension by using the `ALT + C` shortcut or by right-clicki
 
 One of the following dialog boxes will show up:
 
-+ Changelog configuration (explained later) exists:
++ Changelog configuration ([explained later](#configuration-file)) exists:
 
   ![](../img/dialog_withConfig.png)
 
@@ -39,9 +41,11 @@ One of the following dialog boxes will show up:
 
   ![](../img/dialog_withoutConfig.png)
 
-  `Change Category` is a text-box accepting any user input as the change category. (Input can be an empty value).
+  `Change Category` is a text-box accepting any user input as the change category. (Input can be an empty value and all excess whitespace will be removed).
 
-In both cases `Change Description` is a text-box that can accept any non-empty user input which is used to describe the changes made by the user. **Add Change** button is disabled if the `Change Description` is invalid (empty), and enabled otherwise.
+In both cases `Change Description` is a text-box that can accept any non-empty user input which is used to describe the changes made by the user. Excess whitespace will be removed.
+
+**Add Change** button is disabled if the `Change Description` is invalid (empty), and enabled otherwise.
 
 Extension uses the Visual Studio Status bar in order to log the results:
 
@@ -70,13 +74,13 @@ If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend)
 }
 ```
 
-If the configuration exists, application will ignore every change in the **changes** folder that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+If the configuration exists, application will ignore every change in the **changes** directory that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
-For more features that can be configured with the configuration file, see [Enterwell.CI.Changelog README](../Enterwell.CI.Changelog/README.md/#configuration-file).
+For more features that can be configured using the configuration file, see the [Changelog Manager's README](../Enterwell.CI.Changelog/README.md/#configuration-file).
 
 ## Result / Output
 
-If the change was added successfully, **changes** folder is created in the Solution root if one did not exist already, with the correct file and naming used by our [`Enterwell.CI.Changelog`](../Enterwell.CI.Changelog) project.
+If the change was added successfully, **changes** directory is created in the Solution root if one did not exist already, with the correct file and naming used by our [`Changelog Manager`](../Enterwell.CI.Changelog) tool.
 
 ## Development
 

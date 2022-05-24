@@ -2,6 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Enterwell.CI.Changelog.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Enterwell.CI.Changelog
 {
@@ -30,9 +34,9 @@ namespace Enterwell.CI.Changelog
             if (string.IsNullOrWhiteSpace(insertBefore))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(insertBefore));
 
-            // Path to the changelog file.
-            var changelogPath = Path.Combine(changelogLocation, ChangelogFileName);
-            var changelogText = (await File.ReadAllLinesAsync(changelogPath)).ToList();
+            // Correctly-cased path for a changelog file 
+            var changelogFilePath = FileSystemHelper.GetFilePathCaseInsensitive(Path.Combine(changelogLocation, ChangelogFileName));
+            var changelogText = (await File.ReadAllLinesAsync(changelogFilePath)).ToList();
 
             // Get the index of a line before H2 with older version.
             var index = changelogText.FindIndex(0, line => line.StartsWith(insertBefore)) - 1;
@@ -41,7 +45,64 @@ namespace Enterwell.CI.Changelog
             changelogText.RemoveAt(index);
             changelogText.Insert(index, textToWrite);
 
-            await File.WriteAllLinesAsync(changelogPath, changelogText);
+            await File.WriteAllLinesAsync(changelogFilePath, changelogText);
+        }
+
+        /// <summary>
+        /// Method that will set the new application's version to the project file.
+        /// </summary>
+        /// <param name="newVersion">Application's bumped version.</param>
+        /// <param name="projectFilePath">Path to the project file.</param>
+        /// <returns>An asynchronous task.</returns>
+        public async Task BumpProjectFileVersion(string newVersion, string projectFilePath)
+        {
+            // Try to automatically determine the project file
+            if (string.IsNullOrWhiteSpace(projectFilePath))
+            {
+                var determinedProjectFilePath = FileSystemHelper.GetTheProjectFile();
+
+                // If no file was found, throw
+                if (string.IsNullOrWhiteSpace(determinedProjectFilePath))
+                {
+                    throw new FileNotFoundException("Could not find a 'package.json' file or a '.csproj' file with a 'Version' tag.");
+                }
+
+                projectFilePath = determinedProjectFilePath;
+            }
+
+            // Manage the package.json file
+            if (projectFilePath.EndsWith("package.json"))
+            {
+                var jsonString = await File.ReadAllTextAsync(projectFilePath);
+
+                if (JsonConvert.DeserializeObject(jsonString) is not JObject jsonObject)
+                {
+                    throw new InvalidCastException("Could not deserialize the 'package.json' file.");
+                }
+
+                // Replacing the JSON 'version' entry
+                jsonObject["version"]?.Replace(newVersion);
+
+                await File.WriteAllTextAsync(projectFilePath, jsonObject.ToString());
+            }
+
+            // Manage the .csproj file
+            if (projectFilePath.EndsWith(".csproj"))
+            {
+                var csprojString = await File.ReadAllTextAsync(projectFilePath);
+                var csprojXml = XDocument.Parse(csprojString);
+
+                var xmlVersionTag = csprojXml
+                    .Descendants()
+                    .FirstOrDefault(e =>
+                        e.Name.ToString().ToLowerInvariant() == "version" &&
+                        e.Parent?.Name.ToString().ToLowerInvariant() == "propertygroup");
+
+                // Replace the .csproj 'Version' entry
+                xmlVersionTag!.Value = newVersion;
+
+                await File.WriteAllTextAsync(projectFilePath, csprojXml.ToString());
+            }
         }
     }
 }
