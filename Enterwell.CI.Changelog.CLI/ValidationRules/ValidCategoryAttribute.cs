@@ -14,28 +14,30 @@ namespace Enterwell.CI.Changelog.CLI.ValidationRules
         /// </summary>
         public ValidCategoryAttribute() : base("The change category is not valid based on the configuration file.") { }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        /// <summary>
+        /// Checks if the target property contains the valid data.
+        /// </summary>
+        /// <param name="value">Property value.</param>
+        /// <param name="validationContext">Validation context containing the information about the property.</param>
+        /// <returns>Result of the validation; can be either success or fail.</returns>
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             var config = Configuration.LoadConfiguration(Directory.GetCurrentDirectory());
 
-            // Any input data is valid if the configuration file does not exist or if its empty.
+            // Any input data is valid if the configuration file does not exist or if it is empty.
             if (config == null || config.IsEmpty())
             {
                 return ValidationResult.Success;
             }
-            else
-            {
-                var inputString = (string)value;
 
-                if (config.IsValid(inputString?.Trim()))
-                {
-                    return ValidationResult.Success;
-                }
-                else
-                {
-                    return new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
-                }
+            var inputString = (string?)value;
+
+            if (config.IsValid(inputString?.Trim()))
+            {
+                return ValidationResult.Success;
             }
+
+            return new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
         }
     }
 }

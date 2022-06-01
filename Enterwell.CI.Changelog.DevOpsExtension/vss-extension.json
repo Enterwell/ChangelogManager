@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "merge-changelog",
     "name": "Merge Changelog Task",
-    "version": "1.0.0",
+    "version": "2.2.0",
     "publisher": "Enterwell",
     "targets": [
         {
@@ -18,19 +18,15 @@
     },
     "files": [
         {
-            "path": "task"
+            "path": "MergeChangelogTask"
         }
     ],
     "contributions": [
         {
             "id": "merge-changelog",
             "type": "ms.vss-distributed-task.task",
-            "targets": [
-                "ms.vss-distributed-task.tasks"
-            ],
-            "properties": {
-                "name": "task"
-            }
+            "targets": [ "ms.vss-distributed-task.tasks" ],
+            "properties": { "name": "MergeChangelogTask" }
         }
     ]
 }

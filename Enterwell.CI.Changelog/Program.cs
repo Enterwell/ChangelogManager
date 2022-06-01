@@ -1,38 +1,22 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Enterwell.CI.Changelog
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, services) =>
+            return await Host
+                .CreateDefaultBuilder()
+                .ConfigureServices((_, services) =>
                 {
-                    services.AddSingleton<FillingChangelogService>();
-
-                    services.AddSingleton<ParseInputService>();
                     services.AddSingleton<ChangeGatheringService>();
                     services.AddSingleton<MarkdownTextService>();
                     services.AddSingleton<FileWriterService>();
                 })
-                .Build();
-
-            var changelogService = ActivatorUtilities.CreateInstance<FillingChangelogService>(host.Services);
-
-            try
-            {
-                await changelogService.Run(args);
-            }
-            catch (Exception ex)
-            {
-                await Console.Error.WriteLineAsync(ex.Message);
-                Environment.Exit(1);
-            }
-
+                .RunCommandLineApplicationAsync<ChangelogManagerCommand>(args);
         }
     }
 }

@@ -22,12 +22,12 @@ namespace Enterwell.CI.Changelog.Shared
         /// Validates a change based on Configuration object properties.
         /// </summary>
         /// <param name="changeCategory">Category of the user change.</param>
-        /// <returns>Returns true if the change category is valid and false otherwise.</returns>
+        /// <returns>Returns <c>true</c> if the change category is valid and <c>false</c> otherwise.</returns>
         public bool IsValid(string changeCategory)
         {
-            if (Categories.Length == 0) return true;
-
-            return Categories.Contains(changeCategory);
+            return 
+                this.Categories.Length == 0 || 
+                this.Categories.Any(c => string.Equals(c, changeCategory, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>
@@ -36,7 +36,24 @@ namespace Enterwell.CI.Changelog.Shared
         /// <returns>A <see cref="bool"/> representing if the configuration is empty or not.</returns>
         public bool IsEmpty()
         {
-            return Categories.Length == 0;
+            return this.Categories.Length == 0;
+        }
+
+        /// <summary>
+        /// Formats the category entered by the user so that it is correctly spelled and saved as a file later.
+        /// </summary>
+        /// <param name="category">User entered change category to format.</param>
+        /// <returns>Correctly formatted change category.</returns>
+        public string FormatCategoryCorrectly(string category)
+        {
+            var correctCategory = this.Categories.FirstOrDefault(c => string.Equals(c, category, StringComparison.InvariantCultureIgnoreCase));
+
+            if (correctCategory != null)
+            {
+                return correctCategory;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -45,17 +62,21 @@ namespace Enterwell.CI.Changelog.Shared
         /// <param name="directoryPath">Path to the directory where the changelog configuration file should be located.</param>
         /// <returns><see cref="Configuration"/> object deserialized from the changelog configuration file.</returns>
         /// <exception cref="ArgumentException">Thrown when arguments are not valid.</exception>
-        public static Configuration LoadConfiguration(string directoryPath)
+        public static Configuration? LoadConfiguration(string directoryPath)
         {
             if (string.IsNullOrWhiteSpace(directoryPath))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(directoryPath));
 
-            var configurationFilePath = Path.Combine(directoryPath, ConfigurationName);
-
-            // First check to see if the configuration file exists.
-            if (File.Exists(configurationFilePath))
+            var currentDir = new DirectoryInfo(directoryPath);
+            while (currentDir != null)
             {
-                return JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(configurationFilePath));
+                var possibleConfigFilePath = Path.Combine(currentDir.FullName, ConfigurationName);
+                if (File.Exists(possibleConfigFilePath))
+                {
+                    return JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(possibleConfigFilePath));
+                }
+
+                currentDir = currentDir.Parent;
             }
 
             return null;

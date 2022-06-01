@@ -2,7 +2,22 @@
     "categories": [
         "CoreApp",
         "CLI",
-        "VS",
-        "DevOpsTask"
-    ]
+        "VSIX",
+        "DevOpsExtension"
+    ],
+    "bumpingRule": {
+        "major": [
+            "Deprecated"
+        ],
+        "minor": [
+            "Added",
+            "Changed",
+            "Removed",
+            "NoChanges"
+        ],
+        "patch": [
+            "Fixed",
+            "Security"
+        ]
+    }
 }

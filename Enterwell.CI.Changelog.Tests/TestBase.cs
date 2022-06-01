@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using Enterwell.CI.Changelog.Models;
+using Newtonsoft.Json;
 
 namespace Enterwell.CI.Changelog.Tests
 {
@@ -25,9 +27,14 @@ namespace Enterwell.CI.Changelog.Tests
         protected readonly string ChangesFolderName = "changes";
 
         /// <summary>
-        /// Name of the configuration file we are using to configure Changelog program.
+        /// Name of the changelog file.
         /// </summary>
         protected readonly string ChangelogFileName = "Changelog.md";
+
+        /// <summary>
+        /// Name of the configuration file we are using to configure Changelog program.
+        /// </summary>
+        protected readonly string ChangelogConfigFileName = ".changelog.json";
 
         /// <summary>
         /// Path got by combining the path to the system Temp directory with <see cref="TestFolderName"/>
@@ -45,6 +52,11 @@ namespace Enterwell.CI.Changelog.Tests
         protected readonly string ChangelogFilePath;
 
         /// <summary>
+        /// Path got by combining the path to the system Temp directory with <see cref="ChangelogConfigFileName"/>
+        /// </summary>
+        protected readonly string ChangelogConfigFilePath;
+
+        /// <summary>
         /// <see cref="TestBase"/> constructor. It runs before every test in the test class that inherit the <see cref="TestBase"/>.
         /// </summary>
         public TestBase()
@@ -52,6 +64,7 @@ namespace Enterwell.CI.Changelog.Tests
             TestFolderPath = Path.Combine(TemporaryDirectoryPath, TestFolderName);
             ChangesFolderPath = Path.Combine(TestFolderPath, ChangesFolderName);
             ChangelogFilePath = Path.Combine(TestFolderPath, ChangelogFileName);
+            ChangelogConfigFilePath = Path.Combine(TestFolderPath, ChangelogConfigFileName);
 
             Directory.CreateDirectory(TestFolderPath);
         }
@@ -101,29 +114,10 @@ namespace Enterwell.CI.Changelog.Tests
         /// Creates directory on a <see cref="ChangesFolderPath"/> path and fills it with various files
         /// containing different names that could be an edge-case for our application.
         /// </summary>
-        protected void CreateChanges()
+        /// <param name="fileNames">Names of the files to create.</param>
+        protected void CreateChanges(string[] fileNames)
         {
             CreateDirectory(ChangesFolderPath);
-
-            string[] fileNames =
-            {
-                "   Added [API] Added example 1",
-                "   s  Removed [BE] this should not be accepted",
-                "Added [API] Added example 2",
-                "Removed [BE] Removed example 2",
-                "added [API] Added example 3",
-                "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Deprecated [FE] Deprecated example 1",
-                "   deprecated [HUH] Description",
-                "Changed [API] Changed example 1",
-                "Security [API] Security example 1",
-                "This should not be accepted as change",
-                "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
-                " s",
-                "a ",
-                "-"
-            };
 
             foreach (var file in fileNames)
             {
@@ -132,19 +126,33 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
+        /// Creates a <see cref="ChangelogConfigFileName"/> file on a <see cref="ChangelogConfigFilePath"/> path and fills it with some configuration data.
+        /// </summary>
+        /// <param name="configuration">Configuration to write to the file.</param>
+        protected void CreateConfiguration(Configuration configuration)
+        {
+            CreateFile(ChangelogConfigFilePath);
+
+            WriteToFile(ChangelogConfigFilePath, JsonConvert.SerializeObject(configuration));
+        }
+
+        /// <summary>
         /// Creates a <see cref="ChangelogFileName"/> file on a <see cref="ChangelogFilePath"/> path and fills it with some initial data.
         /// </summary>
-        protected void CreateChangelog()
+        /// <param name="majorVersion">Major version number.</param>
+        /// <param name="minorVersion">Minor version number.</param>
+        /// <param name="patchVersion">Patch version number.</param>
+        protected void CreateChangelog(int majorVersion, int minorVersion, int patchVersion)
         {
             CreateFile(ChangelogFilePath);
 
-            string changelogContent = @"# Changelog
+            string changelogContent = @$"# Changelog
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2018-08-13
+## [{majorVersion}.{minorVersion}.{patchVersion}] - 2018-08-13
 ### Changed
 - Migrated from .NET Framework 4.5 to .NET Standard 2.0
 ";

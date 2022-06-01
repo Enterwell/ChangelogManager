@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Enterwell.CI.Changelog.Models;
 
 namespace Enterwell.CI.Changelog
 {
@@ -43,34 +43,33 @@ namespace Enterwell.CI.Changelog
         /// <summary>
         /// Builds the text section in markdown specifying version with date containing all of the changes in the current version.
         /// </summary>
-        /// <param name="semanticVersion">Version of the application this changelog entry targets.</param>
-        /// <param name="changes">Dictionary representing application changes, whose keys are change types and each key contains list of change descriptions.</param>
+        /// <param name="versionInformation">Information about the application's current version.</param>
         /// <returns>Text section in markdown.</returns>
-        public string BuildChangelogSection(string semanticVersion, Dictionary<string, List<string>> changes)
+        public string BuildChangelogSection(VersionInformation versionInformation)
         {
             var builder = new StringBuilder();
 
             builder.AppendLine();
-            builder.AppendLine(ToH2($"[{semanticVersion}] - {DateTime.Now:yyyy-MM-dd}"));
+            builder.AppendLine(this.ToH2($"[{versionInformation.SemanticVersion}] - {DateTime.Now:yyyy-MM-dd}"));
 
-            var orderedChanges = changes.OrderBy(c => c.Key).ToList();
+            var orderedChanges = versionInformation.Changes.OrderBy(c => c.Key).ToList();
 
             if (orderedChanges.Count == 0)
             {
-                builder.AppendLine(ToUnorderedListItem("No new changes"));
+                builder.AppendLine(this.ToUnorderedListItem("No new changes"));
             }
 
-            for (var changeTypeIndex = 0; changeTypeIndex < orderedChanges.Count; changeTypeIndex++)
+            foreach (var change in orderedChanges)
             {
-                builder.AppendLine(ToH3(orderedChanges[changeTypeIndex].Key));
+                builder.AppendLine(this.ToH3(change.Key));
 
-                foreach (var changeDescription in orderedChanges[changeTypeIndex].Value)
+                foreach (var changeInfo in change.Value)
                 {
-                    builder.AppendLine(ToUnorderedListItem(changeDescription));
+                    builder.AppendLine(this.ToUnorderedListItem(changeInfo.ChangeDescription));
                 }
 
-                // If we are not at the last change, we add a blank line separator. (empty line after last change is not necessary).
-                if (changeTypeIndex != orderedChanges.Count - 1)
+                // If we are not at the last change, we add a blank line separator (empty line after the last change is not necessary).
+                if (orderedChanges.IndexOf(change) != orderedChanges.Count - 1)
                 {
                     builder.AppendLine();
                 }

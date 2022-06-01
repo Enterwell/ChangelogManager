@@ -84,7 +84,7 @@ async function run() {
     console.log("Input different location: " + input_differentLocation);
     console.log("Input changes location: " + input_changesLocation);
 
-    if (!input_changesLocation.endsWith("\\changes")){
+    if (!input_changesLocation.endsWith("changes")) {
       throw new Error("Insert correct changes location!");
     }
     
@@ -105,7 +105,7 @@ async function run() {
     console.log("=============================================AFTER EXECUTION=============================================");
     printContents(input_changelogLocation, input_changesLocation);
 
-  } catch (err) {
+  } catch (err: any) {
     tl.setResult(tl.TaskResult.Failed, err.message);
   }
 }
