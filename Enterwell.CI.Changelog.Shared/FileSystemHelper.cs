@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Enterwell.CI.Changelog.Shared
 {
@@ -57,16 +58,20 @@ namespace Enterwell.CI.Changelog.Shared
         {
             var description = inputDescription.Trim();
 
+            string fileName;
             if (string.IsNullOrWhiteSpace(inputCategory))
             {
-                return $"{inputType} {description}";
+                fileName = $"{inputType} {description}";
             }
             else
             {
                 var category = inputCategory.Trim();
 
-                return $"{inputType} [{category}] {description}";
+                fileName = $"{inputType} [{category}] {description}";
             }
+
+            // Replace multiple spaces with a single space for consistency
+            return Regex.Replace(fileName, @"\s+", " ");
         }
 
         /// <summary>
@@ -75,7 +80,7 @@ namespace Enterwell.CI.Changelog.Shared
         /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
         public static string FindNearestChangesFolder()
         {
-            var currentDir = Directory.GetParent(Assembly.GetEntryAssembly()?.Location);
+            var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
             while (currentDir != null)
             {
                 if (currentDir.EnumerateDirectories("changes").Any())
@@ -84,6 +89,56 @@ namespace Enterwell.CI.Changelog.Shared
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Tries to find the project file (either 'package.json' or a '*.csproj' file with a 'Version' tag) in the current directory.
+        /// </summary>
+        /// <returns>Project file path if one exists; <see cref="string.Empty"/> otherwise.</returns>
+        public static string GetTheProjectFile()
+        {
+            var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var currentDirFiles = currentDir.EnumerateFiles().ToList();
+
+            var packageJsonFile = currentDirFiles.FirstOrDefault(f => f.Name == "package.json");
+
+            // If the package.json file exists, return it
+            if (packageJsonFile != null)
+            {
+                return packageJsonFile.FullName;
+            }
+
+            var csprojFile = currentDirFiles.FirstOrDefault(f => f.Extension == ".csproj");
+
+            // If the .csproj file exists check if it contains the 'Version' tag
+            if (csprojFile != null)
+            {
+                var xmlVersionTag = XElement.Load(csprojFile.FullName)
+                    .Descendants()
+                    .FirstOrDefault(e =>
+                        e.Name.ToString().ToLowerInvariant() == "version" &&
+                        e.Parent?.Name.ToString().ToLowerInvariant() == "propertygroup");
+
+                if (xmlVersionTag != null)
+                {
+                    return csprojFile.FullName;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Gets the correctly-cased file path equivalent.
+        /// </summary>
+        /// <param name="filePath">File path for which to find the equivalent.</param>
+        /// <returns>Correctly-cased file path.</returns>
+        public static string GetFilePathCaseInsensitive(string filePath)
+        {
+            var absolutePath = Path.GetFullPath(filePath);
+            var parentDirectory = Directory.GetParent(absolutePath)?.FullName ?? absolutePath;
+
+            return Directory.GetFiles(parentDirectory).FirstOrDefault(fp => string.Equals(fp, absolutePath, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

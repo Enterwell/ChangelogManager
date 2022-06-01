@@ -4,18 +4,20 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<AssemblyName>clm</AssemblyName>
-		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<PublishedTrimmed>true</PublishedTrimmed>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<nullable>enable</nullable>
-		<version>2.1.0</version>
+		<Version>2.2.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
+		<PackageReference Include="McMaster.Extensions.Hosting.CommandLine" Version="4.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Enterwell.CI.Changelog.Shared\Enterwell.CI.Changelog.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

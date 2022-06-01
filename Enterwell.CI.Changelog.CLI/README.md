@@ -1,18 +1,24 @@
-# Introduction
+# Changelog Create CLI Tool
 
-`Changelog.CLI` Console App project using .NET 6 which servers as a CLI version of the [VSIX](../Enterwell.CI.Changelog.VSIX) project, helping developers automatically create needed files from the command line/terminal.
+`Changelog.CLI` is a helper Console App project using .NET 6 that servers as a CLI version of the [Visual Studio extension](../Enterwell.CI.Changelog.VSIX), helping developers automatically create needed files from the command line/terminal to be used by the [`Changelog Manager`](../Enterwell.CI.Changelog) tool.
 
 ## Table of contents
 
-+ [Usage](#usage)
++ [How to use this?](#how-to-use-this)
 + [Configuration file](#configuration-file)
 + [Result / Output](#result--output)
 
-## Usage
-Application takes two arguments and one optional input: 
+## How to use this?
+If you're unfamiliar with the `Changelog Manager` tool, it is highly recommended that you read through the `Changelog Manager's` [README](../Enterwell.CI.Changelog/README.md) to understand why would you need this helper CLI.
+
+Firstly, you can use our [GitHub Releases](https://github.com/Enterwell/ChangelogManager/releases/) tab to start using this CLI. Link contains pre-built binaries for Windows and Linux.
+
+You can run the binary anywhere in the target project's solution directory.
+
+The helper takes two arguments and one optional input:
 + change type - required
 + change description - required
-+ change category - optional (prefixed with either -c or --category)
++ change category - optional (prefixed with either `-c` or `--category`)
 
 Example of a call:
 
@@ -33,17 +39,22 @@ Arguments:
       + each of the previous entries can also be specified using only their first letters
    + Acceptable entries are case-insensitive.
 + change_description:
-   + Change description that describes the changes made inside quotes.
+   + Change description that describes the changes made (if the text is longer than a single word, it needs to be quoted).
+   + Excess whitespace will be removed.
 
 Options:
-+ --version:
++ -v | --version:
    + Shows version information.
 + -c | --category <change_category>:
-   + One of the valid change categories determined in the [configuration file](#configuration-file), or arbitrary if the configuration does not exist or is empty. Needs to be quoted if its longer than one word.
+   + One of the valid change categories (case-insensitive) defined in the [configuration file](#configuration-file) if it exists.
+   + Arbitrary if the configuration does not exist or is empty.
+      + Can be empty.
+      + Excess whitespace will be removed.
+   + Needs to be quoted if its longer than a single word.
 + -? | -h | --help:
    + Shows help information.
 
-Changes in the **changes** folder are just files with the following naming scheme:
+Changes in the **changes** directory are just files with the following naming scheme:
 
 ```
 <change_type> [<change_category>] <change_description>
@@ -66,9 +77,9 @@ If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend)
 }
 ```
 
-If the configuration exists, application will ignore every change in the **changes** folder that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+If the configuration exists, helper will deny the creation of change files which ignore every change in the **changes** directory that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
-For more features that can be configured with the configuration file, see [Enterwell.CI.Changelog README](../Enterwell.CI.Changelog/README.md/#configuration-file).
+For more features that can be configured using the configuration file, see the [Changelog Manager's README](../Enterwell.CI.Changelog/README.md/#configuration-file).
 
 ## Result / Output
-If the change was added successfully, **changes** folder is created in the directory developer is calling the CLI from if one did not exist already, with the correct file and naming used by our [`Enterwell.CI.Changelog`](../Enterwell.CI.Changelog) project.
+If the CLI is used in the directory that doesn't contain **changes** directory to create the change file in, it will automatically search directory tree upwards for the nearest **changes** directory. Created file is named correctly and can be used by our [`Changelog Manager`](../Enterwell.CI.Changelog) tool.

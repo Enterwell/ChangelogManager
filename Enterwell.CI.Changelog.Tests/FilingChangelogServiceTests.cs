@@ -13,53 +13,22 @@ namespace Enterwell.CI.Changelog.Tests
     /// </summary>
     public class FilingChangelogServiceTests : TestBase
     {
-        private readonly FillingChangelogService changelogService;
+        private readonly ChangelogManagerCommand changelogService;
 
         /// <summary>
         /// Initializes the test with services that are needed.
         /// </summary>
         public FilingChangelogServiceTests()
         {
-            var parseInputService = new ParseInputService();
             var changeGatheringService = new ChangeGatheringService();
             var markdownTextService = new MarkdownTextService();
             var fileWriterService = new FileWriterService();
 
-            changelogService = new FillingChangelogService(parseInputService, changeGatheringService,
-                markdownTextService, fileWriterService);
-        }
-
-        /// <summary>
-        /// Testing the application when no inputs are passed. <see cref="ArgumentException"/> should be thrown with correct message.
-        /// </summary>
-        [Fact]
-        public void FillingChangelogService_NoInputs_ThrowsArgumentExceptionWithCorrectMessage()
-        {
-            // Arrange
-            var inputs = Array.Empty<string>();
-
-            // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
-
-            // Assert
-            act.Should().ThrowExactly<ArgumentException>().WithMessage("Correct usage: <changelog location> <changes location>");
-        }
-
-        /// <summary>
-        /// Testing the application when valid version and changelog location are passed, but the changes directory input is invalid and does not exist.
-        /// <see cref="ArgumentException"/> should be thrown with correct message.
-        /// </summary>
-        [Fact]
-        public void FillingChangelogService_ValidInputWithNoChangesDirectory_ThrowsArgumentExceptionWithCorrectMessage()
-        {
-            // Arrange
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
-            // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
-
-            // Assert
-            act.Should().ThrowExactly<ArgumentException>().WithMessage($"Changes location does not exist on path: {ChangesFolderPath}");
+            changelogService = new ChangelogManagerCommand(changeGatheringService, markdownTextService, fileWriterService)
+            {
+                ChangelogLocation = TestFolderPath,
+                ChangesLocation = ChangesFolderPath
+            };
         }
 
         /// <summary>
@@ -73,10 +42,8 @@ namespace Enterwell.CI.Changelog.Tests
             var fileNames = Array.Empty<string>();
             CreateChanges(fileNames);
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().ThrowExactly<FileNotFoundException>().WithMessage("Changelog file is not found.");
@@ -121,10 +88,8 @@ namespace Enterwell.CI.Changelog.Tests
 
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();
@@ -170,10 +135,8 @@ namespace Enterwell.CI.Changelog.Tests
 
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();
@@ -212,10 +175,8 @@ namespace Enterwell.CI.Changelog.Tests
 
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();
@@ -265,11 +226,9 @@ namespace Enterwell.CI.Changelog.Tests
             const int shouldBeMajor = initialMajor + 1;
 
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
-
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
+            
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();
@@ -320,10 +279,8 @@ namespace Enterwell.CI.Changelog.Tests
 
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();
@@ -374,10 +331,8 @@ namespace Enterwell.CI.Changelog.Tests
 
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
-            string[] inputs = { TestFolderPath, ChangesFolderPath };
-
             // Act
-            Func<Task> act = async () => await changelogService.Run(inputs);
+            Func<Task> act = async () => await changelogService.OnExecute();
 
             // Assert
             act.Should().NotThrow();

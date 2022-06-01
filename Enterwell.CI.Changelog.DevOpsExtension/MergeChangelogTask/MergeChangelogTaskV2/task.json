@@ -4,12 +4,11 @@
     "name": "MergeChangelog",
     "friendlyName": "Merge Changelog",
     "description": "Compiles the changes into Changelog.md if one exists.",
-    "helpMarkDown": "",
     "category": "Utility",
     "author": "Enterwell",
     "version": {
         "Major": 2,
-        "Minor": 1,
+        "Minor": 2,
         "Patch": 0
     },
     "instanceNameFormat": "Merging Changelog",
@@ -35,6 +34,21 @@
             "required": true,
             "helpMarkDown": "Location of the 'changes' directory.",
             "visibleRule": "changesInDifferentLocation = true"
+        },
+        {
+            "name": "setVersionFlag",
+            "type": "boolean",
+            "label": "Set Version",
+            "defaultValue": false,
+            "helpMarkDown": "Should the new version be set in the appropriate project file ('package.json' or '*.csproj')."
+        },
+        {
+            "name": "pathToProjectFile",
+            "type": "string",
+            "label": "Path to the project file",
+            "defaultValue": "",
+            "helpMarkDown": "If not set, the application will try to automatically determine the project file. Currently supported project types: NPM (package.json) and .NET SDK (*.csproj with the version tag).",
+            "visibleRule": "setVersionFlag = true"
         }
     ],
     "execution": {
