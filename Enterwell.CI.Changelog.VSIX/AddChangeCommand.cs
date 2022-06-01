@@ -68,13 +68,7 @@ namespace Enterwell.CI.Changelog.VSIX
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private IAsyncServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
+        private IAsyncServiceProvider ServiceProvider => this.package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -109,10 +103,10 @@ namespace Enterwell.CI.Changelog.VSIX
             string fileName = ShowDialogForAddingChange(solutionPath);
             if (fileName == string.Empty)
             {
-                await StatusBarLogAsync(false, "Cancelled By User");
+                await StatusBarLogAsync(false, "Cancelled by the user");
                 return;
             }
-            
+
             FileSystemHelper.EnsureChangesDirectoryExists(solutionPath);
             (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
 
@@ -167,10 +161,8 @@ namespace Enterwell.CI.Changelog.VSIX
                 return FileSystemHelper.ConstructFileName(dialog.ChangeType, dialog.ChangeCategory,
                     dialog.ChangeDescription);
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return string.Empty;
         }
     }
 }

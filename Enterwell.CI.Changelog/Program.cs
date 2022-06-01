@@ -5,12 +5,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Enterwell.CI.Changelog
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             var host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton<FillingChangelogService>();
 
@@ -32,7 +32,6 @@ namespace Enterwell.CI.Changelog
                 await Console.Error.WriteLineAsync(ex.Message);
                 Environment.Exit(1);
             }
-
         }
     }
 }

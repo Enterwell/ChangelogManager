@@ -22,7 +22,7 @@ namespace Enterwell.CI.Changelog.Shared
         /// Validates a change based on Configuration object properties.
         /// </summary>
         /// <param name="changeCategory">Category of the user change.</param>
-        /// <returns>Returns true if the change category is valid and false otherwise.</returns>
+        /// <returns>Returns <c>true</c> if the change category is valid and <c>false</c> otherwise.</returns>
         public bool IsValid(string changeCategory)
         {
             if (Categories.Length == 0) return true;

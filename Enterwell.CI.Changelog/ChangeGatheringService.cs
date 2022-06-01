@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Enterwell.CI.Changelog.Models;
 using Newtonsoft.Json;
 
 namespace Enterwell.CI.Changelog
@@ -13,23 +14,71 @@ namespace Enterwell.CI.Changelog
     /// </summary>
     public class ChangeGatheringService
     {
+        private const string ChangelogFileName = "Changelog.md";
         private const string ConfigurationFileName = ".changelog.json";
 
         private readonly string[] acceptableChanges = { "added", "changed", "deprecated", "removed", "fixed", "security" };
 
         /// <summary>
+        /// Gathers the current application version information that includes the current semantic version number and a dictionary of changes being made.
+        /// </summary>
+        /// <param name="changelogLocation">Path to the directory containing the changelog file.</param>
+        /// <param name="changesLocation">Path to the changes directory.</param>
+        /// <returns><see cref="VersionInformation"/> instance.</returns>
+        public async Task<VersionInformation> GatherVersionInformation(string changelogLocation, string changesLocation)
+        {
+            var latestVersionInformation = await this.GatherVersionNumber(changelogLocation);
+
+            // Load user configuration.
+            var configuration = await this.LoadConfiguration(changelogLocation);
+            var currentChanges = this.GatherChanges(configuration, changesLocation);
+
+            return new VersionInformation(latestVersionInformation.major, latestVersionInformation.minor, latestVersionInformation.patch, currentChanges, configuration?.BumpingRule);
+        }
+
+        /// <summary>
+        /// Reads the changelog to parse the current application's semantic version.
+        /// </summary>
+        /// <param name="changelogLocation">Path to the directory containing the changelog file.</param>
+        /// <returns>Tuple containing the application's parsed semantic version.</returns>
+        private async Task<(int major, int minor, int patch)> GatherVersionNumber(string changelogLocation)
+        {
+            if (string.IsNullOrWhiteSpace(changelogLocation))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
+
+            // Path to the changelog file.
+            var changelogFilePath = Path.Combine(changelogLocation, ChangelogFileName);
+
+            if (!File.Exists(changelogFilePath))
+            {
+                throw new FileNotFoundException("Changelog file is not found.");
+            }
+
+            var changelogText = await File.ReadAllTextAsync(changelogFilePath);
+            var groupMatch = Regex.Match(changelogText, @"\[(\d+.\d+.\d+)\]");
+
+            var latestVersionMatch = groupMatch.Groups[1].Value;    
+            if (string.IsNullOrWhiteSpace(latestVersionMatch)) latestVersionMatch = "0.0.0";
+
+            var versionParts = latestVersionMatch.Split('.');
+            if (versionParts.Length != 3)
+            {
+                throw new ArgumentException($"Expected version format: <major.minor.patch>. Got: '{latestVersionMatch}'.");
+            }
+
+            return (int.Parse(versionParts[0]), int.Parse(versionParts[1]), int.Parse(versionParts[2]));
+        }
+
+        /// <summary>
         /// Reads the changes from the changes folder in the repository on a given changes location and returns the dictionary with change type keys.
         /// </summary>
-        /// <param name="changelogLocation">Path to directory containing the changelog file.</param>
+        /// <param name="configuration">User changelog manager configuration.</param>
         /// <param name="changesLocation">Path to the changes directory.</param>
         /// <returns>Returns the dictionary whose keys are change types and values are all the changes of the corresponding change type.</returns>
-        public async Task<Dictionary<string, List<string>>> GatherChanges(string changelogLocation, string changesLocation)
+        private Dictionary<string, List<string>> GatherChanges(Configuration? configuration, string changesLocation)
         {
             var changes = new Dictionary<string, List<string>>();
-            
-            // Load user configuration.
-            var configuration = await LoadConfiguration(changelogLocation);
-            
+
             var filesPath = Directory.GetFiles(changesLocation);
 
             foreach (string filePath in filesPath)
@@ -49,7 +98,7 @@ namespace Enterwell.CI.Changelog
 
                 // Replace multiple spaces with a single space for consistency.
                 changeDescription = Regex.Replace(changeDescription, @"\s+", " ");
-                
+
                 // Remove all the whitespaces inside the [ ] angle brackets.
                 changeDescription = Regex.Replace(changeDescription, @"\[\s*(\w+)\s*\]", "[$1]");
 
@@ -94,7 +143,6 @@ namespace Enterwell.CI.Changelog
         {
             if (string.IsNullOrWhiteSpace(changelogLocation))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
-
 
             var configurationFilePath = Path.Combine(changelogLocation, ConfigurationFileName);
 

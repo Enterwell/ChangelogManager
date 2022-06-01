@@ -105,7 +105,7 @@ async function run() {
     console.log("=============================================AFTER EXECUTION=============================================");
     printContents(input_changelogLocation, input_changesLocation);
 
-  } catch (err) {
+  } catch (err: any) {
     tl.setResult(tl.TaskResult.Failed, err.message);
   }
 }
