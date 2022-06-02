@@ -210,3 +210,12 @@ If the **changes** directory or `CHANGELOG.md` file does not exist, application 
 Otherwise, appropriate section will be inserted in the `CHANGELOG.md` file and the change files that were used to build the new changelog section from the **changes** directory will be deleted.
 
 Application logs the newly bumped semantic version to the Console Standard output (*stdout*).
+
+## Development
+
+### Publishing
+
+```bash
+dotnet publish -c release -r win-x64 -p:PublishSingleFile=true
+dotnet publish -c release -r linux-x64 -p:PublishSingleFile=true
+```
