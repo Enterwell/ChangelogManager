@@ -151,10 +151,12 @@ In order to be able to run this code and its tests on your machine, you need to:
 1. Position yourself into the **MergeChangelogTask** directory with `cd MergeChangelogTask`.
 2. Position yourself into either `MergeChangelogTaskV1` or `MergeChangelogTaskV2` depending on which version of the task you want to develop in.
 2. Run `npm install` to install all the dependencies used in the project.
-3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
+3. Run `tsc` or `npx tsc` in order for *Typescript* to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.
 
 ## Packaging extension for publish to Marketplace
+
+Before packaging the extension for publishing, make sure that you installed all the dependencies for every task and that you translated all *Typescript* files into *Javascript* equivalents. For information on how to do that refer to the [previous](#development) section.
 
 In order to package extension for publishing, you need to use [Node CLI for Azure DevOps](https://github.com/microsoft/tfs-cli). You can install it by using `npm` by running `npm install -g tfx-cli`.
 
