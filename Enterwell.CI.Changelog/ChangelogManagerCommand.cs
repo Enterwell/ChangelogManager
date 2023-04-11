@@ -93,7 +93,8 @@ namespace Enterwell.CI.Changelog
             catch (Exception ex)
             {
                 await Console.Error.WriteLineAsync(ex.Message);
-                Environment.Exit(1);
+
+                throw;
             }
         }
 

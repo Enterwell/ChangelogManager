@@ -164,13 +164,14 @@ Default rules that apply when determining the next application's semantic versio
 
 | Changes directory contains the following change type  | Bump major | Bump minor | Bump patch |
 |---|---|---|---|
-| Deprecated   | ✅ | ❌ | ❌ |
+| Deprecated   | ❌ | ✅ | ❌ |
 | Added  | ❌ | ✅ | ❌  |
 | Changed  | ❌ | ✅ | ❌  |
 | Removed  | ❌ | ✅ | ❌  |
 | (no changes)  | ❌  | ✅  | ❌  |
 | Fixed  | ❌ | ❌ | ✅ |
 | Security  | ❌ | ❌ | ✅ |
+| Change description containing words `BREAKING CHANGE` (case-insensitive)  | ✅ | ❌ | ❌ |
 
 You are free to overwrite these defaults by using the configuration file and updating it in the following way:
 
@@ -182,20 +183,20 @@ You are free to overwrite these defaults by using the configuration file and upd
     "BE"
   ],
   "bumpingRule": {
-        "major": [
-            "Deprecated"
-        ],
-        "minor": [
-            "Added",
-            "Changed",
-            "Removed",
-            "NoChanges"
-        ],
-        "patch": [
-            "Fixed",
-            "Security"
-        ]
-    }
+    "major": [],
+    "minor": [
+      "Added",
+      "Changed",
+      "Deprecated"
+      "Removed",
+      "NoChanges"
+    ],
+    "patch": [
+      "Fixed",
+      "Security"
+    ],
+    "breakingKeyword": "BREAKING CHANGE"  // this is case-insensitive
+  }
 }
 ```
 

@@ -8,6 +8,11 @@ namespace Enterwell.CI.Changelog.Models
     public class BumpingRule
     {
         /// <summary>
+        /// Change description keyword that will bump the major version.
+        /// </summary>
+        public string BreakingKeyword = "BREAKING CHANGE";
+
+        /// <summary>
         /// Change types that bump the major version.
         /// </summary>
         public string[] Major { get; set; } = Array.Empty<string>();
