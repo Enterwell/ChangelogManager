@@ -1,0 +1,31 @@
+name: Release
+
+# Triggering the workflow on pushes to main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Release job
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      # Bump version and update changelog
+      - name: Bump version and update changelog
+        id: version-bump
+        uses: Enterwell/ChangelogManager-GitHub-Action@v3
+        with:
+          should-bump-version: true
+      
+      # Committing new changes
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9.1.1
+        with:
+          message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
