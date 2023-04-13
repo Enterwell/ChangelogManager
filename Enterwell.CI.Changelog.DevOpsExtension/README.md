@@ -88,7 +88,7 @@ For example:
 - task: MergeChangelog@2
   name: MergeChangelog
   
-- script: echo $(MergeChangelog.bumpedFullVersion)
+- script: echo $(MergeChangelog.bumpedSemanticVersion)
 - script: echo $(MergeChangelog.bumpedMajorPart)
 - script: echo $(MergeChangelog.bumpedMinorPart)
 - script: echo $(MergeChangelog.bumpedPatchPart)

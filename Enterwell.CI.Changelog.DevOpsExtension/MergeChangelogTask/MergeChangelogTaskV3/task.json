@@ -58,7 +58,7 @@
   },
   "outputVariables": [
     {
-      "name": "bumpedFullVersion",
+      "name": "bumpedSemanticVersion",
       "description": "Newly bumped semantic version based on the changes made."
     },
     {

@@ -172,7 +172,7 @@ async function run() {
       const changes = removeVersionLine(newChangelogSection);
 
       // Set output variables
-      tl.setVariable('bumpedFullVersion', newlyBumpedVersion, false, true);
+      tl.setVariable('bumpedSemanticVersion', newlyBumpedVersion, false, true);
       tl.setVariable('bumpedMajorPart', versionParts[0], false, true);
       tl.setVariable('bumpedMinorPart', versionParts[1], false, true);
       tl.setVariable('bumpedPatchPart', versionParts[2], false, true);
