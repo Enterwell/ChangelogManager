@@ -112,10 +112,22 @@ async function run() {
         fileToRunPath = path.join(__dirname, 'cl');
         fs.chmodSync(fileToRunPath, 0o777);
 
+        let error: string;
+
         if (setVersionOption == null) {
-          newlyBumpedVersion = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' }).stdout;
+          const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
+
+          newlyBumpedVersion = result.stdout;
+          error = result.stderr;
         } else {
-          newlyBumpedVersion = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], { encoding: 'utf-8' }).stdout;
+          const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], { encoding: 'utf-8' });
+
+          newlyBumpedVersion = result.stdout;
+          error = result.stderr;
+        }
+
+        if (error) {
+          throw new Error(error);
         }
       }
 

@@ -23,6 +23,7 @@ jobs:
         uses: Enterwell/ChangelogManager-GitHub-Action@v3
         with:
           should-bump-version: true
+          path-to-project-file: Enterwell.CI.Changelog/Enterwell.CI.Changelog.csproj
       
       # Committing new changes
       - name: Commit changes
