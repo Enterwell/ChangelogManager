@@ -88,7 +88,7 @@ namespace Enterwell.CI.Changelog
                 // Delete the accepted change files
                 this.changeGatheringService.RemoveAcceptedChanges(versionInformation.Changes);
 
-                logger.LogSuccess(versionInformation.SemanticVersion);
+                logger.LogSuccess(newChangelogSection);
             }
             catch (Exception ex)
             {

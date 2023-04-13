@@ -43,7 +43,7 @@ namespace Enterwell.CI.Changelog
 
             // Remove that blank like before the older version because our TextToWrite already has blank lines before and after.
             changelogText.RemoveAt(index);
-            changelogText.Insert(index, textToWrite);
+            changelogText.Insert(index, $"\r\n${textToWrite}");
 
             await File.WriteAllLinesAsync(changelogFilePath, changelogText);
         }

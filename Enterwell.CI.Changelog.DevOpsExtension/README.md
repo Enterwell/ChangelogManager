@@ -32,82 +32,13 @@ The task also needs to be able to find `CHANGELOG.md` file (naming is case-insen
 ## [Unreleased]
 ```
 
-## Task versions
-
-This extension contains two different task versions: `MergeChangelog@1` and `MergeChangelog@2`. Details on what each task expects as inputs and an example of a pipeline containing each task will be given in the next sections.
-
-*Important note*. If you used `MergeChangelog` task in your pipeline before the new version was released, make sure that your pipeline correctly specifies the first version of the task by appending `@1` to the tasks' name.
-
-## MergeChangelog@2 task
-
-The smarter, new and improved task for merging changes into the `CHANGELOG.md` file! 🎉
-
-New features:
-
-+ can be ran inside both, Ubuntu and Windows VMs 🤖
-+ removed explicit semantic version input. The task is smart enough to determine it by itself based on your current application's version and the changes you made! 🤯
-+ can automatically (or explicitly) determine the project file and bump its version
-  + this feature is opt-in
-  + supported project types: NPM (`package.json`) and .NET SDK (`.csproj` with the `Version` (case-insensitive) tag)
-+ outputs the newly bumped application's version as an output variable
-+ **only** deletes the change files that were used to build the new changelog section and therefore eliminating risk of accidentally deleting wrong files
-
-Task takes five inputs:
-
-+ directory location containing the `CHANGELOG.md` file (*optional*):
-  + default value is `$(Build.SourcesDirectory)`.
-+ boolean representing that the 'changes' directory exists in a different location than the `CHANGELOG.md` file (*optional*):
-  + default value is `false`.
-+ **changes** directory location that contains all of the changes to be compiled into the `CHANGELOG.md` (*required* if previous boolean is set to `true`):
-  + if the previous boolean is set to `false` changes location is set to `<location containing the CHANGELOG.md>\changes`.
-+ boolean representing if the new semantic version should be set in the appropriate project file (`package.json` or `*.csproj` file with the `Version` tag) (*optional*):
-  + default value is `false`.
-+ location of the project file (`package.json` or `.csproj` file with the `Version` (case-insensitive) tag) (*optional*):
-  + if the previous boolean is set to `true`, but this input is not passed in explicitly, the task will try to automatically determine the appropriate project file
-  + if the previous boolean is set to `false`, this input is ignored
-
-### YAML pipeline task definition
-
-Example of a task call in `.yml` pipeline file:
-
-```yml
-task: MergeChangelog@2
-inputs:
-  changelogLocation: path
-  changesInDifferentLocation: boolean
-  changesLocation: path
-  setVersionFlag: boolean
-  pathToProjectFile: path
-```
-
-### Result / Output
-
-During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
-
-If the **changes** directory or `CHANGELOG.md` file does not exist at their respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
-
-Otherwise, task executes the [Changelog Manager](../Enterwell.CI.Changelog) which inserts the appropriate section to the `CHANGELOG.md` file and deletes the change files that were used to build the new changelog section from the **changes** directory.
-
-Finally, the task sets a newly bumped semantic version as an [output variable](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#use-output-variables-from-tasks) called `bumpedSemanticVersion` which you can then consume in downstream steps, jobs and stages.
-
-For example:
-
-```yml
-# azure-pipelines.yml
-...
-- task: MergeChangelog@2
-  name: MergeChangelog
-  
-- script: echo $(MergeChangelog.bumpedSemanticVersion)
-...
-```
-
 ## MergeChangelog@3 task
 
 New features:
 
 + changed input naming from `setVersionFlag` to `shouldBumpVersion`
 + task no longer updates major version if the `Deprecated` change type was added, rather if **any** change files contains `BREAKING CHANGE` message in case-insensitive form.
++ new outputs
 
 Task takes five inputs:
 
@@ -135,6 +66,34 @@ inputs:
   changesLocation: path
   shouldBumpVersion: boolean
   pathToProjectFile: path
+```
+
+### Result / Output
+
+During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
+
+If the **changes** directory or `CHANGELOG.md` file does not exist at their respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
+
+Otherwise, task executes the [Changelog Manager](../Enterwell.CI.Changelog) which inserts the appropriate section to the `CHANGELOG.md` file and deletes the change files that were used to build the new changelog section from the **changes** directory.
+
+Finally, the task sets multiple new [outputs](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#use-output-variables-from-tasks) which you can then consume in downstream steps, jobs and stages.
+
+
+
+For example:
+
+```yml
+# azure-pipelines.yml
+...
+- task: MergeChangelog@2
+  name: MergeChangelog
+  
+- script: echo $(MergeChangelog.bumpedFullVersion)
+- script: echo $(MergeChangelog.bumpedMajorPart)
+- script: echo $(MergeChangelog.bumpedMinorPart)
+- script: echo $(MergeChangelog.bumpedPatchPart)
+- script: echo $(MergeChangelog.newChanges)
+...
 ```
 
 ## Tasks assistant menu

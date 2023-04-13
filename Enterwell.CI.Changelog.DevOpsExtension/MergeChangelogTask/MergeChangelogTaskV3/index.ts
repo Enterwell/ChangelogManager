@@ -61,6 +61,30 @@ function printContents(changelogLocation: string, changesLocation: string) {
 }
 
 /**
+ * Gets the semantic version from a changelog section by using regex.
+ *
+ * @param input Changelog section
+ */
+function getVersionFromString(input: string) {
+  const regex = /(?:\[)(\d+\.\d+\.\d+)(?:\])/;
+  const match = input.match(regex);
+
+  return match ? match[1] : null;
+}
+
+/**
+ * Removes the first header line from a changelog section to get changes.
+ *
+ * @param input Changelog section
+ */
+function removeVersionLine(input: string) {
+  const lines = input.split('\n');
+  lines.shift();
+
+  return lines.join('\n');
+}
+
+/**
  * Entry method that runs the task.
  */
 async function run() {
@@ -97,16 +121,16 @@ async function run() {
       let setVersionOption = input_shouldBumpVersion ? `-sv${setVersionProjectFilePath}` : null;
 
       let fileToRunPath;
-      let newlyBumpedVersion;
+      let newChangelogSection;
 
       // If on windows VM
       if (process.platform === 'win32') {
         fileToRunPath = path.join(__dirname, 'cl.exe');
         
         if (setVersionOption == null) {
-          newlyBumpedVersion = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
+          newChangelogSection = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
         } else {
-          newlyBumpedVersion = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], {encoding: 'utf-8'});
+          newChangelogSection = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], {encoding: 'utf-8'});
         }
       } else {
         fileToRunPath = path.join(__dirname, 'cl');
@@ -117,12 +141,12 @@ async function run() {
         if (setVersionOption == null) {
           const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
 
-          newlyBumpedVersion = result.stdout;
+          newChangelogSection = result.stdout;
           error = result.stderr;
         } else {
           const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], { encoding: 'utf-8' });
 
-          newlyBumpedVersion = result.stdout;
+          newChangelogSection = result.stdout;
           error = result.stderr;
         }
 
@@ -131,17 +155,28 @@ async function run() {
         }
       }
 
-      console.log('=============================================AFTER EXECUTION=============================================');  
+      console.log('=============================================AFTER EXECUTION=============================================');
+      console.log('New changelog section from the executable:');
+      console.log(newChangelogSection ? newChangelogSection : '-');
 
-      newlyBumpedVersion = newlyBumpedVersion.trim();
-      console.log('Newly bumped version got from the executable:', newlyBumpedVersion);
-
-      if (!(/\d+.\d+.\d+/.test(newlyBumpedVersion))) {
-        throw new Error('Executable output is not in the correct format.');
+      const newlyBumpedVersion = getVersionFromString(newChangelogSection);
+      if (!newlyBumpedVersion) {
+        throw new Error('Could not parse the new semantic version from the changelog section');
       }
 
-      // Set variable with a given name, given value, that is not a secret, but an output variable
-      tl.setVariable('bumpedSemanticVersion', newlyBumpedVersion, false, true);
+      const versionParts = newlyBumpedVersion.split('.');
+      if (versionParts.length !== 3) {
+        throw new Error('Newly bumped semantic version is not in the correct format (MAJOR.MINOR.PATCH).');
+      }
+
+      const changes = removeVersionLine(newChangelogSection);
+
+      // Set output variables
+      tl.setVariable('bumpedFullVersion', newlyBumpedVersion, false, true);
+      tl.setVariable('bumpedMajorPart', versionParts[0], false, true);
+      tl.setVariable('bumpedMinorPart', versionParts[1], false, true);
+      tl.setVariable('bumpedPatchPart', versionParts[2], false, true);
+      tl.setVariable('newChanges', changes, false, true);
     } catch (err) {
       throw new Error('Error occurred while running executable.\n' + err);
     }
