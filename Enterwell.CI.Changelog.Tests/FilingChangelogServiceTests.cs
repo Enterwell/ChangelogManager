@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Enterwell.CI.Changelog.Models;
 using FluentAssertions;
@@ -36,17 +37,17 @@ namespace Enterwell.CI.Changelog.Tests
         /// <see cref="FileNotFoundException"/> should be thrown with correct message.
         /// </summary>
         [Fact]
-        public void FillingChangelogService_ValidInputWithChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
+        public async Task FillingChangelogService_ValidInputWithChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
         {
             // Arrange
             var fileNames = Array.Empty<string>();
             CreateChanges(fileNames);
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().ThrowExactly<FileNotFoundException>().WithMessage("Changelog file is not found.");
+            await act.Should().ThrowExactlyAsync<FileNotFoundException>().WithMessage("Changelog file is not found.");
         }
 
         /// <summary>
@@ -54,29 +55,33 @@ namespace Enterwell.CI.Changelog.Tests
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputs_UpdatesMajorCorrectly()
+        public async Task FillingChangelogService_ValidInputs_UpdatesMajorCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
-                "Deprecated [FE] Deprecated example 1",
-                "   Added [API] Added example 1",
                 "   s  Removed [BE] this should not be accepted",
-                "Added [API] Added example 2",
-                "Removed [BE] Removed example 2",
-                "added [API] Added example 3",
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                
-                "   deprecated [HUH] Description",
-                "Changed [API] Changed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
-                "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "Deprecated [FE] BREAKING CHANGE 1",
+                "   Added [API] Added example 1",
+                "Added [API] Added example 2",
+                "Removed [BE] Removed example 2",
+                "added [API] Added example 3",
+                "Fixed [BE] Fixed example 1",
+                "   deprecated [HUH] Description",
+                "Changed [API] Changed example 1",
+                "Security [API] Security example 1",
+                "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+            
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -89,11 +94,15 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
@@ -104,26 +113,32 @@ namespace Enterwell.CI.Changelog.Tests
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputs_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_ValidInputs_UpdatesMinorCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
-                "   Added [API] Added example 1",
                 "   s  Removed [BE] this should not be accepted",
-                "Added [API] Added example 2",
-                "Removed [BE] Removed example 2",
-                "added [API] Added example 3",
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Changed [API] Changed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
-                "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "Deprecated [FE] Deprecated example 1",
+                "   Added [API] Added example 1",
+                "Added [API] Added example 2",
+                "Removed [BE] Removed example 2",
+                "added [API] Added example 3",
+                "Fixed [BE] Fixed example 1",
+                "Changed [API] Changed example 1",
+                "Security [API] Security example 1",
+                "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -136,11 +151,15 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
@@ -151,19 +170,24 @@ namespace Enterwell.CI.Changelog.Tests
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the patch version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputs_UpdatesPatchCorrectly()
+        public async Task FillingChangelogService_ValidInputs_UpdatesPatchCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -176,11 +200,15 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
@@ -188,23 +216,30 @@ namespace Enterwell.CI.Changelog.Tests
 
         /// <summary>
         /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
+        /// Testing that the application bumps major version correctly based on a custom major category.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesMajorCorrectly()
+        public async Task FillingChangelogService_ValidInputsWithCustomMajorCategory_UpdatesMajorCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
-                "   Added [API] Added example 1",
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+                
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -228,11 +263,78 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
             
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
+        /// Testing that the application bumps major version correctly based on a custom breaking keyword.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithCustomBreakingKeyword_UpdatesMajorCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] SoMEtHing CuSTOm example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    BreakingKeyword = "Something Custom",
+                    Minor = new[] { "Fixed" },
+                    Patch = new[] { "Security" }
+                }
+            };
+            CreateConfiguration(configuration);
+
+            const int shouldBeMajor = initialMajor + 1;
+
+            var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            Func<Task> act = () => changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
@@ -243,20 +345,25 @@ namespace Enterwell.CI.Changelog.Tests
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesMinorCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
-                "   Added [API] Added example 1",
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -280,11 +387,15 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
@@ -295,20 +406,25 @@ namespace Enterwell.CI.Changelog.Tests
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the patch version part is updated.
         /// </summary>
         [Fact]
-        public async void FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesPatchCorrectly()
+        public async Task FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesPatchCorrectly()
         {
             // Arrange
-            string[] fileNames =
+            var invalidFileNames = new[]
             {
-                "   Added [API] Added example 1",
                 "    s  aDDEd [Api] this should not be accepted",
-                "Fixed [BE] Fixed example 1",
-                "Security [API] Security example 1",
                 "This should not be accepted as change",
                 " s",
                 "a ",
                 "-"
             };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -332,11 +448,15 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = async () => await changelogService.OnExecute();
+            Func<Task> act = () => changelogService.OnExecute();
 
             // Assert
-            act.Should().NotThrow();
-            Directory.GetFiles(ChangesFolderPath).Should().BeEmpty();
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
             var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);

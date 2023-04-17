@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33513.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enterwell.CI.Changelog", "Enterwell.CI.Changelog\Enterwell.CI.Changelog.csproj", "{B86FCC64-DCEF-4514-AD95-DEE22F9709E3}"
 EndProject
@@ -11,7 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enterwell.CI.Changelog.VSIX
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enterwell.CI.Changelog.CLI", "Enterwell.CI.Changelog.CLI\Enterwell.CI.Changelog.CLI.csproj", "{D479FEFF-6573-496B-8B3A-71696D3865C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enterwell.CI.Changelog.Shared", "Enterwell.CI.Changelog.Shared\Enterwell.CI.Changelog.Shared.csproj", "{652D5A56-2881-4696-8440-5D9D8BED35C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enterwell.CI.Changelog.Shared", "Enterwell.CI.Changelog.Shared\Enterwell.CI.Changelog.Shared.csproj", "{652D5A56-2881-4696-8440-5D9D8BED35C3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{08C715CF-5DBC-4736-82CF-81AB55D8C9D1}"
+	ProjectSection(SolutionItems) = preProject
+		.changelog.json = .changelog.json
+		CHANGELOG.md = CHANGELOG.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

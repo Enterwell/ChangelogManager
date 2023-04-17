@@ -62,13 +62,15 @@ namespace Enterwell.CI.Changelog.Models
             var shouldBumpMinor = false;
             var shouldBumpPatch = false;
 
+            var changeInfos = this.Changes.SelectMany(kvp => kvp.Value);
+
             if (bumpingRule == null)
             {
-                if (this.Changes.ContainsKey("Deprecated"))
+                if (changeInfos.Any(c => c.ChangeDescription.ToLower().Contains("breaking change")))
                 {
                     shouldBumpMajor = true;
                 }
-                else if (!this.Changes.Keys.Any() || this.Changes.ContainsKey("Added") || this.Changes.ContainsKey("Changed") || this.Changes.ContainsKey("Removed"))
+                else if (!this.Changes.Keys.Any() || this.Changes.ContainsKey("Added") || this.Changes.ContainsKey("Changed") || this.Changes.ContainsKey("Removed") || this.Changes.ContainsKey("Deprecated"))
                 {
                     shouldBumpMinor = true;
                 }
@@ -79,7 +81,8 @@ namespace Enterwell.CI.Changelog.Models
             }
             else
             {
-                if (bumpingRule.Major.Any(changeType => this.Changes.ContainsKey(changeType)) ||
+                if (changeInfos.Any(c => c.ChangeDescription.ToLower().Contains(bumpingRule.BreakingKeyword.ToLower())) ||
+                    bumpingRule.Major.Any(changeType => this.Changes.ContainsKey(changeType)) ||
                     bumpingRule.Major.Contains("NoChanges") && !this.Changes.Any())
                 {
                     shouldBumpMajor = true;

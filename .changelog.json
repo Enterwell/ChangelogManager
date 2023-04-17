@@ -1,23 +1,23 @@
 {
-    "categories": [
-        "CoreApp",
-        "CLI",
-        "VSIX",
-        "DevOpsExtension"
+  "categories": [
+    "CoreApp",
+    "CLI",
+    "VSIX",
+    "DevOpsExtension"
+  ],
+  "bumpingRule": {
+    "major": [],
+    "minor": [
+      "Added",
+      "Changed",
+      "Deprecated",
+      "Removed",
+      "NoChanges"
     ],
-    "bumpingRule": {
-        "major": [
-            "Deprecated"
-        ],
-        "minor": [
-            "Added",
-            "Changed",
-            "Removed",
-            "NoChanges"
-        ],
-        "patch": [
-            "Fixed",
-            "Security"
-        ]
-    }
+    "patch": [
+      "Fixed",
+      "Security"
+    ],
+    "breakingKeyword": "BREAKING CHANGE"
+  }
 }
