@@ -1,19 +1,19 @@
 import * as vscode from 'vscode';
 
 import { allowedTypes } from './constants';
-import Configuration from './models/Configuration';
 import {
   constructFileName,
   createFile,
   ensureChangesDirectoryExists,
-  getWorkspaceFolder
+  getWorkspaceFolder,
+  loadConfiguration
 } from './helpers/FileSystemHelper';
 
 /**
  * Handles the command termination with a user error message.
  */
 const terminate = () => {
-  vscode.window.showErrorMessage('Aborted the changelog change creation process');
+  vscode.window.showErrorMessage('Change creation aborted');
 };
 
 /**
@@ -37,7 +37,7 @@ const handleCommand = async () => {
     return terminate();
   }
 
-  const configuration = Configuration.loadConfiguration(workspaceFolder.uri.fsPath);
+  const configuration = loadConfiguration(workspaceFolder.uri.fsPath);
   if (configuration === null) {
     vscode.window.showErrorMessage('Failed to load the changelog configuration.');
     return terminate();

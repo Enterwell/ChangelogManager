@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
 
-const changesDirectoryName: string = 'changes';
+import { changesDirectoryName, configurationName } from '../constants';
 
 /**
  * Determines the user's workspace folder in which to generate a change file.
@@ -30,6 +30,36 @@ export async function getWorkspaceFolder() {
   }
 
   return workspaceFolder;
+}
+
+/**
+ * Loads the changelog configuration from the directory root.
+ *
+ * @param workspaceFolderPath User's workspace folder path
+ */
+export function loadConfiguration(workspaceFolderPath: string): { categories: string[] } | undefined | null {
+  // Notify that the incorrect directory was passed in
+  if (!fs.existsSync(workspaceFolderPath)) {
+    return null;
+  }
+
+  let currentDirectory = workspaceFolderPath;
+
+  // Search for the changelog config upwards
+  while (path.basename(currentDirectory) !== '') {
+    const possibleConfigFilePath = path.join(currentDirectory, configurationName);
+
+    // If the file exists, parse it
+    if (fs.existsSync(possibleConfigFilePath)) {
+      const configFile = fs.readFileSync(possibleConfigFilePath, 'utf-8');
+
+      return JSON.parse(configFile);
+    }
+
+    currentDirectory = path.dirname(currentDirectory);
+  }
+
+  return undefined;
 }
 
 /**

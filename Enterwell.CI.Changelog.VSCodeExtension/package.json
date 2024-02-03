@@ -21,7 +21,9 @@
     "keybindings": [
       {
         "command": "changelog-change-create.addchange",
-        "key": "alt+c"
+        "key": "Alt+C",
+        "mAc": "Alt+C",
+        "linux": "Alt+C"
       }
     ]
   },
