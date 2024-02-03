@@ -22,7 +22,7 @@
       {
         "command": "changelog-change-create.addchange",
         "key": "Alt+C",
-        "mAc": "Alt+C",
+        "mac": "Alt+C",
         "linux": "Alt+C"
       }
     ]
