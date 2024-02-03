@@ -3,7 +3,8 @@
     "CoreApp",
     "CLI",
     "VSIX",
-    "DevOpsExtension"
+    "DevOpsExtension",
+    "VSCodeExtension"
   ],
   "bumpingRule": {
     "major": [],

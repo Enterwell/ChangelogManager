@@ -1,0 +1,48 @@
+{
+  "name": "ew-changelogmanager-change-create-vscode",
+  "displayName": "Changelog Manager Change Create",
+  "description": "This extension is helping developers create needed change files for the Changelog Manager tool.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/index.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "changelog-change-create.addchange",
+        "category": "Changelog",
+        "shortTitle": "Add change",
+        "title": "Add change file"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "changelog-change-create.addchange",
+        "key": "alt+c"
+      }
+    ]
+  },
+  "scripts": {
+    "package": "pnpm vsce package --no-dependencies",
+    "publish": "pnpm vsce publish --no-dependencies",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.86.0",
+    "@types/mocha": "10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "6.19.1",
+    "@typescript-eslint/parser": "6.19.1",
+    "eslint": "8.56.0",
+    "typescript": "5.3.3",
+    "@vscode/test-cli": "0.0.4",
+    "@vscode/test-electron": "2.3.9"
+  }
+}
