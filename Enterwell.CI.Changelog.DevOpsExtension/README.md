@@ -1,148 +1,166 @@
-# Changelog Manager extension for Azure DevOps
+<div align="center">
+  <img width="128" height="128" src="images/icon.svg" alt="logo" />
 
-`Changelog.DevOpsExtension` is a project that contains the extension developed for the Azure DevOps containing one task called **Merge Changelog**. The task to merge files describing changes made into a changelog file.
+  <h1>Changelog Manager Azure DevOps extension</h1>
 
-## Table of contents
+  <p>Compiles the <i>change</i> files into CHANGELOG.md</p>
+</div>
 
-+ [Pre-requisites for the task](#pre-requisites-for-the-task)
-  + [Changes directory](#changes-directory)
-  + [Changelog file](#changelog-file)
-+ [Task inputs](#task-inputs)
-+ [Tasks assistant menu](#tasks-assistant-menu)
-+ [YAML pipeline task definition](#yaml-pipeline-task-definition)
-+ [Result / Output](#result--output)
-+ [Development](#development)
-+ [Packaging extension for publish to Marketplace](#packaging-extension-for-publish-to-marketplace)
+## 🌱 Introduction
+This is the *Azure DevOps task* version of a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) developed for the convenience of managing a [changelog](https://keepachangelog.com/en/1.1.0/), indirectly, using special *change* files.
 
-## Pre-requisites for the task
-The following pre-requisites need to be fulfilled in order for the task to work properly:
+#### What are the *change* files?
 
-### **Changes directory**
+*Change* files are just files located in the ***changes*** directory with the following naming scheme:
 
-Automation agent where the task executes needs to have a **changes** directory containing files created with our helper [`Visual Studio extension`](../Enterwell.CI.Changelog.VSIX) and/or [`CLI tool`](../Enterwell.CI.Changelog.CLI). If the directory does not exist, task will throw an error.
-
-### **Changelog file**
-
-The task also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive) in order to not throw and stop executing.
-
-*Important note*. As it currently stands, the application is inserting the newly compiled section above the latest changelog entry. So, the `CHANGELOG.md` file needs to contain **atleast** 
 ```
+<change_type> [<change_category>] <change_description>
+```
+
+Acceptable entries for the `<change_type>` are:
+
++ Added
++ Changed
++ Deprecated
++ Removed
++ Fixed
++ Security
+
+This decision was inspired by following the [principles](https://keepachangelog.com/en/1.0.0/#how) for keeping a good changelog.
+
+To avoid incorrect file naming and to ease this file creation process on the developer, [Visual Studio extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX) and the [CLI helper](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.CLI) were made.
+
+This *Action* internally calls our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) by forwarding action inputs to it, which then inserts the appropriate section to the `CHANGELOG.md` and deletes all the contents of the ***changes*** directory.
+ 
+We **highly** recommend that you read up on how and what exactly is it doing behind the scenes, as well as, learn how to use the `.changelog.json` configuration file to customize the tool's behaviour.
+
+## 📖 Table of contents
++ 🌱 [Introduction](#-introduction)
++ 🛠️ [Prerequisities](#-prerequisities)
++ 📝 [Usage](#-usage)
++ 📥 [Inputs](#-inputs)
++ 📤 [Outputs](#-outputs)
++ 🏗 [Development](#-development)
++ ☎️ [Support](#-support)
+
+## 🛠 Prerequisities
+
+The following prerequisities need to be fulfilled in order for the action to work properly:
+
+#### Changes directory
+
+Automation agent where the action executes needs to have a ***changes*** directory containing the [*change*](#what-are-the-change-files) files created manually or with one of our helpers. If the directory does not exist, action will throw an error.
+
+#### Changelog file
+
+The action also needs to be able to find `CHANGELOG.md` file (naming is case-insensitive), otherwise, it will throw and stop executing.
+
+*Important note*. As it currently stands, the action is inserting the newly compiled section **above** the latest changelog entry. So, the `CHANGELOG.md` needs to contain **atleast**
+
+```
+_NOTE: This is an automatically generated file. Do not modify contents of this file manually._
+
 ## [Unreleased]
 ```
 
-## Task versions
+## 📝 Usage
 
-This extension contains two different task versions: `MergeChangelog@1` and `MergeChangelog@2`. Details on what each task expects as inputs and an example of a pipeline containing each task will be given in the next sections.
+### Basic
+```yaml
+task: MergeChangelog@3
+```
 
-*Important note*. If you used `MergeChangelog` task in your pipeline before the new version was released, make sure that your pipeline correctly specifies the first version of the task by appending `@1` to the tasks' name.
-
-## MergeChangelog@1 task
-The initial task developed for merging changes into the `CHANGELOG.md` file. This task was originally made to be ran **only** inside Windows VMs.
-
-Task takes four inputs:
-+ semantic version (*required*):
-  + a string (ex. major.minor.patch) or an environmental variable (ex. `$(semanticVersion)`).
-+ directory location containing the `CHANGELOG.md` file (*optional*):
-  + default value is `$(Build.SourcesDirectory)`.
-+ boolean representing that the 'changes' directory exists in a different location than the `CHANGELOG.md` file (*optional*):
-  + default value is `false`.
-+ **changes** directory location that contains all of the changes to be compiled into the `CHANGELOG.md` (*required* if previous boolean is set to `true`):
-  + if the previous boolean is set to `false` changes location is set to `<location containing the CHANGELOG.md>\changes`.
-
-### YAML pipeline task definition
-Example of a task call in `.yml` pipeline file:
-
-```yml
-task: MergeChangelog@1
+### Advanced
+```yaml
+task: MergeChangelog@3
 inputs:
-  semanticVersion: <major.minor.patch>
-  changelogLocation: path
-  changesInDifferentLocation: boolean
-  changesLocation: path
+  changelogLocation: ./
+  changesInDifferentLocation: true
+  changesLocation: ./somewhere-else/changes
+  shouldBumpVersion: true
+  pathToProjectFile: ./somewhere-else/[package.json | something.csproj]
 ```
 
-### Result / Output
-During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
+### Tasks assistant menu
 
-If the **changes** directory or `CHANGELOG.md` file does not exist at their respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
-
-Otherwise, task executes the [Changelog Manager](../Enterwell.CI.Changelog) which inserts the appropriate section to the `CHANGELOG.md` file and deletes all the contents of the **changes** directory.
-
-## MergeChangelog@2 task
-The smarter, new and improved task for merging changes into the `CHANGELOG.md` file! 🎉
-
-New features:
- + can be ran inside both, Ubuntu and Windows VMs 🤖
- + removed explicit semantic version input. The task is smart enough to determine it by itself based on your current application's version and the changes you made! 🤯
- + can automatically (or explicitly) determine the project file and bump its version
-    + this feature is opt-in
-    + supported project types: NPM (`package.json`) and .NET SDK (`.csproj` with the `Version` (case-insensitive) tag)
- + outputs the newly bumped application's version as an output variable
- + **only** deletes the change files that were used to build the new changelog section and therefore eliminating risk of accidentally deleting wrong files
-
-Task takes five inputs:
-+ directory location containing the `CHANGELOG.md` file (*optional*):
-  + default value is `$(Build.SourcesDirectory)`.
-+ boolean representing that the 'changes' directory exists in a different location than the `CHANGELOG.md` file (*optional*):
-  + default value is `false`.
-+ **changes** directory location that contains all of the changes to be compiled into the `CHANGELOG.md` (*required* if previous boolean is set to `true`):
-  + if the previous boolean is set to `false` changes location is set to `<location containing the CHANGELOG.md>\changes`.
-+ boolean representing if the new semantic version should be set in the appropriate project file (`package.json` or `*.csproj` file with the `Version` tag) (*optional*):
-  + default value is `false`.
-+ location of the project file (`package.json` or `.csproj` file with the `Version` (case-insensitive) tag) (*optional*):
-  + if the previous boolean is set to `true`, but this input is not passed in explicitly, the task will try to automatically determine the appropriate project file
-  + if the previous boolean is set to `false`, this input is ignored
-
-### YAML pipeline task definition
-Example of a task call in `.yml` pipeline file:
-
-```yml
-task: MergeChangelog@2
-inputs:
-  changelogLocation: path
-  changesInDifferentLocation: boolean
-  changesLocation: path
-  setVersionFlag: boolean
-  pathToProjectFile: path
-```
-
-### Result / Output
-During the task execution, before and after doing changes to the `CHANGELOG.md` file, the task prints out all of the files found at the locations passed to the task and the `CHANGELOG.md` contents, for debugging purposes.
-
-If the **changes** directory or `CHANGELOG.md` file does not exist at their respected locations, task will log an error to the pipeline job output and set its status to **FAILED**.
-
-Otherwise, task executes the [Changelog Manager](../Enterwell.CI.Changelog) which inserts the appropriate section to the `CHANGELOG.md` file and deletes the change files that were used to build the new changelog section from the **changes** directory.
-
-Finally, the task sets a newly bumped semantic version as an [output variable](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#use-output-variables-from-tasks) called `bumpedSemanticVersion` which you can then consume in downstream steps, jobs and stages.
-
-For example:
-
-```yml
-# azure-pipelines.yml
-...
-- task: MergeChangelog@2
-  name: MergeChangelog
-  
-- script: echo $(MergeChangelog.bumpedSemanticVersion)
-...
-```
-
-## Tasks assistant menu
-After installing the extension from the Marketplace, you can find the task in the assistant menu when editing pipeline `.yml` file.
+After installing the extension from the [Marketplace](https://marketplace.visualstudio.com/azuredevops), you can find the task in the assistant menu when editing pipeline `.yml` file.
 
 ![](../img/devOpsTask.png)
 
-## Development
+
+## 📥 Inputs
+
+### `changelogLocation`
+**Optional** Location of the directory containing the `CHANGELOG.md` file.
+  + Defaults to `$(Build.SourcesDirectory)`
+
+### `changesInDifferentLocation`
+**Optional** Boolean representing that the *changes* directory exists in a different location than the `CHANGELOG.md` file.
+  + Defaults to `false`
+
+### `changesLocation`
+**Optional** Location of the `changes` directory.
+  + If the previous input is set to `false`, changes location is set to `<location containing the CHANGELOG.md>\changes`.
+
+### `shouldBumpVersion`
+**Optional** Boolean representing should the new version be set in the appropriate project file (`package.json` or `*.csproj`).
+  + Defaults to `false`
+
+### `pathToProjectFile`
+**Optional** Path to the project file (`package.json` or `.csproj` with the `version` (case-insensitive) tag).
+  + If the previous input is set to `true`, but this input is not passed in explicitly, the action will try to automatically determine the appropriate project file
+  + If the previous input is set to `false`, this input is **ignored**
+
+## 📤 Outputs
+
+### `bumpedSemanticVersion`
+Newly bumped semantic version based on the changes made.
+
+### `bumpedMajorPart`
+Major part of the newly bumped version.
+
+### `bumpedMinorPart`
+Minor part of the newly bumped version.
+
+### `bumpedPatchPart`
+Patch part of the newly bumped version.
+
+### `newChanges`
+Changes from the new changelog section.
+
+### Usage
+
+```yaml
+# azure-pipelines.yml
+...
+  steps:
+    ...
+    - task: MergeChangelog@3
+      name: MergeChangelog
+
+    - script: echo $(MergeChangelog.bumpedSemanticVersion)
+    ...
+...
+```
+
+## 🏗 Development
+
 In order to be able to run this code and its tests on your machine, you need to:
 
 1. Position yourself into the **MergeChangelogTask** directory with `cd MergeChangelogTask`.
 2. Position yourself into either `MergeChangelogTaskV1` or `MergeChangelogTaskV2` depending on which version of the task you want to develop in.
 2. Run `npm install` to install all the dependencies used in the project.
-3. Run `tsc` or `npx tsc` in order for Typescript to translate all the `.ts` files to the `.js` files.
+3. Run `tsc` or `npx tsc` in order for *Typescript* to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.
 
 ## Packaging extension for publish to Marketplace
+
+Before packaging the extension for publishing, make sure that you installed all the dependencies for every task and that you translated all *Typescript* files into *Javascript* equivalents. For information on how to do that refer to the [previous](#development) section.
+
 In order to package extension for publishing, you need to use [Node CLI for Azure DevOps](https://github.com/microsoft/tfs-cli). You can install it by using `npm` by running `npm install -g tfx-cli`.
 
 After having installed the CLI tool, you can follow the [Step 4 and Step 5](https://docs.microsoft.com/en-us/azure/devops/extend/develop/add-build-task?view=azure-devops#step-4-package-your-extension) of the official documentation on how to package and publish a custom task.
 
+## ☎ Support
+
+If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new).

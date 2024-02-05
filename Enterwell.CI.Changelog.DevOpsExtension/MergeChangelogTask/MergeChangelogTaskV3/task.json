@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "fd8800ae-13a1-4faf-a126-185bd26705d4",
+  "name": "MergeChangelog",
+  "friendlyName": "Merge Changelog",
+  "description": "Compiles the changes into Changelog.md if one exists.",
+  "category": "Utility",
+  "author": "Enterwell",
+  "version": {
+    "Major": 3,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "instanceNameFormat": "Merging Changelog",
+  "inputs": [
+    {
+      "name": "changelogLocation",
+      "type": "filePath",
+      "label": "Changelog Location",
+      "defaultValue": "$(Build.SourcesDirectory)",
+      "helpMarkDown": "Location of the directory that contains Changelog.md."
+    },
+    {
+      "name": "changesInDifferentLocation",
+      "type": "boolean",
+      "label": "Different location of the 'changes' directory",
+      "defaultValue": false,
+      "helpMarkDown": "Mark this as true if the 'changes' directory exists somewhere else than on the changelog location."
+    },
+    {
+      "name": "changesLocation",
+      "type": "filePath",
+      "label": "Changes Location",
+      "required": true,
+      "helpMarkDown": "Location of the 'changes' directory.",
+      "visibleRule": "changesInDifferentLocation = true"
+    },
+    {
+      "name": "shouldBumpVersion",
+      "type": "boolean",
+      "label": "Should bump version",
+      "defaultValue": false,
+      "helpMarkDown": "Should the new version be bumped in the appropriate project file ('package.json' or '*.csproj')."
+    },
+    {
+      "name": "pathToProjectFile",
+      "type": "string",
+      "label": "Path to the project file",
+      "defaultValue": "",
+      "helpMarkDown": "If not set, the application will try to automatically determine the project file. Currently supported project types: NPM (package.json) and .NET SDK (*.csproj with the version tag).",
+      "visibleRule": "shouldBumpVersion = true"
+    }
+  ],
+  "execution": {
+    "Node10": {
+      "target": "index.js"
+    }
+  },
+  "outputVariables": [
+    {
+      "name": "bumpedSemanticVersion",
+      "description": "Newly bumped semantic version based on the changes made."
+    },
+    {
+      "name": "bumpedMajorPart",
+      "description": "Major part of the newly bumped version."
+    },
+    {
+      "name": "bumpedMinorPart",
+      "description": "Minor part of the newly bumped version."
+    },
+    {
+      "name": "bumpedPatchPart",
+      "description": "Patch part of the newly bumped version."
+    },
+    {
+      "name": "newChanges",
+      "description": "Changes from the new changelog section."
+    }
+  ]
+}

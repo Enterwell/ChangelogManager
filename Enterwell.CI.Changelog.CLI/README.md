@@ -83,3 +83,12 @@ For more features that can be configured using the configuration file, see the [
 
 ## Result / Output
 If the CLI is used in the directory that doesn't contain **changes** directory to create the change file in, it will automatically search directory tree upwards for the nearest **changes** directory. Created file is named correctly and can be used by our [`Changelog Manager`](../Enterwell.CI.Changelog) tool.
+
+## Development
+
+### Publishing
+
+```bash
+dotnet publish -c release -r win-x64 -p:PublishSingleFile=true
+dotnet publish -c release -r linux-x64 -p:PublishSingleFile=true
+```

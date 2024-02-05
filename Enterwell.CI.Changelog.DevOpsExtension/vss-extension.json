@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "merge-changelog",
     "name": "Merge Changelog Task",
-    "version": "2.2.0",
+    "version": "3.0.0",
     "publisher": "Enterwell",
     "targets": [
         {
@@ -14,7 +14,7 @@
         "Azure Pipelines"
     ],
     "icons": {
-        "default": "images/extension-icon.png"        
+        "default": "images/icon.png"        
     },
     "files": [
         {
