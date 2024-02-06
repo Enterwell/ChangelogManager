@@ -95,7 +95,7 @@ And that's it! You should now have a new file created inside the **changes** fol
 
 You can now let this folder accumulate change entries which will be bundled up into your `CHANGELOG.md` when you want to create a new application release using one of our tools mentioned in the [introduction section](#-introduction).
 
-## ⚙️ Configuration file
+## ⚙ Configuration file
 
 `.changelog.json` is an optional [JSON file](https://www.json.org/json-en.html). It specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
 
