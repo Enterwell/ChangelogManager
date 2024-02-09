@@ -23,7 +23,7 @@ jobs:
         id: version-bump
         uses: Enterwell/ChangelogManager-GitHub-Action@v3
         with:
-          changelog-location: ./Enterwell.CI.Changelog.VSCodeExtension'
+          changelog-location: ./Enterwell.CI.Changelog.VSCodeExtension
           changes-location: ./Enterwell.CI.Changelog.VSCodeExtension/changes
           should-bump-version: true
           path-to-project-file: ./Enterwell.CI.Changelog.VSCodeExtension/package.json
