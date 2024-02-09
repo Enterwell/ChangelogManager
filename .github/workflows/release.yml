@@ -10,7 +10,7 @@ on:
 jobs:
   # Release VS Code extension
   release-vscode:
-    uses: './Enterwell.CI.Changelog.VSCodeExtension/.github/workflows/release.yml'
+    uses: './.github/workflows/release-vscode.yml'
 
   # Rest of the repository
   rest:
