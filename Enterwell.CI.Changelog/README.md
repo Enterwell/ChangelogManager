@@ -1,30 +1,56 @@
-# Changelog Manager CLI Tool
+<div align="center">
+  <a style="display: inline-block;" href="https://enterwell.net" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://enterwell.net/wp-content/uploads/2023/05/ew-logomark-color-negative-128.x48680.png">
+      <img width="128" height="128" alt="logo" src="https://enterwell.net/wp-content/uploads/2023/05/ew-logomark-color-positive-128.x48680.png">
+    </picture>
+  </a>
+  
+  <h1>Changelog Manager CLI Tool</h1>
 
-`Changelog` is a helper CLI Console App project using .NET 6 that uses files describing changes made to fill out the `CHANGELOG.md` file.
+  <p>Compiles the <i>change</i> files into CHANGELOG.md</p>
+</div>
 
-Helper automatically determines the next application's [semantic version](https://semver.org/) based on the current `CHANGELOG.md` file and the files generated (either by hand, our [CLI helper](../Enterwell.CI.Changelog.CLI/README.md) or our [Visual Studio extension](../Enterwell.CI.Changelog.VSIX/README.md)) in the **changes** directory using the [default bumping rule](#default-bumping-rule). Then it builds a section representing the determined next semantic version containing the changes from the **changes** directory. The section is inserted above the latest changelog entry and its heading is formatted as:
+## 🌱 Introduction
+
+`Changelog Manager` is a helper CLI tool that uses files (in the rest of the documentation called *change* files) describing changes to fill out the `CHANGELOG.md` file.
+
+Tool automatically determines the next application's [semantic version](https://semver.org/) based on the current `CHANGELOG.md` file and the [*change* files](#what-are-these-change-files) generated in the **changes** directory.
+
+These files can be generated in the following ways:
+
++ using our [CLI helper](../Enterwell.CI.Changelog.CLI/README.md)
++ using our [Visual Studio extension](../Enterwell.CI.Changelog.VSIX/README.md)
++ using our [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension/README.md)
++ manually. *This is not recommended as the user creating these can be prone to error*.
+
+Tool then builds a section representing the newly determined semantic version containing the changes from these files. The section is inserted above the latest changelog entry and its heading is formatted as:
 
 ```
 [<semantic_version>] - yyyy-MM-dd
 ```
 
 *Important note*. As it currently stands, the helper is inserting the newly compiled section above the latest changelog entry. So, the `CHANGELOG.md` file needs to contain **atleast** 
+
 ```
+_NOTE: This is an automatically generated file. Do not modify contents of this file manually._
+
 ## [Unreleased]
 ```
 
-If you want to manage `CHANGELOG.md` automatically using the [Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/) instead of running this helper tool manually, check out our [Azure DevOps extension](..\Enterwell.CI.Changelog.DevOpsExtension)!
+**For the convenience of using this tool to manage a changelog in an automated CI/CD environment we made a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) and an [Azure DevOps extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.DevOpsExtension)! No need for running this manually!**
 
-## Table of contents
+## 📖 Table of contents
++ 🌱 [Introduction](#-introduction)
++ 📝 [Usage](#-usage)
++ 🤔 [What are these *change* files?](#-what-are-these-change-files)
++ ⚙️ [Configuration file](#-configuration-file)
++ 📤 [Result / Output](#-result--output)
++ 🏗 [Development](#-development)
++ ☎️ [Support](#-support)
++ 🪪 [License](#-license)
 
-+ [How to use this?](#how-to-use-this)
-  + [Example](#example)
-+ [What are the changes in the changes directory?](#what-are-the-changes-in-the-changes-directory)
-+ [Configuration file](#configuration-file)
-  + [Default bumping rule](#default-bumping-rule)
-+ [Result / Output](#result--output)
-
-## How to use this?
+## 📝 Usage
 
 Firstly, you can use our [GitHub Releases](https://github.com/Enterwell/ChangelogManager/releases/) tab to start using our tool. Link contains pre-built binaries for Windows and Linux, as well as [Visual Studio extension](../Enterwell.CI.Changelog.VSIX) which is also available on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Enterwell.EnterwellChangelogVsix).
 
@@ -116,9 +142,9 @@ As mentioned earlier, you could have used relative paths instead of an absolute 
 clm . .\changes -sv:.\ExampleProject.Application\ExampleProject.Application.csproj
 ```
 
-## What are the changes in the changes directory?
+## 🤔 What are these *change* files?
 
-Changes in the **changes** directory are just files with the following naming scheme:
+*Change* files are just files located in the ***changes*** directory with the following naming scheme:
 
 ```
 <change_type> [<change_category>] <change_description>
@@ -137,10 +163,13 @@ This decision was inspired by following the [principles](https://keepachangelog.
 
 `[<change_category>]` part of the naming is controlled and validated using the `.changelog.json` configuration file.
 
-To avoid incorrect naming and to ease this file creation process on the developer, [Visual Studio extension](../Enterwell.CI.Changelog.VSIX) and the [CLI helper](../Enterwell.CI.Changelog.CLI) were made.
+To avoid incorrect naming and to ease this file creation process on the developer, following helper tools were created:
++ [Visual Studio extension](../Enterwell.CI.Changelog.VSIX) 
++ [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension)
++ [CLI helper](../Enterwell.CI.Changelog.CLI)
 
-## Configuration file
-`.changelog.json` is a [JSON file](https://www.json.org/json-en.html) that is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
+## ⚙ Configuration file
+`.changelog.json` is an optional [JSON file](https://www.json.org/json-en.html). It specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
 
 If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend) and `BE` (Backend), the configuration would look like:
 
@@ -154,15 +183,15 @@ If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend)
 }
 ```
 
-If the configuration exists, helper will ignore every change in the **changes** directory that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
+If the configuration exists, helper will ignore every change in the ***changes*** directory that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
 ### Default bumping rule
 
 Another important feature that can be configured and overwritten by using the configuration file is the default bumping rule.
 
-Default rules that apply when determining the next application's semantic version:
+Default rules that apply when determining the application's next semantic version:
 
-| Changes directory contains the following change type  | Bump major | Bump minor | Bump patch |
+| Change type  | Bump major | Bump minor | Bump patch |
 |---|---|---|---|
 | Deprecated   | ❌ | ✅ | ❌ |
 | Added  | ❌ | ✅ | ❌  |
@@ -182,6 +211,7 @@ You are free to overwrite these defaults by using the configuration file and upd
     "FE",
     "BE"
   ],
+  // This bumping rule configuration is equivalent to the default behaviour.
   "bumpingRule": {
     "major": [],
     "minor": [
@@ -200,19 +230,17 @@ You are free to overwrite these defaults by using the configuration file and upd
 }
 ```
 
-This `bumpingRule` configuration is equivalent to the default rule.
-
 *Important note*. The naming is **case-sensitive**.
 
-## Result / Output
+## 📤 Result / Output
 
-If the **changes** directory or `CHANGELOG.md` file does not exist, application will log the error to the Console Error output (*stderr*) and stop with the execution.
+If the ***changes*** directory or the `CHANGELOG.md` file does not exist, application will log the error to the Console Error output (*stderr*) and stop with the execution.
 
-Otherwise, appropriate section will be inserted in the `CHANGELOG.md` file and the change files that were used to build the new changelog section from the **changes** directory will be deleted.
+Otherwise, appropriate section will be inserted in the `CHANGELOG.md` file and the change files that were used to build the new changelog section from the **changes** directory will be **deleted**.
 
 Application logs the newly bumped semantic version to the Console Standard output (*stdout*).
 
-## Development
+## 🏗 Development
 
 ### Publishing
 
@@ -220,3 +248,9 @@ Application logs the newly bumped semantic version to the Console Standard outpu
 dotnet publish -c release -r win-x64 -p:PublishSingleFile=true
 dotnet publish -c release -r linux-x64 -p:PublishSingleFile=true
 ```
+
+## ☎ Support
+If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[CLM]).
+
+## 🪪 License
+This project is licensed with the [MIT License](../LICENSE).
