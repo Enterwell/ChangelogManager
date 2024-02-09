@@ -53,7 +53,7 @@ The following prerequisities need to be fulfilled in order for the action to wor
 
 #### Changes directory
 
-Automation agent where the action executes needs to have a ***changes*** directory containing the [*change*](#what-are-the-change-files) files created manually or with one of our helpers. If the directory does not exist, action will throw an error.
+Automation agent where the action executes needs to have a ***changes*** directory containing the [*change*](#-what-are-the-change-files) files created manually or with one of our helpers. If the directory does not exist, action will throw an error.
 
 #### Changelog file
 
@@ -159,7 +159,7 @@ In order to be able to run this code and its tests on your machine, you need to:
 
 ### Packaging extension for publish to Marketplace
 
-Before packaging the extension for publishing, make sure that you installed all the dependencies for every task and that you translated all *Typescript* files into *Javascript* equivalents. For information on how to do that refer to the [previous](#development) section.
+Before packaging the extension for publishing, make sure that you installed all the dependencies for every task and that you translated all *Typescript* files into *Javascript* equivalents. For information on how to do that refer to the [previous](#-development) section.
 
 In order to package extension for publishing, you need to use [Node CLI for Azure DevOps](https://github.com/microsoft/tfs-cli). You can install it by using `npm` by running `npm install -g tfx-cli`.
 

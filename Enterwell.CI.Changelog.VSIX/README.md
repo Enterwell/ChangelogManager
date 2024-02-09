@@ -73,7 +73,7 @@ You can trigger the extension by using the `ALT + C` shortcut or by right-clicki
 
 One of the following dialog boxes will show up:
 
-+ Changelog configuration ([explained later](#configuration-file)) exists:
++ Changelog configuration ([explained later](#-configuration-file)) exists:
 
   ![](../img/dialog_withConfig.png)
 

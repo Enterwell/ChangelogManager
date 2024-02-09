@@ -15,7 +15,7 @@
 
 `Changelog Manager` is a helper CLI tool that uses files (in the rest of the documentation called *change* files) describing changes to fill out the `CHANGELOG.md` file.
 
-Tool automatically determines the next application's [semantic version](https://semver.org/) based on the current `CHANGELOG.md` file and the [*change* files](#what-are-these-change-files) generated in the **changes** directory.
+Tool automatically determines the next application's [semantic version](https://semver.org/) based on the current `CHANGELOG.md` file and the [*change* files](#-what-are-these-change-files) generated in the **changes** directory.
 
 These files can be generated in the following ways:
 
