@@ -1,11 +1,22 @@
-# Introduction
+<h1 align="center">
+  <a style="display: inline-block;" href="https://enterwell.net" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://enterwell.net/wp-content/uploads/2023/05/ew-logomark-color-negative-128.x48680.png">
+      <img width="128" height="128" alt="logo" src="https://enterwell.net/wp-content/uploads/2023/05/ew-logomark-color-positive-128.x48680.png">
+    </picture>
+  </a>
+  
+  <p>Changelog Manager</p>
+</h1>
 
-This repository containes:
-+ [`Changelog`](Enterwell.CI.Changelog) Console App project using .NET 6. Changelog Manager (CLI for merging changes to the `CHANGELOG.md`).
+This repository contains:
++ [`Changelog`](Enterwell.CI.Changelog) - Changelog Manager (CLI for merging changes to the `CHANGELOG.md`).
 
-+ [`Changelog.CLI`](Enterwell.CI.Changelog.CLI) Console App project using .NET 6. Changelog Create (CLI for creating change entries).
++ [`Changelog.CLI`](Enterwell.CI.Changelog.CLI) - Changelog Create CLI.
 
-+ [`Changelog.VSIX`](Enterwell.CI.Changelog.VSIX) VSIX project. Changelog Create extension for Visual Studio.
++ [`Changelog.VSIX`](Enterwell.CI.Changelog.VSIX) - Changelog Create extension for Visual Studio.
+
++ [`Changelog.VSCodeExtension`](Enterwell.CI.Changelog.VSCodeExtension) - Changelog Create extension for Visual Studio Code.
 
 + [`Changelog.DevOpsExtension`](Enterwell.CI.Changelog.DevOpsExtension) project that contains the extension developed for the Azure DevOps containing **Merge Changelog** task. The task to merge files describing changes made into a changelog file. Changelog Manager extension for Azure DevOps.
 

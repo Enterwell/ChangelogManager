@@ -1,18 +1,23 @@
 {
-  "name": "ew-changelogmanager-change-create-vscode",
-  "displayName": "Changelog Manager Change Create",
-  "description": "This extension is helping developers create needed change files for the Changelog Manager tool.",
-  "version": "0.0.1",
+  "name": "changelog-create",
+  "displayName": "Changelog Create",
+  "description": "This extension helps developers make easy notes on changes made to their codebase.",
+  "version": "0.1.0",
+  "publisher": "Enterwell",
+  "repository": "https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSCodeExtension",
+  "homepage": "https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/README.md",
   "engines": {
     "vscode": "^1.86.0"
   },
   "categories": ["Other"],
+  "icon": "assets/enterwellBlack.png",
+  "license": "SEE LICENSE IN LICENSE",
   "activationEvents": [],
   "main": "./out/index.js",
   "contributes": {
     "commands": [
       {
-        "command": "changelog-change-create.addchange",
+        "command": "changelog-create.addchange",
         "category": "Changelog",
         "shortTitle": "Add change",
         "title": "Add change file"
@@ -20,7 +25,7 @@
     ],
     "keybindings": [
       {
-        "command": "changelog-change-create.addchange",
+        "command": "changelog-create.addchange",
         "key": "Alt+C",
         "mac": "Alt+C",
         "linux": "Alt+C"

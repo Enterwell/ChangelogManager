@@ -98,7 +98,7 @@ const handleCommand = async () => {
  */
 export function activate(context: vscode.ExtensionContext) {
   // The command name that has been defined in the package.json file (extension manifest)
-  const commandName = 'changelog-change-create.addchange';
+  const commandName = 'changelog-create.addchange';
 
   const commandSubscription = vscode.commands.registerCommand(commandName, handleCommand);
   context.subscriptions.push(commandSubscription);
