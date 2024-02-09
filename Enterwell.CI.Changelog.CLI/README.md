@@ -91,7 +91,7 @@ Options:
 + -v | --version:
    + Shows version information.
 + -c | --category <change_category>:
-   + One of the valid change categories (case-insensitive) defined in the [configuration file](#configuration-file) if it exists.
+   + One of the valid change categories (case-insensitive) defined in the [configuration file](#-configuration-file) if it exists.
    + Arbitrary if the configuration does not exist or is empty.
       + Can be empty.
       + Excess whitespace will be removed.
