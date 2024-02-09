@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+      "name": "Changelog Manager",
+			"path": "."
+		},
+		{
+      "name": "Changelog Manager CLI",
+			"path": "Enterwell.CI.Changelog"
+		},
+		{
+      "name": "Changelog Create CLI",
+			"path": "Enterwell.CI.Changelog.CLI"
+		},
+		{
+      "name": "Changelog DevOpsExtension",
+			"path": "Enterwell.CI.Changelog.DevOpsExtension"
+		},
+		{
+      "name": "Changelog VS Code extension",
+			"path": "Enterwell.CI.Changelog.VSCodeExtension"
+		},
+		{
+      "name": "Changelog VS extension",
+			"path": "Enterwell.CI.Changelog.VSIX"
+		}
+	]
+}
