@@ -28,7 +28,10 @@ Acceptable entries for the `<change_type>` are:
 
 This decision was inspired by following the [principles](https://keepachangelog.com/en/1.0.0/#how) for keeping a good changelog.
 
-To avoid incorrect file naming and to ease this file creation process on the developer, [Visual Studio extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX) and the [CLI helper](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.CLI) were made.
+To avoid incorrect naming and to ease this file creation process on the developer, following helper tools were created:
++ [CLI helper](../Enterwell.CI.Changelog.CLI)
++ [Visual Studio extension](../Enterwell.CI.Changelog.VSIX) 
++ [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension)
 
 This *Action* internally calls our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) by forwarding action inputs to it, which then inserts the appropriate section to the `CHANGELOG.md` and deletes all the contents of the ***changes*** directory.
  
@@ -42,6 +45,7 @@ We **highly** recommend that you read up on how and what exactly is it doing beh
 + 📤 [Outputs](#-outputs)
 + 🏗 [Development](#-development)
 + ☎️ [Support](#-support)
++ 🪪 [License](#-license)
 
 ## 🛠 Prerequisities
 
@@ -153,7 +157,7 @@ In order to be able to run this code and its tests on your machine, you need to:
 3. Run `tsc` or `npx tsc` in order for *Typescript* to translate all the `.ts` files to the `.js` files.
 4. Run the available npm script for running [Mocha](https://mochajs.org/) tests with `npm test`.
 
-## Packaging extension for publish to Marketplace
+### Packaging extension for publish to Marketplace
 
 Before packaging the extension for publishing, make sure that you installed all the dependencies for every task and that you translated all *Typescript* files into *Javascript* equivalents. For information on how to do that refer to the [previous](#development) section.
 
@@ -162,5 +166,7 @@ In order to package extension for publishing, you need to use [Node CLI for Azur
 After having installed the CLI tool, you can follow the [Step 4 and Step 5](https://docs.microsoft.com/en-us/azure/devops/extend/develop/add-build-task?view=azure-devops#step-4-package-your-extension) of the official documentation on how to package and publish a custom task.
 
 ## ☎ Support
+If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[DevOpsExtension]).
 
-If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new).
+## 🪪 License
+This project is licensed with the [MIT License](../LICENSE).

@@ -1,4 +1,4 @@
-<h1 align="center">
+<div align="center">
   <a style="display: inline-block;" href="https://enterwell.net" target="_blank">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://enterwell.net/wp-content/uploads/2023/05/ew-logomark-color-negative-128.x48680.png">
@@ -6,17 +6,15 @@
     </picture>
   </a>
   
-  <p>Changelog Create extension for Visual Studio Code</p>
-</h1>
+  <h1>Changelog Create extension for Visual Studio Code</h1>
 
-<div align="center">
   <p>This extension helps developers make easy notes on changes made to their codebase.</p>
 </div>
 
 ## 🌱 Introduction
-This is the *Visual Studio Code* version of an [Visual Studio extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX) developed for the convenience of creating special *change* files that are used to manage a [changelog](https://keepachangelog.com/en/1.1.0/).
+This is the *Visual Studio Code* alternative to a [Visual Studio extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX) developed for the convenience of creating special *change* files that are used to manage a [changelog](https://keepachangelog.com/en/1.1.0/).
 
-#### What are the *change* files?
+#### What are the *change* files? 🤔
 
 *Change* files are just files located in the ***changes*** directory with the following naming scheme:
 
@@ -41,15 +39,16 @@ To avoid incorrect file naming and to ease file creation process on the develope
 
 These files are then used with our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) to compile changes and insert a new changelog sections and thus versioning the application.
 
-*We **highly** recommend that you read up on how and what exactly is it doing behind the scenes, as well as, learn how to use the `.changelog.json` configuration file to customize the tool's behaviour.*
+**For the convenience of using this tool to manage a changelog in an automated CI/CD environment we made a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) and an [Azure DevOps extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.DevOpsExtension).**
 
-For the convenience of using this tool to manage a changelog in an automated CI/CD environments we made a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) and an [Azure DevOps extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.DevOpsExtension).
+*We **highly** recommend that you read up on how and what exactly is it doing behind the scenes, as well as, learn how to use the `.changelog.json` configuration file to customize the tool's behaviour.*
 
 ## 📖 Table of contents
 + 🌱 [Introduction](#-introduction)
 + 🛠️ [Prerequisites](#-prerequisites)
 + 📝 [Usage](#-usage)
 + ⚙️ [Configuration file](#-configuration-file)
++ 🏗 [Development](#-development)
 + ☎️ [Support](#-support)
 + 🪪 [License](#-license)
 
@@ -93,7 +92,7 @@ And in the final step, the user is prompted for a change description which is va
 
 And that's it! You should now have a new file created inside the **changes** folder in your workspace directory! 🎉
 
-You can now let this folder accumulate change entries which will be bundled up into your `CHANGELOG.md` when you want to create a new application release using one of our tools mentioned in the [introduction section](#-introduction).
+You can now let this folder accumulate change entries which will be bundled up into your `CHANGELOG.md` when you want to create a new application release using our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) or one of our CI/CD tasks mentioned in the [introduction section](#-introduction).
 
 ## ⚙ Configuration file
 
@@ -114,6 +113,34 @@ If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend)
 If the configuration exists, user will be able to choose only one of the categories provided as the change category. On the other hand, if the configuration file does not exist or the categories list is empty, user will be shown a text input and everything  will be able to qualify as the change category.
 
 For more features that can be configured using the configuration file, see the [Changelog Manager's README](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog/README.md/#configuration-file).
+
+## 🏗 Development
+
+This action uses [pnpm](https://pnpm.io/) as its package manager, so in order to get quickly up and developing you will need to have it installed on your machine.
+
+If you don't already have it, you can easily install it by using the following command (assuming you have [Node.js](https://nodejs.org/en) installed)
+
+```bash
+npm install --global pnpm
+```
+
+Now you can install dependencies using the following command
+
+```bash
+pnpm install
+```
+
+### Available commands
+
+| Command | Description |
+| ----------- | ----------- |
+| `pnpm package` | Packages the extension into a `VSIX` file |
+| `pnpm publish` | Publishes the extension |
+| `pnpm compile` | Compile the TypeScript source code into JavaScript |
+| `pnpm watch`  | Watches the source code and automatically compiles it into JavaScript |
+| `pnpm pretest` | Compiles the TypeScript source code and lints it |
+| `pnpm lint` | Lints the extension |
+| `pnpm test` | Tests the extension |
 
 ## ☎ Support
 If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[VSCodeExtension]).
