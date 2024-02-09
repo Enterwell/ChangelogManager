@@ -1,0 +1,49 @@
+name: Release VS Code extension
+
+on: workflow_call
+
+jobs:
+  release:
+    name: Release VS Code extension
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.4.0
+        with:
+          version: 'latest'
+      
+      # Bump version and update changelog
+      - name: Changelog
+        id: version-bump
+        uses: Enterwell/ChangelogManager-GitHub-Action@v3
+        with:
+          changelog-location: ./Enterwell.CI.Changelog.VSCodeExtension'
+          changes-location: ./Enterwell.CI.Changelog.VSCodeExtension/changes
+          should-bump-version: true
+          path-to-project-file: ./Enterwell.CI.Changelog.VSCodeExtension/package.json
+
+      # Commit new changes
+      - name: Commit changelog changes
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          message: "[skip ci] [version-bump] [vscode] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
+
+      # Installing node dependencies using pnpm
+      - name: Pnpm install
+        run: pnpm install --frozen-lockfile
+
+      # Compile and run linter
+      - name: Compile and lint
+        run: pnpm pretest
+
+      # Publish the extension
+      - name: Publish extension
+        run: pnpm publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

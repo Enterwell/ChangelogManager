@@ -5,17 +5,22 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  # Release job
-  release:
-    name: Release
+  # Release VS Code extension
+  release-vscode:
+    uses: './Enterwell.CI.Changelog.VSCodeExtension/.github/workflows/release.yml'
+
+  # Rest of the repository
+  rest:
+    name: Rest
     runs-on: ubuntu-latest
 
     steps:
       # Checkout
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       # Bump version and update changelog
       - name: Bump version and update changelog
