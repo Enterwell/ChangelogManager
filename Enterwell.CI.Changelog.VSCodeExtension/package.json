@@ -2,7 +2,7 @@
   "name": "changelog-create",
   "displayName": "Changelog Create",
   "description": "This extension helps developers make easy notes on changes made to their codebase.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Enterwell",
   "repository": "https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSCodeExtension",
   "homepage": "https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/README.md",
