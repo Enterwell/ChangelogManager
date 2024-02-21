@@ -1,11 +1,18 @@
 name: Release VS Code extension
 
+# Variables
+env:
+  VSCODE_PATH: Enterwell.CI.Changelog.VSCodeExtension
+
 on: workflow_call
 
 jobs:
   release:
     name: Release VS Code extension
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.VSCODE_PATH }}
 
     steps:
       # Checkout
@@ -18,17 +25,17 @@ jobs:
         with:
           node-version: 20.x
           cache: yarn
-          cache-dependency-path: ./Enterwell.CI.Changelog.VSCodeExtension/yarn.lock
+          cache-dependency-path: ${{ env.VSCODE_PATH }}/yarn.lock
 
       # Bump version and update changelog
       - name: Changelog
         id: version-bump
         uses: Enterwell/ChangelogManager-GitHub-Action@v3
         with:
-          changelog-location: ./Enterwell.CI.Changelog.VSCodeExtension
-          changes-location: ./Enterwell.CI.Changelog.VSCodeExtension/changes
+          changelog-location: ${{ env.VSCODE_PATH }}
+          changes-location: ${{ env.VSCODE_PATH }}/changes
           should-bump-version: true
-          path-to-project-file: ./Enterwell.CI.Changelog.VSCodeExtension/package.json
+          path-to-project-file: ${{ env.VSCODE_PATH }}/package.json
 
       # Commit new changes
       - name: Commit changelog changes
