@@ -51,6 +51,10 @@ jobs:
       - name: Compile and lint
         run: yarn pretest
 
+      # Install @vscode/vsce globally
+      - name: Install global @vscode/vsce
+        run: yarn global add @vscode/vsce
+
       # Publish the extension
       - name: Publish extension
         run: vsce publish
