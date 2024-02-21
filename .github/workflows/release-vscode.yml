@@ -4,7 +4,11 @@ name: Release VS Code extension
 env:
   VSCODE_PATH: Enterwell.CI.Changelog.VSCodeExtension
 
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      VSCE_PAT:
+        required: true
 
 jobs:
   release:
