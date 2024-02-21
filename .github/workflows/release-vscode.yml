@@ -1,0 +1,51 @@
+name: Release VS Code extension
+
+on: workflow_call
+
+jobs:
+  release:
+    name: Release VS Code extension
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Defining what Node.js version to use
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: yarn
+          cache-dependency-path: ./Enterwell.CI.Changelog.VSCodeExtension/yarn.lock
+
+      # Bump version and update changelog
+      - name: Changelog
+        id: version-bump
+        uses: Enterwell/ChangelogManager-GitHub-Action@v3
+        with:
+          changelog-location: ./Enterwell.CI.Changelog.VSCodeExtension
+          changes-location: ./Enterwell.CI.Changelog.VSCodeExtension/changes
+          should-bump-version: true
+          path-to-project-file: ./Enterwell.CI.Changelog.VSCodeExtension/package.json
+
+      # Commit new changes
+      - name: Commit changelog changes
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          message: "[skip ci] [version-bump] [vscode] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
+
+      # Installing node dependencies using Yarn
+      - name: Yarn install
+        run: yarn install --frozen-lockfile
+
+      # Compile and run linter
+      - name: Compile and lint
+        run: yarn pretest
+
+      # Publish the extension
+      - name: Publish extension
+        run: vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

@@ -116,31 +116,30 @@ For more features that can be configured using the configuration file, see the [
 
 ## 🏗 Development
 
-This action uses [pnpm](https://pnpm.io/) as its package manager, so in order to get quickly up and developing you will need to have it installed on your machine.
+This action uses [Yarn v1](https://classic.yarnpkg.com/en/docs) as its package manager, so in order to get quickly up and developing you will need to have it installed on your machine.
 
 If you don't already have it, you can easily install it by using the following command (assuming you have [Node.js](https://nodejs.org/en) installed)
 
 ```bash
-npm install --global pnpm
+npm install --global yarn
 ```
 
 Now you can install dependencies using the following command
 
 ```bash
-pnpm install
+yarn install
 ```
 
 ### Available commands
 
 | Command | Description |
 | ----------- | ----------- |
-| `pnpm package` | Packages the extension into a `VSIX` file |
-| `pnpm publish` | Publishes the extension |
-| `pnpm compile` | Compile the TypeScript source code into JavaScript |
-| `pnpm watch`  | Watches the source code and automatically compiles it into JavaScript |
-| `pnpm pretest` | Compiles the TypeScript source code and lints it |
-| `pnpm lint` | Lints the extension |
-| `pnpm test` | Tests the extension |
+| `yarn package` | Packages the extension into a `VSIX` file |
+| `yarn compile` | Compile the TypeScript source code into JavaScript |
+| `yarn watch`  | Watches the source code and automatically compiles it into JavaScript |
+| `yarn pretest` | Compiles the TypeScript source code and lints it |
+| `yarn lint` | Lints the extension |
+| `yarn test` | Tests the extension |
 
 ## ☎ Support
 If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[VSCodeExtension]).

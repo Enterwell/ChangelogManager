@@ -43,20 +43,13 @@ export function loadConfiguration(workspaceFolderPath: string): { categories: st
     return null;
   }
 
-  let currentDirectory = workspaceFolderPath;
+  const possibleConfigFilePath = path.join(workspaceFolderPath, configurationName);
 
-  // Search for the changelog config upwards
-  while (path.basename(currentDirectory) !== '') {
-    const possibleConfigFilePath = path.join(currentDirectory, configurationName);
+  // If the file exists, parse it
+  if (fs.existsSync(possibleConfigFilePath)) {
+    const configFile = fs.readFileSync(possibleConfigFilePath, 'utf-8');
 
-    // If the file exists, parse it
-    if (fs.existsSync(possibleConfigFilePath)) {
-      const configFile = fs.readFileSync(possibleConfigFilePath, 'utf-8');
-
-      return JSON.parse(configFile);
-    }
-
-    currentDirectory = path.dirname(currentDirectory);
+    return JSON.parse(configFile);
   }
 
   return undefined;
