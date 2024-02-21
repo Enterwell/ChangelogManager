@@ -46,6 +46,7 @@ These files are then used with our [Changelog Manager tool](https://github.com/E
 ## 📖 Table of contents
 + 🌱 [Introduction](#-introduction)
 + 🛠️ [Prerequisites](#-prerequisites)
++ 💻 [Installation](#-installation)
 + 📝 [Usage](#-usage)
 + ⚙️ [Configuration file](#-configuration-file)
 + 🏗 [Development](#-development)
@@ -56,21 +57,27 @@ These files are then used with our [Changelog Manager tool](https://github.com/E
 
 Simple, just [Visual Studio Code](https://code.visualstudio.com/) editor 🎉
 
+## 💻 Installation
+
+You can get the extension either by downloading and installing it manually from [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Enterwell.changelog-create) or by searching for it in the Visual Studio Code Extension Manager.
+
+![Image showing the extension in the extension manager](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/extensionMarketplace.png)
+
 ## 📝 Usage
 
 You can trigger the extension by using the `ALT + C` shortcut or by using the command palette (`Ctrl + Shift + P`) and searching for the command
 
-![Image showing the command in the command palette](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/commandPalette.png)
+![Image showing the command in the command palette](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/commandPalette.png)
 
 In the first step, user will be prompted to choose a type of the change he is documenting
 
-![Image showing the change type prompt](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeType.png)
+![Image showing the change type prompt](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeType.png)
 
 Based on the users workspace one of the two things will happen next:
 
 + If there are more than 1 workspaces open in the editor, user will be asked to choose a workspace he would like to create a change file for
 
-  ![Image showing the workspace prompt](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/workspacePicker.png)
+  ![Image showing the workspace prompt](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/workspacePicker.png)
 
 + If the user has only 1 workspace open, the extension will take the current workspace folder as the working directory and proceed to the next step
 
@@ -78,17 +85,17 @@ In the next step, one of the two things will happen next depending on if the use
 
 + If the `.changelog.json` exists with the categories listed inside, the user will be asked to choose one of the categories for the change
 
-  ![Image showing the change category picker prompt](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeCategory.png)
+  ![Image showing the change category picker prompt](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeCategory.png)
 
 + If the `.changelog.json` does **not** exist or there are no explicit categories defined inside
 
     + input can be any empty value and all excess whitespace will be removed
 
-  ![Image showing the change category input](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeCategoryInput.png)
+  ![Image showing the change category input](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeCategoryInput.png)
 
 And in the final step, the user is prompted for a change description which is validated for empty and whitespace input
 
-  ![Image showing the change description input](https://github.com/Enterwell/ChangelogManager/blob/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeDescription.png)
+  ![Image showing the change description input](https://raw.githubusercontent.com/Enterwell/ChangelogManager/main/Enterwell.CI.Changelog.VSCodeExtension/assets/changeDescription.png)
 
 And that's it! You should now have a new file created inside the **changes** folder in your workspace directory! 🎉
 
