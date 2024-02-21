@@ -11,6 +11,8 @@ jobs:
   # Release VS Code extension
   release-vscode:
     uses: './.github/workflows/release-vscode.yml'
+    secrets:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   # Rest of the repository
   rest:
