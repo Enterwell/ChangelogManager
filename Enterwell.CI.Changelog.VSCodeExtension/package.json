@@ -35,11 +35,10 @@
     ]
   },
   "scripts": {
-    "package": "pnpm vsce package --no-dependencies",
-    "publish": "pnpm vsce publish --no-dependencies",
+    "package": "vsce package --no-dependencies",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "yarn compile && yarn lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
   },
