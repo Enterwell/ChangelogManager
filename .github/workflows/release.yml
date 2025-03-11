@@ -14,6 +14,12 @@ jobs:
     secrets:
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
+  # Release Azure DevOps extension
+  release-devops:
+    uses: './.github/workflows/release-devops.yml'
+    secrets:
+      VS_MARKETPLACE_TOKEN: ${{ secrets.VSCE_PAT }}
+
   # Rest of the repository
   rest:
     name: Rest
@@ -23,6 +29,12 @@ jobs:
       # Checkout
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Defining what .NET SDK to use
+      - name: Use .NET 6.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
       
       # Bump version and update changelog
       - name: Bump version and update changelog
@@ -34,6 +46,6 @@ jobs:
       
       # Committing new changes
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9.1.1
+        uses: EndBug/add-and-commit@v9.1.4
         with:
           message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
