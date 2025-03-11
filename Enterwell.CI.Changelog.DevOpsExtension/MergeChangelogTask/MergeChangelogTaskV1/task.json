@@ -9,7 +9,7 @@
     "version": {
         "Major": 1,
         "Minor": 1,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Merging Changelog",
     "inputs": [
@@ -46,6 +46,9 @@
     ],
     "execution": {
         "Node10": {
+            "target": "index.js"
+        },
+        "Node20_1": {
             "target": "index.js"
         }
     }
