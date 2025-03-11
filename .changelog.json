@@ -2,8 +2,7 @@
   "categories": [
     "CoreApp",
     "CLI",
-    "VSIX",
-    "DevOpsExtension"
+    "VSIX"
   ],
   "bumpingRule": {
     "major": [],

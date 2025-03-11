@@ -1,0 +1,90 @@
+name: Release Azure DevOps extension
+
+# Variables
+env:
+  ROOT_PATH: Enterwell.CI.Changelog.DevOpsExtension
+
+on:
+  workflow_call:
+    secrets:
+      VS_MARKETPLACE_TOKEN:
+        required: true
+
+jobs:
+  release:
+    name: Release Azure DevOps extension
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.ROOT_PATH }}
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Globally install TFX CLI
+      - name: Install TFX CLI
+        run: npm install -g tfx-cli
+
+      # Defining what .NET SDK to use
+      - name: Use .NET 6.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      # Update changelog
+      - name: Changelog
+        id: version-bump
+        uses: Enterwell/ChangelogManager-GitHub-Action@v3
+        with:
+          changelog-location: ${{ env.ROOT_PATH }}
+          changes-location: ${{ env.ROOT_PATH }}/changes
+
+      # Bump version
+      - name: Bump extension version
+        run: |
+          jq '.version = "${{ steps.version-bump.outputs.bumped-semantic-version }}"' vss-extension.json > temp.json && mv temp.json vss-extension.json
+
+      # Process all tasks
+      - name: Preparing tasks
+        run: |
+          for parent in ./*/ ; do
+            parent_name=$(basename "$parent")
+
+            # Exclude 'images' i 'changes'
+            if [ "$parent_name" != "images" ] && [ "$parent_name" != "changes" ]; then
+              echo "Processing task directory: $parent_name"
+
+              # Iterate subfolders
+              for sub in "$parent"*/ ; do
+                sub_name=$(basename "$sub")
+
+                echo "Processing version: $sub_name in $parent_name"
+
+                cd "$sub"
+
+                echo "Step 1 for $sub_name: NPM install..."
+                npm i
+
+                echo "Step 2 for $sub_name: Compiling Typescript..."
+                npx tsc
+
+                cd ../..
+              done
+            else
+              echo "Skipping $parent_name"
+            fi
+          done
+      
+      # Once all tasks have been processed, publish the extension
+      - name: Publishing the extension
+        run: tfx extension publish --token ${{ secrets.VS_MARKETPLACE_TOKEN }} --share-with enterwell tehnozavod
+
+      # Commit new changes
+      - name: Commit changelog changes
+        uses: EndBug/add-and-commit@v9.1.4
+        with:
+          cwd: ${{ env.ROOT_PATH }}
+          add: "[changes, CHANGELOG.md, vss-extension.json]"
+          message: "[skip ci] [version-bump] [devops] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
