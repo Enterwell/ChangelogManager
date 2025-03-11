@@ -79,7 +79,7 @@ jobs:
       
       # Once all tasks have been processed, publish the extension
       - name: Publishing the extension
-        run: tfx extension publish --token ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        run: tfx extension publish --token ${{ secrets.VS_MARKETPLACE_TOKEN }} --share-with enterwell tehnozavod
 
       # Commit new changes
       - name: Commit changelog changes
