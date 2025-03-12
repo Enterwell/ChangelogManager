@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Enterwell.CI.Changelog.Models;
+using Enterwell.CI.Changelog.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Enterwell.CI.Changelog.Models;
-using Enterwell.CI.Changelog.Shared;
-using Newtonsoft.Json;
 using Configuration = Enterwell.CI.Changelog.Models.Configuration;
 
 namespace Enterwell.CI.Changelog
@@ -151,7 +151,7 @@ namespace Enterwell.CI.Changelog
             // First check to see if the configuration file exists.
             if (File.Exists(configurationFilePath))
             {
-                return JsonConvert.DeserializeObject<Configuration>(await File.ReadAllTextAsync(configurationFilePath));
+                return JsonSerializer.Deserialize<Configuration>(await File.ReadAllTextAsync(configurationFilePath));
             }
 
             return null;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Enterwell.CI.Changelog.Models;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Enterwell.CI.Changelog.Tests
@@ -25,10 +26,10 @@ namespace Enterwell.CI.Changelog.Tests
             var markdownTextService = new MarkdownTextService();
             var fileWriterService = new FileWriterService();
 
-            changelogService = new ChangelogManagerCommand(changeGatheringService, markdownTextService, fileWriterService)
+            this.changelogService = new ChangelogManagerCommand(changeGatheringService, markdownTextService, fileWriterService)
             {
-                ChangelogLocation = TestFolderPath,
-                ChangesLocation = ChangesFolderPath
+                ChangelogLocation = this.TestFolderPath,
+                ChangesLocation = this.ChangesFolderPath
             };
         }
 
@@ -44,7 +45,7 @@ namespace Enterwell.CI.Changelog.Tests
             CreateChanges(fileNames);
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().ThrowExactlyAsync<FileNotFoundException>().WithMessage("Changelog file is not found.");
@@ -81,7 +82,7 @@ namespace Enterwell.CI.Changelog.Tests
                 "Added [ThisIsFalseCategory] This should not be accepted as change if this category is not in configuration",
             };
             var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
-            
+
             const int initialMajor = 1;
             const int initialMinor = 2;
             const int initialPatch = 3;
@@ -94,17 +95,17 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -151,17 +152,17 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -200,17 +201,17 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -236,7 +237,7 @@ namespace Enterwell.CI.Changelog.Tests
                 "   Added [API] Added example 1",
                 "Fixed [BE] Fixed example 1",
                 "Security [API] Security example 1"
-                
+
             };
             var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
 
@@ -251,9 +252,9 @@ namespace Enterwell.CI.Changelog.Tests
             {
                 BumpingRule = new BumpingRule
                 {
-                    Major = new[] { "Added" },
-                    Minor = new[] { "Fixed" },
-                    Patch = new[] { "Security" }
+                    Major = ["Added"],
+                    Minor = ["Fixed"],
+                    Patch = ["Security"]
                 }
             };
             CreateConfiguration(configuration);
@@ -261,19 +262,19 @@ namespace Enterwell.CI.Changelog.Tests
             const int shouldBeMajor = initialMajor + 1;
 
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
-            
+
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -299,7 +300,6 @@ namespace Enterwell.CI.Changelog.Tests
                 "   Added [API] SoMEtHing CuSTOm example 1",
                 "Fixed [BE] Fixed example 1",
                 "Security [API] Security example 1"
-
             };
             var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
 
@@ -315,8 +315,8 @@ namespace Enterwell.CI.Changelog.Tests
                 BumpingRule = new BumpingRule
                 {
                     BreakingKeyword = "Something Custom",
-                    Minor = new[] { "Fixed" },
-                    Patch = new[] { "Security" }
+                    Minor = ["Fixed"],
+                    Patch = ["Security"]
                 }
             };
             CreateConfiguration(configuration);
@@ -326,17 +326,17 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{shouldBeMajor}.0.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -375,9 +375,9 @@ namespace Enterwell.CI.Changelog.Tests
             {
                 BumpingRule = new BumpingRule
                 {
-                    Major = new[] { "Deprecated" },
-                    Minor = new[] { "Added" },
-                    Patch = new[] { "Security" }
+                    Major = ["Deprecated"],
+                    Minor = ["Added"],
+                    Patch = ["Security"]
                 }
             };
             CreateConfiguration(configuration);
@@ -387,17 +387,17 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
         }
 
@@ -436,9 +436,9 @@ namespace Enterwell.CI.Changelog.Tests
             {
                 BumpingRule = new BumpingRule
                 {
-                    Major = new[] { "Deprecated" },
-                    Minor = new[] { "Removed" },
-                    Patch = new[] { "Fixed" }
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
                 }
             };
             CreateConfiguration(configuration);
@@ -448,18 +448,374 @@ namespace Enterwell.CI.Changelog.Tests
             var expectedHeading = $"## [{initialMajor}.{initialMinor}.{shouldBePatch}] - {DateTime.Now:yyyy-MM-dd}";
 
             // Act
-            Func<Task> act = () => changelogService.OnExecute();
+            Func<Task> act = () => this.changelogService.OnExecute();
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            var changeFilesRemaining = Directory.GetFiles(ChangesFolderPath);
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
 
             changeFilesRemaining.Should().NotBeEmpty();
             changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
 
-            var changelogText = await File.ReadAllLinesAsync(ChangelogFilePath);
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
             changelogText.Should().Contain(expectedHeading);
+        }
+
+        /// <summary>
+        /// Testing the application when trying to bump a project file that does not exist.
+        /// <see cref="FileNotFoundException"/> should be thrown with correct message.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithVersionBumpNoProjectFile_ThrowsFileNotFoundExceptionWithCorrectMessage()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            // Act
+            this.changelogService.SetVersion = (true, null);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<FileNotFoundException>().WithMessage("Could not find a 'package.json' file or a '.csproj' file with a 'Version' tag.");
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and package.json is automatically determined for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the package.json's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithImplicitPackageJson_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var packageJsonContent = JsonConvert.SerializeObject(new
+            {
+                name = "tasks",
+                version = $"{initialMajor}.{initialMinor}.{initialPatch}",
+                description = ""
+            }, Formatting.Indented);
+            CreateProjectFile("package.json", packageJsonContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, null);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var packageJsonText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            packageJsonText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and package.json is explicitly set for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the package.json's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitPackageJson_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var packageJsonFilePath = Path.Combine(subFolderPath, "package.json");
+            var packageJsonContent = JsonConvert.SerializeObject(new
+            {
+                name = "tasks",
+                version = $"{initialMajor}.{initialMinor}.{initialPatch}",
+                description = ""
+            }, Formatting.Indented);
+            CreateProjectFile(packageJsonFilePath, packageJsonContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, packageJsonFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var packageJsonText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            packageJsonText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and .csproj is automatically determined for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .csproj's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithImplicitCsproj_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var csprojContent = $"""
+                                 <Project Sdk="Microsoft.NET.Sdk">
+                                 	<PropertyGroup>
+                                 		<Version>{initialMajor}.{initialMinor}.{initialPatch}</Version>
+                                 	</PropertyGroup>
+                                 </Project>
+                                 """;
+            CreateProjectFile("test.csproj", csprojContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, null);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var csprojText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            csprojText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and .csproj file is explicitly set for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .csproj's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitCsproj_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var csprojFilePath = Path.Combine(subFolderPath, "test.csproj");
+            var csprojContent = $"""
+                                 <Project Sdk="Microsoft.NET.Sdk">
+                                 	<PropertyGroup>
+                                 		<Version>{initialMajor}.{initialMinor}.{initialPatch}</Version>
+                                 	</PropertyGroup>
+                                 </Project>
+                                 """;
+            CreateProjectFile(csprojFilePath, csprojContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, csprojFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var csprojText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            csprojText.Should().Contain(expectedVersion);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Enterwell.CI.Changelog.Models
         /// <summary>
         /// Only changes with these categories are accepted. 
         /// </summary>
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
 
         /// <summary>
         /// Custom rules with which to bump the application's semantic version.
