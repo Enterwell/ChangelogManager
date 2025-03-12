@@ -135,8 +135,8 @@ For more features that can be configured using the configuration file, see the [
 ### Publishing
 
 ```bash
-dotnet publish -c release -r win-x64 -p:PublishSingleFile=true
-dotnet publish -c release -r linux-x64 -p:PublishSingleFile=true
+dotnet publish -c release -r win-x64
+dotnet publish -c release -r linux-x64
 ```
 
 ## ☎ Support

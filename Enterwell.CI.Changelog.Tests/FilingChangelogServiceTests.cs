@@ -216,6 +216,51 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
+        /// Testing the application bumps patch correctly when no changes have been made.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsNoChanges_UpdatesMinorCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = Array.Empty<string>();
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            const int shouldBeMinor = initialMinor + 1;
+
+            var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+        }
+
+        /// <summary>
         /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
         /// Testing that the application bumps major version correctly based on a custom major category.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
@@ -300,6 +345,7 @@ namespace Enterwell.CI.Changelog.Tests
                 "   Added [API] SoMEtHing CuSTOm example 1",
                 "Fixed [BE] Fixed example 1",
                 "Security [API] Security example 1"
+
             };
             var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
 
@@ -378,6 +424,62 @@ namespace Enterwell.CI.Changelog.Tests
                     Major = ["Deprecated"],
                     Minor = ["Added"],
                     Patch = ["Security"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            const int shouldBeMinor = initialMinor + 1;
+
+            var expectedHeading = $"## [{initialMajor}.{shouldBeMinor}.0] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+        }
+
+        /// <summary>
+        /// Testing the application bumps patch correctly when no changes have been made and the custom 'changelog' configuration exists.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithCustomConfigurationNoChanges_UpdatesMinorCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = Array.Empty<string>();
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
                 }
             };
             CreateConfiguration(configuration);
@@ -662,6 +764,185 @@ namespace Enterwell.CI.Changelog.Tests
 
             var packageJsonText = await File.ReadAllTextAsync(this.ProjectFilePath);
             packageJsonText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and a .json file is explicitly set for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .json's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitGeneralJson_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var jsonFilePath = Path.Combine(subFolderPath, "composer.json");
+            var jsonContent = JsonConvert.SerializeObject(new
+            {
+                name = "tasks",
+                version = $"{initialMajor}.{initialMinor}.{initialPatch}",
+                description = ""
+            }, Formatting.Indented);
+            CreateProjectFile(jsonFilePath, jsonContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, jsonFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var jsonText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            jsonText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed and a file with version in its documentation is explicitly set for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the file's documented version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitDocumentationFile_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var documentationFilePath = Path.Combine(subFolderPath, "test.php");
+            var documentationFileContent = $"""
+                                 <?php
+                                 /**
+                                  * The plugin bootstrap file
+                                  *
+                                  * This file is read by WordPress to generate the plugin information in the plugin
+                                  * admin area. This file also includes all of the dependencies used by the plugin,
+                                  * registers the activation and deactivation functions, and defines a function
+                                  * that starts the plugin.
+                                  *
+                                  * @link              http://example.com
+                                  * @since             1.0.0
+                                  * @package           PluginName
+                                  *
+                                  * @wordpress-plugin
+                                  * Plugin Name:       PluginName
+                                  * Plugin URI:        http://enterwell.net
+                                  * Description:       Administration plugin.
+                                  * Version:           {initialMajor}.{initialMinor}.{initialPatch}
+                                  * Author:            Enterwell
+                                  * Author URI:        http://enterwell.net/
+                                  * License:           GPL-2.0+
+                                  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+                                  * Text Domain:       PluginName
+                                  * Domain Path:       /languages
+                                  */
+                                 
+                                 // If this file is called directly, abort.
+                                 """;
+            CreateProjectFile(documentationFilePath, documentationFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, documentationFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain(expectedVersion);
         }
 
         /// <summary>

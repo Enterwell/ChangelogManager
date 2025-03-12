@@ -1,10 +1,9 @@
-﻿using Enterwell.CI.Changelog.Shared;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using Enterwell.CI.Changelog.Shared;
 
 namespace Enterwell.CI.Changelog
 {
@@ -69,39 +68,22 @@ namespace Enterwell.CI.Changelog
                 projectFilePath = determinedProjectFilePath;
             }
 
-            // Manage the package.json file
-            if (projectFilePath.EndsWith("package.json"))
+            // If the explicit project file does not exist, throw
+            if (!File.Exists(projectFilePath))
             {
-                var jsonString = await File.ReadAllTextAsync(projectFilePath);
-
-                var jsonObject = JsonNode.Parse(jsonString);
-                if (jsonObject == null)
-                {
-                    throw new InvalidCastException("Could not deserialize the 'package.json' file.");
-                }
-
-                // Replacing the JSON 'version' entry
-                jsonObject["version"] = newVersion;
-
-                await File.WriteAllTextAsync(projectFilePath, jsonObject.ToString());
+                throw new FileNotFoundException("Could not find the given project file.");
             }
 
-            // Manage the .csproj file
-            if (projectFilePath.EndsWith(".csproj"))
+            // Handle the file contents
+            var fileContent = await File.ReadAllTextAsync(projectFilePath);
+
+            var universalVersionPattern = """(?<=("version"\s*:\s*"|<Version>|<PackageVersion>|Version:\s*))(\d+\.\d+\.\d+)""";
+            var patternRegex = new Regex(universalVersionPattern, RegexOptions.IgnoreCase);
+
+            var updatedContent = patternRegex.Replace(fileContent, newVersion, 1);
+            if (updatedContent != fileContent)
             {
-                var csprojString = await File.ReadAllTextAsync(projectFilePath);
-                var csprojXml = XDocument.Parse(csprojString);
-
-                var xmlVersionTag = csprojXml
-                    .Descendants()
-                    .FirstOrDefault(e =>
-                        e.Name.ToString().ToLowerInvariant() == "version" &&
-                        e.Parent?.Name.ToString().ToLowerInvariant() == "propertygroup");
-
-                // Replace the .csproj 'Version' entry
-                xmlVersionTag!.Value = newVersion;
-
-                await File.WriteAllTextAsync(projectFilePath, csprojXml.ToString());
+                await File.WriteAllTextAsync(projectFilePath, updatedContent);
             }
         }
     }
