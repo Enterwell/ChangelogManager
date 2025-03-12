@@ -51,6 +51,7 @@ jobs:
       - name: Commit changelog changes
         uses: EndBug/add-and-commit@v9.1.4
         with:
+          pull: '--rebase --autostash'
           message: "[skip ci] [version-bump] [vscode] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
 
       # Installing node dependencies using Yarn
