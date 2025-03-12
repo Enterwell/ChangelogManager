@@ -1,5 +1,10 @@
 name: Release
 
+# Variables
+env:
+  CLM_PATH: Enterwell.CI.Changelog
+  CC_PATH: Enterwell.CI.Changelog.CLI
+
 # Triggering the workflow on pushes to main
 on:
   push:
@@ -30,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Defining what .NET SDK to use
+      # Using .NET 6 for running the changelog action
       - name: Use .NET 6.0.x
         uses: actions/setup-dotnet@v3
         with:
@@ -50,3 +55,51 @@ jobs:
         with:
           pull: '--rebase --autostash'
           message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
+
+      # Using .NET 8 for publishing the .NET 8 projects
+      - name: Use .NET 8.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      # Packaging Changelog Manager CLI Tool (CLM)
+      - name: Package Changelog Manager CLI Tool (CLM)
+        working-directory: ${{ env.CLM_PATH }}
+        run: |
+          dotnet publish -c release -r win-x64 -o out
+          dotnet publish -c release -r linux-x64 -o out
+
+      # Packaging Changelog Create CLI Tool (CC)
+      - name: Package Changelog Create CLI Tool (CC)
+        working-directory: ${{ env.CC_PATH }}
+        run: |
+          dotnet publish -c release -r win-x64 -o out
+          dotnet publish -c release -r linux-x64 -o out
+
+      # Update Git tags
+      - name: Git tags update
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          git tag "v${{ steps.version-bump.outputs.bumped-semantic-version }}"
+          git tag -f "v${{ steps.version-bump.outputs.bumped-major-part }}" "v${{ steps.version-bump.outputs.bumped-semantic-version }}"
+          git tag -f "v${{ steps.version-bump.outputs.bumped-major-part }}.${{ steps.version-bump.outputs.bumped-minor-part }}" "v${{ steps.version-bump.outputs.bumped-semantic-version }}"
+
+          git push -f --tags
+
+      # Creating latest release
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ steps.version-bump.outputs.bumped-semantic-version }}
+          body: |
+            ${{ steps.version-bump.outputs.new-changes }}
+
+            *Please note `cc` and `clm` binaries are built as standalone single file executables so they don't require specific .NET installed on machine and have larger than usual file sizes for that reason.*
+          files: |
+            ${{ env.CLM_PATH }}/out/clm.exe
+            ${{ env.CLM_PATH }}/out/clm
+            ${{ env.CC_PATH }}/out/cc.exe
+            ${{ env.CC_PATH }}/out/cc
