@@ -48,4 +48,5 @@ jobs:
       - name: Commit changes
         uses: EndBug/add-and-commit@v9.1.4
         with:
+          pull: '--rebase --autostash'
           message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"

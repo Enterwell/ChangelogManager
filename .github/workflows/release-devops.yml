@@ -86,5 +86,6 @@ jobs:
         uses: EndBug/add-and-commit@v9.1.4
         with:
           cwd: ${{ env.ROOT_PATH }}
+          pull: '--rebase --autostash'
           add: "[changes, CHANGELOG.md, vss-extension.json]"
           message: "[skip ci] [version-bump] [devops] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"

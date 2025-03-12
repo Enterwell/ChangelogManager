@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "merge-changelog",
     "name": "Merge Changelog Task",
-    "version": "3.0.1",
+    "version": "3.2.0",
     "publisher": "Enterwell",
     "targets": [
         {
