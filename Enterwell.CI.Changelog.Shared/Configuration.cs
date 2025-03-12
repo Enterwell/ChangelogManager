@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace Enterwell.CI.Changelog.Shared
 {
@@ -16,7 +16,7 @@ namespace Enterwell.CI.Changelog.Shared
         /// Categories from the configuration json file.
         /// Only changes with these categories are accepted. 
         /// </summary>
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
 
         /// <summary>
         /// Validates a change based on Configuration object properties.
@@ -73,7 +73,7 @@ namespace Enterwell.CI.Changelog.Shared
                 var possibleConfigFilePath = Path.Combine(currentDir.FullName, ConfigurationName);
                 if (File.Exists(possibleConfigFilePath))
                 {
-                    return JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(possibleConfigFilePath));
+                    return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(possibleConfigFilePath));
                 }
 
                 currentDir = currentDir.Parent;

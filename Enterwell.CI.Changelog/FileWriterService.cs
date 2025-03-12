@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Enterwell.CI.Changelog.Shared;
+using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Enterwell.CI.Changelog.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Enterwell.CI.Changelog
 {
@@ -43,7 +42,7 @@ namespace Enterwell.CI.Changelog
 
             // Remove that blank like before the older version because our TextToWrite already has blank lines before and after.
             changelogText.RemoveAt(index);
-            changelogText.Insert(index, $"\r\n${textToWrite}");
+            changelogText.Insert(index, $"\r\n{textToWrite}");
 
             await File.WriteAllLinesAsync(changelogFilePath, changelogText);
         }
@@ -75,13 +74,14 @@ namespace Enterwell.CI.Changelog
             {
                 var jsonString = await File.ReadAllTextAsync(projectFilePath);
 
-                if (JsonConvert.DeserializeObject(jsonString) is not JObject jsonObject)
+                var jsonObject = JsonNode.Parse(jsonString);
+                if (jsonObject == null)
                 {
                     throw new InvalidCastException("Could not deserialize the 'package.json' file.");
                 }
 
                 // Replacing the JSON 'version' entry
-                jsonObject["version"]?.Replace(newVersion);
+                jsonObject["version"] = newVersion;
 
                 await File.WriteAllTextAsync(projectFilePath, jsonObject.ToString());
             }

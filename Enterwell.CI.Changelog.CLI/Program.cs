@@ -31,7 +31,7 @@ namespace Enterwell.CI.Changelog.CLI
         /// </summary>
         [Argument(0, "Change Type", "Change type following the 'Keep a Changelog' guiding principle.")]
         [Required]
-        [AllowedValues(StringComparison.InvariantCultureIgnoreCase,
+        [McMaster.Extensions.CommandLineUtils.AllowedValues(StringComparison.InvariantCultureIgnoreCase,
             "Added", "a", "Changed", "c", "Deprecated", "d", "Removed", "r", "Fixed", "f", "Security", "s",
             IgnoreCase = true)]
         public string Type { get; set; }

@@ -15,11 +15,11 @@ namespace Enterwell.CI.Changelog.Tests
         /// Gets the path to the system Temp directory which we are using for testing purposes.
         /// </summary>
         protected readonly string TemporaryDirectoryPath = Path.GetTempPath();
-        
+
         /// <summary>
         /// Name of the folder which is going to be created inside system Temp directory for testing purposes.
         /// </summary>
-        protected readonly string TestFolderName = "Testing";
+        protected readonly string TestFolderName = "ChangelogManagerTesting";
 
         /// <summary>
         /// Name of the folder inside the Testing folder which contains all of the changes with which our program works. Needs to be 'changes'.
@@ -57,16 +57,22 @@ namespace Enterwell.CI.Changelog.Tests
         protected readonly string ChangelogConfigFilePath;
 
         /// <summary>
+        /// Project file path.
+        /// </summary>
+        protected string ProjectFilePath;
+
+        /// <summary>
         /// <see cref="TestBase"/> constructor. It runs before every test in the test class that inherit the <see cref="TestBase"/>.
         /// </summary>
         public TestBase()
         {
-            TestFolderPath = Path.Combine(TemporaryDirectoryPath, TestFolderName);
-            ChangesFolderPath = Path.Combine(TestFolderPath, ChangesFolderName);
-            ChangelogFilePath = Path.Combine(TestFolderPath, ChangelogFileName);
-            ChangelogConfigFilePath = Path.Combine(TestFolderPath, ChangelogConfigFileName);
+            this.TestFolderPath = Path.Combine(this.TemporaryDirectoryPath, this.TestFolderName);
+            this.ChangesFolderPath = Path.Combine(this.TestFolderPath, this.ChangesFolderName);
+            this.ChangelogFilePath = Path.Combine(this.TestFolderPath, this.ChangelogFileName);
+            this.ChangelogConfigFilePath = Path.Combine(this.TestFolderPath, this.ChangelogConfigFileName);
 
-            Directory.CreateDirectory(TestFolderPath);
+            Directory.CreateDirectory(this.TestFolderPath);
+            Directory.SetCurrentDirectory(this.TestFolderPath);
         }
 
         /// <summary>
@@ -76,7 +82,7 @@ namespace Enterwell.CI.Changelog.Tests
         /// <exception cref="Exception">If the path starts with anything other than <see cref="TestFolderPath"/>.</exception>
         protected void CreateDirectory(string folderPath)
         {
-            if (!folderPath.StartsWith(TestFolderPath))
+            if (!folderPath.StartsWith(this.TestFolderPath))
             {
                 throw new Exception("Cannot create directories on given path!");
             }
@@ -91,7 +97,7 @@ namespace Enterwell.CI.Changelog.Tests
         /// <exception cref="Exception">If the path starts with anything other than <see cref="TestFolderPath"/>.</exception>
         protected void CreateFile(string filePath)
         {
-            if (!filePath.StartsWith(TestFolderPath))
+            if (!filePath.StartsWith(this.TestFolderPath))
             {
                 throw new Exception("Cannot create files on given path!");
             }
@@ -117,11 +123,11 @@ namespace Enterwell.CI.Changelog.Tests
         /// <param name="fileNames">Names of the files to create.</param>
         protected void CreateChanges(string[] fileNames)
         {
-            CreateDirectory(ChangesFolderPath);
+            CreateDirectory(this.ChangesFolderPath);
 
             foreach (var file in fileNames)
             {
-                CreateFile(Path.Combine(ChangesFolderPath, file));
+                CreateFile(Path.Combine(this.ChangesFolderPath, file));
             }
         }
 
@@ -131,9 +137,22 @@ namespace Enterwell.CI.Changelog.Tests
         /// <param name="configuration">Configuration to write to the file.</param>
         protected void CreateConfiguration(Configuration configuration)
         {
-            CreateFile(ChangelogConfigFilePath);
+            CreateFile(this.ChangelogConfigFilePath);
 
-            WriteToFile(ChangelogConfigFilePath, JsonConvert.SerializeObject(configuration));
+            WriteToFile(this.ChangelogConfigFilePath, JsonConvert.SerializeObject(configuration));
+        }
+
+        /// <summary>
+        /// Creates the project file with the given project file name and with the given content.
+        /// </summary>
+        /// <param name="projectFileName">The project file name.</param>
+        /// <param name="projectContent">Content of the project.</param>
+        protected void CreateProjectFile(string projectFileName, string projectContent)
+        {
+            this.ProjectFilePath = Path.Combine(TestFolderPath, projectFileName);
+
+            CreateFile(this.ProjectFilePath);
+            WriteToFile(this.ProjectFilePath, projectContent);
         }
 
         /// <summary>
@@ -144,20 +163,21 @@ namespace Enterwell.CI.Changelog.Tests
         /// <param name="patchVersion">Patch version number.</param>
         protected void CreateChangelog(int majorVersion, int minorVersion, int patchVersion)
         {
-            CreateFile(ChangelogFilePath);
+            CreateFile(this.ChangelogFilePath);
 
-            string changelogContent = @$"# Changelog
-All notable changes to this project will be documented in this file.
+            string changelogContent = $"""
+                                       # Changelog
+                                       All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+                                       The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+                                       and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [{majorVersion}.{minorVersion}.{patchVersion}] - 2018-08-13
-### Changed
-- Migrated from .NET Framework 4.5 to .NET Standard 2.0
-";
+                                       ## [{majorVersion}.{minorVersion}.{patchVersion}] - 2018-08-13
+                                       ### Changed
+                                       - Migrated from .NET Framework 4.5 to .NET Standard 2.0
+                                       """;
 
-            WriteToFile(ChangelogFilePath, changelogContent);
+            WriteToFile(this.ChangelogFilePath, changelogContent);
         }
 
         /// <summary>
@@ -165,7 +185,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
         /// </summary>
         public void Dispose()
         {
-            Directory.Delete(TestFolderPath, true);
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            Directory.Delete(this.TestFolderPath, true);
         }
     }
 }
