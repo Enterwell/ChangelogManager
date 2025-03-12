@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-03-12
+### Changed
+- [CoreApp] Using .NET 8
+- [CLI] Using .NET 8
+
 ## [3.0.0] - 2023-04-17
 ### Added
 - [CoreApp] Words BREAKING CHANGE in change description now bump major version
