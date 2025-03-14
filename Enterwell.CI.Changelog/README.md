@@ -78,11 +78,13 @@ Options:
   + Shows version information.
 + -sv | --set-version[:<PROJECT_FILE_PATH>]:
   + Should the new application's version be set in the appropriate project file.
-  + If set without a file path, the helper will try to automatically determine the project file.
-  + Currently supported project types:
-    + NPM (`package.json`)
-    + .NET SDK (`.csproj` with the `Version` (case-insensitive) tag)
-  + Can be either an absolute or a relative path
+  + If set without a file path, the helper will try to automatically determine the project file:
+    + Currently supported project types that are automatically detected:
+      + NPM (`package.json`)
+      + .NET SDK (`.csproj` with the `Version` (case-insensitive) tag)
+  + Can be either an absolute or a relative path:
+    + If explicitly set, the project file can be any readable file
+    + Application will try to parse the current version and replace it with a new one
 + -? | -h | --help:
   + Shows help information.
 
@@ -245,8 +247,8 @@ Application logs the newly bumped semantic version to the Console Standard outpu
 ### Publishing
 
 ```bash
-dotnet publish -c release -r win-x64 -p:PublishSingleFile=true
-dotnet publish -c release -r linux-x64 -p:PublishSingleFile=true
+dotnet publish -c release -r win-x64
+dotnet publish -c release -r linux-x64
 ```
 
 ## ☎ Support

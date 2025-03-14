@@ -97,6 +97,13 @@ jobs:
           body: |
             ${{ steps.version-bump.outputs.new-changes }}
 
+            | File | Description |
+            |-----|--------------|
+            | cc | Changelog Create (CLI for creating change entries) |
+            | clm | Changelog Manager (CLI for merging changes to changelog.md) |
+
+            Please see `README.md` for each project for usage instructions and examples.
+
             *Please note `cc` and `clm` binaries are built as standalone single file executables so they don't require specific .NET installed on machine and have larger than usual file sizes for that reason.*
           files: |
             ${{ env.CLM_PATH }}/out/clm.exe

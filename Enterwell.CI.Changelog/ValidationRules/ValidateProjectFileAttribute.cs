@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace Enterwell.CI.Changelog.ValidationRules;
 
@@ -35,28 +33,6 @@ public class ValidateProjectFileAttribute : ValidationAttribute
         if (!File.Exists(projectFilePath))
         {
             return new ValidationResult(this.FormatErrorMessage("File does not exist."));
-        }
-
-        // Check if the file type is supported
-        if (!projectFilePath.EndsWith("package.json") && !projectFilePath.EndsWith(".csproj"))
-        {
-            return new ValidationResult(this.FormatErrorMessage("Only 'package.json' and '.csproj' files are supported."));
-        }
-
-        // Check if the '.csproj' file contains the 'Version' tag
-        if (projectFilePath.EndsWith(".csproj"))
-        {
-            var xmlVersionTag = XElement.Load(projectFilePath)
-                .Descendants()
-                .FirstOrDefault(e =>
-                    e.Name.ToString().ToLowerInvariant() == "version" &&
-                    e.Parent?.Name.ToString().ToLowerInvariant() == "propertygroup");
-
-            // Check if not found
-            if (xmlVersionTag == null)
-            {
-                return new ValidationResult(this.FormatErrorMessage("Given '.csproj' file does not contain a 'Version' tag."));
-            }
         }
 
         return ValidationResult.Success;

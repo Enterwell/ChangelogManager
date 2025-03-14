@@ -55,7 +55,8 @@ namespace Enterwell.CI.Changelog
         /// </summary>
         [Option("-sv|--set-version[:<PROJECT_FILE_PATH>]",
             Description = "Should the new application's version be set in the appropriate project file. If set without a file path, application will try to automatically determine the project file. " +
-                          "Currently supported project types: NPM (package.json) and .NET SDK (*.csproj with the version tag).")]
+                          "\n\nCurrently supported project types that are automatically detected: \nNPM (package.json)\n.NET SDK (*.csproj with the version tag).\n\nIf the file path is explicitly set, the project file can be any readable file. " +
+                          "\nApplication will try to parse the current version and replace it with a new one.")]
         [ValidateProjectFile]
         public (bool isEnabled, string projectFilePath) SetVersion { get; set; }
 

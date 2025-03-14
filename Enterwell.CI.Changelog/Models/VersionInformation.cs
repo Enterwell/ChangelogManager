@@ -88,7 +88,8 @@ namespace Enterwell.CI.Changelog.Models
                     shouldBumpMajor = true;
                 }
                 else if (bumpingRule.Minor.Any(changeType => this.Changes.ContainsKey(changeType)) ||
-                         bumpingRule.Minor.Contains("NoChanges") && !this.Changes.Any())
+                         bumpingRule.Minor.Contains("NoChanges") && !this.Changes.Any() ||
+                         !this.Changes.Any())
                 {
                     shouldBumpMinor = true;
                 }
