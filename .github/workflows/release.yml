@@ -17,12 +17,14 @@ jobs:
   release-vscode:
     uses: './.github/workflows/release-vscode.yml'
     secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   # Release Azure DevOps extension
   release-devops:
     uses: './.github/workflows/release-devops.yml'
     secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
       VS_MARKETPLACE_TOKEN: ${{ secrets.VSCE_PAT }}
 
   # Rest of the repository
@@ -34,6 +36,8 @@ jobs:
       # Checkout
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       # Using .NET 6 for running the changelog action
       - name: Use .NET 6.0.x
@@ -54,6 +58,7 @@ jobs:
         uses: EndBug/add-and-commit@v9.1.4
         with:
           pull: '--rebase --autostash'
+          default_author: github_actions
           message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
 
       # Using .NET 8 for publishing the .NET 8 projects
