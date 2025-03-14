@@ -36,6 +36,8 @@ jobs:
       # Checkout
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       # Using .NET 6 for running the changelog action
       - name: Use .NET 6.0.x
