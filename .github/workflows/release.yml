@@ -71,15 +71,25 @@ jobs:
       - name: Package Changelog Manager CLI Tool (CLM)
         working-directory: ${{ env.CLM_PATH }}
         run: |
-          dotnet publish -c release -r win-x64 -o out
-          dotnet publish -c release -r linux-x64 -o out
+          dotnet publish -c release -r win-x64 -o publish/win
+          dotnet publish -c release -r osx-x64 -o publish/osx
+          dotnet publish -c release -r linux-x64 -o publish/linux
+
+          zip -j clm-win-x64.zip publish/win/*
+          zip -j clm-osx-x64.zip publish/osx/*
+          zip -j clm-linux-x64.zip publish/linux/*
 
       # Packaging Changelog Create CLI Tool (CC)
       - name: Package Changelog Create CLI Tool (CC)
         working-directory: ${{ env.CC_PATH }}
         run: |
-          dotnet publish -c release -r win-x64 -o out
-          dotnet publish -c release -r linux-x64 -o out
+          dotnet publish -c release -r win-x64 -o publish/win
+          dotnet publish -c release -r osx-x64 -o publish/osx
+          dotnet publish -c release -r linux-x64 -o publish/linux
+
+          zip -j cc-win-x64.zip publish/win/*
+          zip -j cc-osx-x64.zip publish/osx/*
+          zip -j cc-linux-x64.zip publish/linux/*
 
       # Update Git tags
       - name: Git tags update
@@ -111,7 +121,9 @@ jobs:
 
             *Please note `cc` and `clm` binaries are built as standalone single file executables so they don't require specific .NET installed on machine and have larger than usual file sizes for that reason.*
           files: |
-            ${{ env.CLM_PATH }}/out/clm.exe
-            ${{ env.CLM_PATH }}/out/clm
-            ${{ env.CC_PATH }}/out/cc.exe
-            ${{ env.CC_PATH }}/out/cc
+            ${{ env.CLM_PATH }}/clm-linux-x64.zip
+            ${{ env.CLM_PATH }}/clm-osx-x64.zip
+            ${{ env.CLM_PATH }}/clm-win-x64.zip
+            ${{ env.CC_PATH }}/cc-linux-x64.zip
+            ${{ env.CC_PATH }}/cc-osx-x64.zip
+            ${{ env.CC_PATH }}/cc-win-x64.zip
