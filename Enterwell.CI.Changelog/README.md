@@ -59,6 +59,8 @@ In general, the helper takes two arguments and one optional input:
   + changelog location - required
   + changes location - required
   + set version flag with the optional project file path - optional (prefixed with either `-sv` or `--set-version`)
+  + revision number - optional (`-r` or `--revision`)
+  + should changelog be merged flag - optional (`-mc` or `--merge-changelog`)
 
 Example of a call:
 ```
@@ -85,6 +87,12 @@ Options:
   + Can be either an absolute or a relative path:
     + If explicitly set, the project file can be any readable file
     + Application will try to parse the current version and replace it with a new one
++ -r | --revision:
+  + If the revision number is provided, 4 number long versions will be supported.
+  + This is write-only, which means the revision number will not be bumped automatically, but only replaced if provided
++ -mc | --merge-changelog:
+  + Should the newly generated changelog section be merged to the changelog. If set to false, the merge step is skipped
+  + Defaults to `true`
 + -? | -h | --help:
   + Shows help information.
 
