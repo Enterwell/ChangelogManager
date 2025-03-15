@@ -63,8 +63,18 @@ namespace Enterwell.CI.Changelog
         /// <summary>
         /// Optional parameter to the CLI application representing if the application should support 4 number long versions.
         /// </summary>
-        [Option("-r|--revision", CommandOptionType.SingleValue, Description = "If the revision number is provided, 4 number long versions will be supported.\nThis is write-only, which means the revision number will not be bumped automatically, but only replaced if provided.")]
+        [Option("-r|--revision",
+            CommandOptionType.SingleValue,
+            Description = "If the revision number is provided, 4 number long versions will be supported.\nThis is write-only, which means the revision number will not be bumped automatically, but only replaced if provided.")]
         public int? RevisionNumber { get; set; }
+
+        /// <summary>
+        /// Optional parameter to the CLI application representing should the newly generated changelog section be merged to the changelog. Defaults to true.
+        /// </summary>
+        [Option("-mc|--merge-changelog",
+            CommandOptionType.SingleValue,
+            Description = "Should the newly generated changelog section be merged to the changelog. If set to false, the merge step is skipped.")]
+        public bool ShouldMergeChangelog { get; set; } = true;
 
         /// <summary>
         /// Main method of the application. The method delegates all the work to the appropriate services.
@@ -89,11 +99,14 @@ namespace Enterwell.CI.Changelog
                 var newChangelogSection = this.markdownTextService.BuildChangelogSection(versionInformation);
                 var elementToInsertChangelogSectionBefore = this.markdownTextService.ToH2(string.Empty);
 
-                // Write the newly built section to the changelog
-                await this.fileWriterService.WriteToChangelog(newChangelogSection, this.ChangelogLocation, elementToInsertChangelogSectionBefore);
+                if (this.ShouldMergeChangelog)
+                {
+                    // Write the newly built section to the changelog
+                    await this.fileWriterService.WriteToChangelog(newChangelogSection, this.ChangelogLocation, elementToInsertChangelogSectionBefore);
 
-                // Delete the accepted change files
-                this.changeGatheringService.RemoveAcceptedChanges(versionInformation.Changes);
+                    // Delete the accepted change files
+                    this.changeGatheringService.RemoveAcceptedChanges(versionInformation.Changes);
+                }
 
                 logger.LogSuccess(newChangelogSection);
             }
