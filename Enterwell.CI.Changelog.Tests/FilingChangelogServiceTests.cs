@@ -915,9 +915,8 @@ namespace Enterwell.CI.Changelog.Tests
                                   * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
                                   * Text Domain:       PluginName
                                   * Domain Path:       /languages
+                                  * Version:           1.1.1
                                   */
-                                 
-                                 // If this file is called directly, abort.
                                  """;
             CreateProjectFile(documentationFilePath, documentationFileContent);
 
@@ -943,6 +942,233 @@ namespace Enterwell.CI.Changelog.Tests
 
             var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
             fileText.Should().Contain(expectedVersion);
+            fileText.Should().Contain("1.1.1");
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed, an assembly info file is explicitly set for version bumping and there is no explicit revision number given.
+        /// Test should not throw any exception, 'changes' directory should be emptied, 'Changelog.md' file should contain new version section and the assembly info's version should be bumped with revision number unchanged.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitAssemblyInfoFileNoExplicitRevision_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+            const int initialRevision = 12345;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var assemblyInfoFilePath = Path.Combine(subFolderPath, "AssemblyInfo.cs");
+            var assemblyInfoFileContent = $"""
+                                 ﻿using System.Reflection;
+                                 using System.Runtime.InteropServices;
+                                 using System.Runtime.Serialization;
+                                 
+                                 // General Information about an assembly is controlled through the following 
+                                 // set of attributes. Change these attribute values to modify the information
+                                 // associated with an assembly.
+                                 [assembly: AssemblyTitle("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyDescription("")]
+                                 [assembly: AssemblyConfiguration("")]
+                                 [assembly: AssemblyCompany("")]
+                                 [assembly: AssemblyProduct("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyCopyright("Copyright ©  2010")]
+                                 [assembly: AssemblyTrademark("")]
+                                 [assembly: AssemblyCulture("")]
+                                 
+                                 // Setting ComVisible to false makes the types in this assembly not visible 
+                                 // to COM components.  If you need to access a type in this assembly from 
+                                 // COM, set the ComVisible attribute to true on that type.
+                                 [assembly: ComVisible(false)]
+                                 
+                                 // The following GUID is for the ID of the typelib if this project is exposed to COM
+                                 [assembly: Guid("8870d9fc-01e9-46e9-a89f-e3194f965096")]
+                                 
+                                 // Version information for an assembly consists of the following four values:
+                                 //
+                                 //      Major Version
+                                 //      Minor Version 
+                                 //      Build Number
+                                 //      Revision
+                                 //
+                                 // You can specify all the values or you can default the Build and Revision Numbers 
+                                 // by using the '*' as shown below:
+                                 // [assembly: AssemblyVersion("1.0.*")]
+                                 [assembly: AssemblyVersion("{initialMajor}.{initialMinor}.{initialPatch}.{initialRevision}")]
+                                 [assembly: AssemblyFileVersion("1.1.1205.1040")]
+                                 """;
+            CreateProjectFile(assemblyInfoFilePath, assemblyInfoFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedChangelogVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedChangelogHeading = $"## [{expectedChangelogVersion}] - {DateTime.Now:yyyy-MM-dd}";
+            var expectedAssemblyVersion = $"{expectedChangelogVersion}.{initialRevision}";
+
+            // Act
+            this.changelogService.SetVersion = (true, assemblyInfoFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedChangelogHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain(expectedAssemblyVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when valid inputs are passed, an assembly info file is explicitly set for version bumping and there is an explicit revision given.
+        /// Test should not throw any exception, 'changes' directory should be emptied, 'Changelog.md' file should contain new version section and the assembly info's version should be bumped with revision number that was explicitly given.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ValidInputsWithExplicitAssemblyInfoFileAndExplicitRevision_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+            const int initialRevision = 12345;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var assemblyInfoFilePath = Path.Combine(subFolderPath, "AssemblyInfo.cs");
+            var assemblyInfoFileContent = $"""
+                                 ﻿using System.Reflection;
+                                 using System.Runtime.InteropServices;
+                                 using System.Runtime.Serialization;
+                                 
+                                 // General Information about an assembly is controlled through the following 
+                                 // set of attributes. Change these attribute values to modify the information
+                                 // associated with an assembly.
+                                 [assembly: AssemblyTitle("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyDescription("")]
+                                 [assembly: AssemblyConfiguration("")]
+                                 [assembly: AssemblyCompany("")]
+                                 [assembly: AssemblyProduct("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyCopyright("Copyright ©  2010")]
+                                 [assembly: AssemblyTrademark("")]
+                                 [assembly: AssemblyCulture("")]
+                                 
+                                 // Setting ComVisible to false makes the types in this assembly not visible 
+                                 // to COM components.  If you need to access a type in this assembly from 
+                                 // COM, set the ComVisible attribute to true on that type.
+                                 [assembly: ComVisible(false)]
+                                 
+                                 // The following GUID is for the ID of the typelib if this project is exposed to COM
+                                 [assembly: Guid("8870d9fc-01e9-46e9-a89f-e3194f965096")]
+                                 
+                                 // Version information for an assembly consists of the following four values:
+                                 //
+                                 //      Major Version
+                                 //      Minor Version 
+                                 //      Build Number
+                                 //      Revision
+                                 //
+                                 // You can specify all the values or you can default the Build and Revision Numbers 
+                                 // by using the '*' as shown below:
+                                 // [assembly: AssemblyVersion("1.0.*")]
+                                 [assembly: AssemblyVersion("{initialMajor}.{initialMinor}.{initialPatch}.{initialRevision}")]
+                                 [assembly: AssemblyFileVersion("1.1.1205.1040")]
+                                 """;
+            CreateProjectFile(assemblyInfoFilePath, assemblyInfoFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+            const int explicitRevision = 54321;
+
+            var expectedChangelogVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedChangelogHeading = $"## [{expectedChangelogVersion}] - {DateTime.Now:yyyy-MM-dd}";
+            var expectedAssemblyVersion = $"{expectedChangelogVersion}.{explicitRevision}";
+
+            // Act
+            this.changelogService.SetVersion = (true, assemblyInfoFilePath);
+            this.changelogService.RevisionNumber = explicitRevision;
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedChangelogHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain(expectedAssemblyVersion);
         }
 
         /// <summary>

@@ -61,6 +61,12 @@ namespace Enterwell.CI.Changelog
         public (bool isEnabled, string projectFilePath) SetVersion { get; set; }
 
         /// <summary>
+        /// Optional parameter to the CLI application representing if the application should support 4 number long versions.
+        /// </summary>
+        [Option("-r|--revision", CommandOptionType.SingleValue, Description = "If the revision number is provided, 4 number long versions will be supported.\nThis is write-only, which means the revision number will not be bumped automatically, but only replaced if provided.")]
+        public int? RevisionNumber { get; set; }
+
+        /// <summary>
         /// Main method of the application. The method delegates all the work to the appropriate services.
         /// </summary>
         /// <returns>An asynchronous task.</returns>
@@ -76,7 +82,7 @@ namespace Enterwell.CI.Changelog
                 // If the set-version flag is set
                 if (this.SetVersion.isEnabled)
                 {
-                    await this.fileWriterService.BumpProjectFileVersion(versionInformation.SemanticVersion, this.SetVersion.projectFilePath);
+                    await this.fileWriterService.BumpProjectFileVersion(versionInformation.SemanticVersion, this.SetVersion.projectFilePath, this.RevisionNumber);
                 }
 
                 // Building the string representing the new changelog section for the new bumped version
