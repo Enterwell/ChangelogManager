@@ -82,7 +82,7 @@ inputs:
   changesInDifferentLocation: true
   changesLocation: ./somewhere-else/changes
   shouldBumpVersion: true
-  pathToProjectFile: ./somewhere-else/[package.json | something.csproj]
+  pathToProjectFile: ./somewhere-else/project-file
 ```
 
 ### Tasks assistant menu
@@ -111,8 +111,9 @@ After installing the extension from the [Marketplace](https://marketplace.visual
   + Defaults to `false`
 
 ### `pathToProjectFile`
-**Optional** Path to the project file (`package.json` or `.csproj` with the `version` (case-insensitive) tag).
+**Optional** Path to the project file with the `version` (case-insensitive).
   + If the previous input is set to `true`, but this input is not passed in explicitly, the action will try to automatically determine the appropriate project file
+    + automatic discovery only searches for `package.json` or `*.csproj` with the `version` tag in the same directory as the changelog file
   + If the previous input is set to `false`, this input is **ignored**
 
 ## 📤 Outputs
