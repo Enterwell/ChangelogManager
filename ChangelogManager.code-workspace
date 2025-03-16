@@ -17,6 +17,10 @@
       "path": "Enterwell.CI.Changelog.CLI"
     },
     {
+      "name": "Changelog Create CLI NPM",
+      "path": "Enterwell.CI.Changelog.CLI.NPM"
+    }
+    {
       "name": "Changelog Create VS extension",
       "path": "Enterwell.CI.Changelog.VSIX"
     },
