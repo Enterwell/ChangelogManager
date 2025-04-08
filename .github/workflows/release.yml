@@ -55,7 +55,7 @@ jobs:
       
       # Committing new changes
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9.1.4
+        uses: EndBug/add-and-commit@v9
         with:
           pull: '--rebase --autostash'
           default_author: github_actions
