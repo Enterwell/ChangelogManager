@@ -51,8 +51,9 @@ namespace Enterwell.CI.Changelog
         /// </summary>
         /// <param name="newVersion">Application's bumped version.</param>
         /// <param name="projectFilePath">Path to the project file.</param>
+        /// <param name="revisionNumber">(Optional) revision number.</param>
         /// <returns>An asynchronous task.</returns>
-        public async Task BumpProjectFileVersion(string newVersion, string projectFilePath)
+        public async Task BumpProjectFileVersion(string newVersion, string projectFilePath, int? revisionNumber)
         {
             // Try to automatically determine the project file
             if (string.IsNullOrWhiteSpace(projectFilePath))
@@ -77,10 +78,30 @@ namespace Enterwell.CI.Changelog
             // Handle the file contents
             var fileContent = await File.ReadAllTextAsync(projectFilePath);
 
-            var universalVersionPattern = """(?<=("version"\s*:\s*"|<Version>|<PackageVersion>|Version:\s*))(\d+\.\d+\.\d+)""";
+            var universalVersionPattern = """(?<=("version"\s*:\s*"|<Version>|<PackageVersion>|Version:\s*|\[assembly:\s*AssemblyVersion\("))(\d+\.\d+\.\d+)(?:\.(\d+))?""";
             var patternRegex = new Regex(universalVersionPattern, RegexOptions.IgnoreCase);
 
-            var updatedContent = patternRegex.Replace(fileContent, newVersion, 1);
+            var updatedContent = patternRegex.Replace(fileContent, match =>
+            {
+                var baseVersion = newVersion;
+                var existingRevision = match.Groups[3].Success ? match.Groups[3].Value : "";
+
+                // If we have explicit revision number, use it
+                if (revisionNumber.HasValue)
+                {
+                    return $"{baseVersion}.{revisionNumber.Value}";
+                }
+
+                // Otherwise, use the revision number we found in the file
+                if (!string.IsNullOrWhiteSpace(existingRevision))
+                {
+                    return $"{baseVersion}.{existingRevision}";
+                }
+
+                // Otherwise, just use the base version
+                return baseVersion;
+            }, 1);
+
             if (updatedContent != fileContent)
             {
                 await File.WriteAllTextAsync(projectFilePath, updatedContent);

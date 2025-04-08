@@ -38,7 +38,7 @@ namespace Enterwell.CI.Changelog.Tests
         /// <see cref="FileNotFoundException"/> should be thrown with correct message.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputWithChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
+        public async Task FillingChangelogService_ChangesDirectoryNoChangelog_ThrowsFileNotFoundExceptionWithCorrectMessage()
         {
             // Arrange
             var fileNames = Array.Empty<string>();
@@ -52,11 +52,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed.
+        /// Testing the application when change with a breaking keyword exists.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputs_UpdatesMajorCorrectly()
+        public async Task FillingChangelogService_BreakingKeyword_UpdatesMajorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -110,11 +110,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed.
+        /// Testing the application with changes that bump minor by default.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputs_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_DefaultMinorBumpingChanges_UpdatesMinorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -167,11 +167,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed.
+        /// Testing the application with changes that bump patch by default.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the patch version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputs_UpdatesPatchCorrectly()
+        public async Task FillingChangelogService_DefaultPatchBumpingChanges_UpdatesPatchCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -216,11 +216,122 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application bumps patch correctly when no changes have been made.
+        /// Testing the application when the flag to not merge changelog is explicitly set.
+        /// Test should not throw any exception, 'changes' directory should not be emptied and 'Changelog.md' file should not contain new version section.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ShouldNotMergeFlag_DoesNothingCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var expectedHeading = $"## [{initialMajor}.{initialMinor}.{initialPatch}]";
+
+            // Act
+            this.changelogService.ShouldMergeChangelog = false;
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(fileNames.Length);
+
+            var changelogText = await File.ReadAllTextAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+        }
+
+        /// <summary>
+        /// Testing the application when the flags to not merge changelog and to version bump project file are set.
+        /// Test should not throw any exception, 'changes' directory should not be emptied, 'Changelog.md' file should not contain new version section but the project file will be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ShouldNotMergeFlagWithVersionBump_UpdatesProjectFileCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var packageJsonContent = JsonConvert.SerializeObject(new
+            {
+                name = "tasks",
+                version = $"{initialMajor}.{initialMinor}.{initialPatch}",
+                description = ""
+            }, Formatting.Indented);
+            CreateProjectFile("package.json", packageJsonContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedHeading = $"## [{initialMajor}.{initialMinor}.{initialPatch}]";
+            var expectedPackageJsonVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+
+            // Act
+            this.changelogService.ShouldMergeChangelog = false;
+            this.changelogService.SetVersion = (true, null);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(fileNames.Length);
+
+            var changelogText = await File.ReadAllTextAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var packageJsonText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            packageJsonText.Should().Contain(expectedPackageJsonVersion);
+        }
+
+        /// <summary>
+        /// Testing the application bumps minor correctly when no changes have been made.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsNoChanges_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_NoChanges_UpdatesMinorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -261,12 +372,12 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
-        /// Testing that the application bumps major version correctly based on a custom major category.
+        /// Testing the application with custom 'changelog' configuration.
+        /// The application bumps major version correctly based on a custom major category.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithCustomMajorCategory_UpdatesMajorCorrectly()
+        public async Task FillingChangelogService_CustomMajorCategory_UpdatesMajorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -324,12 +435,12 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
-        /// Testing that the application bumps major version correctly based on a custom breaking keyword.
+        /// Testing the application with custom 'changelog' configuration.
+        /// The application bumps major version correctly based on a custom breaking keyword.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the major version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithCustomBreakingKeyword_UpdatesMajorCorrectly()
+        public async Task FillingChangelogService_CustomBreakingKeyword_UpdatesMajorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -387,11 +498,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
+        /// Testing the application with custom 'changelog' configuration.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_CustomConfiguration_UpdatesMinorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -448,11 +559,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application bumps patch correctly when no changes have been made and the custom 'changelog' configuration exists.
+        /// Testing the application with custom 'changelog' configuration and no changes.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the minor version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithCustomConfigurationNoChanges_UpdatesMinorCorrectly()
+        public async Task FillingChangelogService_CustomConfigurationNoChanges_UpdatesMinorCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -504,11 +615,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and the custom 'changelog' configuration exists.
+        /// Testing the application with custom 'changelog' configuration.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section where the patch version part is updated.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithCustomConfiguration_UpdatesPatchCorrectly()
+        public async Task FillingChangelogService_CustomConfiguration_UpdatesPatchCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -569,7 +680,7 @@ namespace Enterwell.CI.Changelog.Tests
         /// <see cref="FileNotFoundException"/> should be thrown with correct message.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithVersionBumpNoProjectFile_ThrowsFileNotFoundExceptionWithCorrectMessage()
+        public async Task FillingChangelogService_VersionBumpNoProjectFile_ThrowsFileNotFoundExceptionWithCorrectMessage()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -615,11 +726,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and package.json is automatically determined for version bumping.
+        /// Testing the application when package.json is automatically determined for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the package.json's version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithImplicitPackageJson_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ImplicitPackageJson_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -689,11 +800,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and package.json is explicitly set for version bumping.
+        /// Testing the application when the package.json is explicitly set for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the package.json's version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithExplicitPackageJson_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ExplicitPackageJson_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -767,11 +878,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and a .json file is explicitly set for version bumping.
+        /// Testing the application when a .json file is explicitly set for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .json's version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithExplicitGeneralJson_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ExplicitGeneralJson_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -845,11 +956,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and a file with version in its documentation is explicitly set for version bumping.
+        /// Testing the application when a file with version in its documentation is explicitly set for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the file's documented version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithExplicitDocumentationFile_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ExplicitDocumentationFile_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -915,9 +1026,8 @@ namespace Enterwell.CI.Changelog.Tests
                                   * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
                                   * Text Domain:       PluginName
                                   * Domain Path:       /languages
+                                  * Version:           1.1.1
                                   */
-                                 
-                                 // If this file is called directly, abort.
                                  """;
             CreateProjectFile(documentationFilePath, documentationFileContent);
 
@@ -943,14 +1053,241 @@ namespace Enterwell.CI.Changelog.Tests
 
             var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
             fileText.Should().Contain(expectedVersion);
+            fileText.Should().Contain("1.1.1");
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and .csproj is automatically determined for version bumping.
+        /// Testing the application when an assembly info file is explicitly set for version bumping and there is no explicit revision number given.
+        /// Test should not throw any exception, 'changes' directory should be emptied, 'Changelog.md' file should contain new version section and the assembly info's version should be bumped with revision number unchanged.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ExplicitAssemblyInfoFileNoExplicitRevision_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+            const int initialRevision = 12345;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var assemblyInfoFilePath = Path.Combine(subFolderPath, "AssemblyInfo.cs");
+            var assemblyInfoFileContent = $"""
+                                 ﻿using System.Reflection;
+                                 using System.Runtime.InteropServices;
+                                 using System.Runtime.Serialization;
+                                 
+                                 // General Information about an assembly is controlled through the following 
+                                 // set of attributes. Change these attribute values to modify the information
+                                 // associated with an assembly.
+                                 [assembly: AssemblyTitle("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyDescription("")]
+                                 [assembly: AssemblyConfiguration("")]
+                                 [assembly: AssemblyCompany("")]
+                                 [assembly: AssemblyProduct("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyCopyright("Copyright ©  2010")]
+                                 [assembly: AssemblyTrademark("")]
+                                 [assembly: AssemblyCulture("")]
+                                 
+                                 // Setting ComVisible to false makes the types in this assembly not visible 
+                                 // to COM components.  If you need to access a type in this assembly from 
+                                 // COM, set the ComVisible attribute to true on that type.
+                                 [assembly: ComVisible(false)]
+                                 
+                                 // The following GUID is for the ID of the typelib if this project is exposed to COM
+                                 [assembly: Guid("8870d9fc-01e9-46e9-a89f-e3194f965096")]
+                                 
+                                 // Version information for an assembly consists of the following four values:
+                                 //
+                                 //      Major Version
+                                 //      Minor Version 
+                                 //      Build Number
+                                 //      Revision
+                                 //
+                                 // You can specify all the values or you can default the Build and Revision Numbers 
+                                 // by using the '*' as shown below:
+                                 // [assembly: AssemblyVersion("1.0.*")]
+                                 [assembly: AssemblyVersion("{initialMajor}.{initialMinor}.{initialPatch}.{initialRevision}")]
+                                 [assembly: AssemblyFileVersion("1.1.1205.1040")]
+                                 """;
+            CreateProjectFile(assemblyInfoFilePath, assemblyInfoFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedChangelogVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedChangelogHeading = $"## [{expectedChangelogVersion}] - {DateTime.Now:yyyy-MM-dd}";
+            var expectedAssemblyVersion = $"{expectedChangelogVersion}.{initialRevision}";
+
+            // Act
+            this.changelogService.SetVersion = (true, assemblyInfoFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedChangelogHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain(expectedAssemblyVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when an assembly info file is explicitly set for version bumping and there is an explicit revision given.
+        /// Test should not throw any exception, 'changes' directory should be emptied, 'Changelog.md' file should contain new version section and the assembly info's version should be bumped with revision number that was explicitly given.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ExplicitAssemblyInfoFileAndExplicitRevision_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+            const int initialRevision = 12345;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var assemblyInfoFilePath = Path.Combine(subFolderPath, "AssemblyInfo.cs");
+            var assemblyInfoFileContent = $"""
+                                 ﻿using System.Reflection;
+                                 using System.Runtime.InteropServices;
+                                 using System.Runtime.Serialization;
+                                 
+                                 // General Information about an assembly is controlled through the following 
+                                 // set of attributes. Change these attribute values to modify the information
+                                 // associated with an assembly.
+                                 [assembly: AssemblyTitle("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyDescription("")]
+                                 [assembly: AssemblyConfiguration("")]
+                                 [assembly: AssemblyCompany("")]
+                                 [assembly: AssemblyProduct("ServiceStack.Examples.ServiceModel")]
+                                 [assembly: AssemblyCopyright("Copyright ©  2010")]
+                                 [assembly: AssemblyTrademark("")]
+                                 [assembly: AssemblyCulture("")]
+                                 
+                                 // Setting ComVisible to false makes the types in this assembly not visible 
+                                 // to COM components.  If you need to access a type in this assembly from 
+                                 // COM, set the ComVisible attribute to true on that type.
+                                 [assembly: ComVisible(false)]
+                                 
+                                 // The following GUID is for the ID of the typelib if this project is exposed to COM
+                                 [assembly: Guid("8870d9fc-01e9-46e9-a89f-e3194f965096")]
+                                 
+                                 // Version information for an assembly consists of the following four values:
+                                 //
+                                 //      Major Version
+                                 //      Minor Version 
+                                 //      Build Number
+                                 //      Revision
+                                 //
+                                 // You can specify all the values or you can default the Build and Revision Numbers 
+                                 // by using the '*' as shown below:
+                                 // [assembly: AssemblyVersion("1.0.*")]
+                                 [assembly: AssemblyVersion("{initialMajor}.{initialMinor}.{initialPatch}.{initialRevision}")]
+                                 [assembly: AssemblyFileVersion("1.1.1205.1040")]
+                                 """;
+            CreateProjectFile(assemblyInfoFilePath, assemblyInfoFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+            const int explicitRevision = 54321;
+
+            var expectedChangelogVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedChangelogHeading = $"## [{expectedChangelogVersion}] - {DateTime.Now:yyyy-MM-dd}";
+            var expectedAssemblyVersion = $"{expectedChangelogVersion}.{explicitRevision}";
+
+            // Act
+            this.changelogService.SetVersion = (true, assemblyInfoFilePath);
+            this.changelogService.RevisionNumber = explicitRevision;
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedChangelogHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain(expectedAssemblyVersion);
+        }
+
+        /// <summary>
+        /// Testing the application when .csproj is automatically determined for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .csproj's version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithImplicitCsproj_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ImplicitCsproj_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
@@ -1021,11 +1358,11 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
-        /// Testing the application when valid inputs are passed and .csproj file is explicitly set for version bumping.
+        /// Testing the application when .csproj file is explicitly set for version bumping.
         /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the .csproj's version should be bumped.
         /// </summary>
         [Fact]
-        public async Task FillingChangelogService_ValidInputsWithExplicitCsproj_BumpsVersionCorrectly()
+        public async Task FillingChangelogService_ExplicitCsproj_BumpsVersionCorrectly()
         {
             // Arrange
             var invalidFileNames = new[]
