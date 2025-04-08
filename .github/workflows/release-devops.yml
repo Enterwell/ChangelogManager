@@ -31,12 +31,6 @@ jobs:
       - name: Install TFX CLI
         run: npm install -g tfx-cli
 
-      # Defining what .NET SDK to use
-      - name: Use .NET 6.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 6.0.x
-
       # Update changelog
       - name: Changelog
         id: version-bump

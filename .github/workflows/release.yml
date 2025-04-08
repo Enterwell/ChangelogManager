@@ -46,12 +46,6 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      # Using .NET 6 for running the changelog action
-      - name: Use .NET 6.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 6.0.x
-      
       # Bump version and update changelog
       - name: Bump version and update changelog
         id: version-bump
@@ -67,7 +61,7 @@ jobs:
           pull: '--rebase --autostash'
           default_author: github_actions
           message: "[skip ci] [version-bump] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
-
+      
       # Using .NET 8 for publishing the .NET 8 projects
       - name: Use .NET 8.0.x
         uses: actions/setup-dotnet@v3
