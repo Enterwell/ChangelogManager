@@ -42,13 +42,10 @@ jobs:
         id: version-bump
         uses: Enterwell/ChangelogManager-GitHub-Action@v3
         with:
+          should-bump-version: true
           changelog-location: ${{ env.ROOT_PATH }}
           changes-location: ${{ env.ROOT_PATH }}/changes
-
-      # Bump version
-      - name: Bump extension version
-        run: |
-          jq '.version = "${{ steps.version-bump.outputs.bumped-semantic-version }}"' vss-extension.json > temp.json && mv temp.json vss-extension.json
+          path-to-project-file: ${{ env.ROOT_PATH }}/vss-extension.json
 
       # Process all tasks
       - name: Preparing tasks

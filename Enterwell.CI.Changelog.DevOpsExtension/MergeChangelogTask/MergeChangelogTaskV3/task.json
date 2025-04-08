@@ -8,7 +8,7 @@
   "author": "Enterwell",
   "version": {
     "Major": 3,
-    "Minor": 1,
+    "Minor": 2,
     "Patch": 0
   },
   "instanceNameFormat": "Merging Changelog",
@@ -49,6 +49,22 @@
       "defaultValue": "",
       "helpMarkDown": "If not set, the application will try to automatically determine the project file. Currently supported project types: NPM (package.json) and .NET SDK (*.csproj with the version tag).",
       "visibleRule": "shouldBumpVersion = true"
+    },
+    {
+      "name": "revisionNumber",
+      "type": "string",
+      "label": "Revision number",
+      "required": false,
+      "defaultValue": "",
+      "helpMarkDown": "If the revision number is provided, 4 number long versions will be supported. This is write-only, which means the revision number will not be bumped automatically, but only replaced if provided",
+    },
+    {
+      "name": "shouldMergeChangelog",
+      "type": "boolean",
+      "label": "Should merge changelog",
+      "required": false,
+      "defaultValue": true,
+      "helpMarkDown": "Should the newly generated changelog section be merged to the changelog. If set to false, the merge step is skipped"
     }
   ],
   "execution": {

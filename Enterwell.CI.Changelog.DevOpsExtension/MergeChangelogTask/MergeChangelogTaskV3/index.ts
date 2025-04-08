@@ -24,7 +24,6 @@ function printContents(changelogLocation: string, changesLocation: string) {
 
     console.log('=======FOLDER CONTENTS=======');
     folderFiles.forEach((file) => {
-
       if (file.toLowerCase() === changelogName) {
         changelogName = file;
       }
@@ -95,7 +94,9 @@ async function run() {
     let input_differentLocation: boolean = tl.getBoolInput('changesInDifferentLocation');
     let input_changesLocation: string;
     let input_shouldBumpVersion: boolean = tl.getBoolInput('shouldBumpVersion');
-    let input_pathToProjectFile: string = tl.getInput('pathToProjectFile') || ''; 
+    let input_pathToProjectFile: string = tl.getInput('pathToProjectFile') || '';
+    let input_revisionNumber: string = tl.getInput('revisionNumber') || '';
+    let input_shouldMergeChangelog: boolean = tl.getBoolInput('shouldMergeChangelog');
 
     if (!input_differentLocation) {
       input_changesLocation = path.join(input_changelogLocation, 'changes');
@@ -108,6 +109,8 @@ async function run() {
     console.log('Input changes location: ' + input_changesLocation);
     console.log('Input should bump version: ' + input_shouldBumpVersion);
     console.log('Input path to the project file: ' + input_pathToProjectFile);
+    console.log('Input revision number: ' + input_revisionNumber);
+    console.log('Input should merge changelog: ' + input_shouldMergeChangelog);
 
     if (!(input_changesLocation.endsWith('changes'))) {
       throw new Error('Insert correct changes location!');
@@ -118,7 +121,15 @@ async function run() {
 
     try {
       let setVersionProjectFilePath = input_pathToProjectFile !== '' ? `:${input_pathToProjectFile}` : '';
-      let setVersionOption = input_shouldBumpVersion ? `-sv${setVersionProjectFilePath}` : null;
+      let setVersionOption = input_shouldBumpVersion ? `-sv${setVersionProjectFilePath}` : '';
+      let revisionNumberOption = input_revisionNumber ? `-r ${input_revisionNumber}` : '';
+      let shouldMergeChangelogOption = !input_shouldMergeChangelog ? '-mc false' : '';
+
+      let execOptions = [input_changelogLocation, input_changesLocation];
+
+      if (setVersionOption) execOptions.push(setVersionOption);
+      if (revisionNumberOption) execOptions.push(revisionNumberOption);
+      if (shouldMergeChangelogOption) execOptions.push(shouldMergeChangelogOption);
 
       let fileToRunPath;
       let newChangelogSection;
@@ -126,31 +137,18 @@ async function run() {
       // If on windows VM
       if (process.platform === 'win32') {
         fileToRunPath = path.join(__dirname, 'dist', 'clm-win.exe');
-        
-        if (setVersionOption == null) {
-          newChangelogSection = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
-        } else {
-          newChangelogSection = execFileSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], {encoding: 'utf-8'});
-        }
+
+        newChangelogSection = execFileSync(fileToRunPath, execOptions, { encoding: 'utf-8' });
       } else {
         const fileName = `clm-${process.platform === 'darwin' ? 'osx' : 'linux'}`;
 
         fileToRunPath = path.join(__dirname, 'dist', fileName);
         fs.chmodSync(fileToRunPath, 0o777);
 
-        let error: string;
+        const result = spawnSync(fileToRunPath, execOptions, { encoding: 'utf-8' });
 
-        if (setVersionOption == null) {
-          const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation], { encoding: 'utf-8' });
-
-          newChangelogSection = result.stdout;
-          error = result.stderr;
-        } else {
-          const result = spawnSync(fileToRunPath, [input_changelogLocation, input_changesLocation, setVersionOption], { encoding: 'utf-8' });
-
-          newChangelogSection = result.stdout;
-          error = result.stderr;
-        }
+        newChangelogSection = result.stdout;
+        const error = result.stderr;
 
         if (error) {
           throw new Error(error);
