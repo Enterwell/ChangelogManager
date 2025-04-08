@@ -27,6 +27,13 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
       VS_MARKETPLACE_TOKEN: ${{ secrets.VSCE_PAT }}
 
+  # Release NPM package
+  release-npm:
+    uses: './.github/workflows/release-npm.yml'
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   # Rest of the repository
   rest:
     name: Rest
