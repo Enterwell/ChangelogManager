@@ -82,8 +82,6 @@ namespace Enterwell.CI.Changelog
         /// <returns>An asynchronous task.</returns>
         public async Task OnExecute()
         {
-            var logger = new ConsoleLogger();
-
             try
             {
                 // Gathering changes and the bumping the version
@@ -108,7 +106,7 @@ namespace Enterwell.CI.Changelog
                     this.changeGatheringService.RemoveAcceptedChanges(versionInformation.Changes);
                 }
 
-                logger.LogSuccess(newChangelogSection);
+                ConsoleLogger.LogSuccess(newChangelogSection);
             }
             catch (Exception ex)
             {
