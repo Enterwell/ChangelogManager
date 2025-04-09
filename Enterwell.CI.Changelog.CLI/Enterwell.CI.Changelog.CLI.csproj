@@ -7,11 +7,11 @@
 		<AssemblyName>cc</AssemblyName>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<Nullable>enable</Nullable>
-		<Version>2.2.0</Version>
+		<Version>3.4.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
+		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>

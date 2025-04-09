@@ -60,7 +60,13 @@ You can run the binary anywhere in the target project's workspace directory.
 
 If the helper is used in the directory that doesn't contain ***changes*** directory to create the change file in, it will automatically search current working directory tree upwards for the nearest **changes** directory.
 
-The helper takes two arguments and one optional input:
+The helper functionality is divided into two subcommands:
++ **add** - add a new change
++ **list** - list various information about the changes
+    + **categories** - list categories allowed by the configuration
+    + **changes** - list changes created
+
+**Add** subcommand takes two arguments and one optional input:
 + change type - required
 + change description - required
 + change category - optional (prefixed with either `-c` or `--category`)
@@ -68,7 +74,7 @@ The helper takes two arguments and one optional input:
 Example of a call:
 
 ```
-cc [options] <change_type> <change_description>
+cc add [options] <change_type> <change_description>
 ```
 
 Arguments:

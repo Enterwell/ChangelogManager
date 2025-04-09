@@ -73,7 +73,10 @@ namespace Enterwell.CI.Changelog.Shared
                 var possibleConfigFilePath = Path.Combine(currentDir.FullName, ConfigurationName);
                 if (File.Exists(possibleConfigFilePath))
                 {
-                    return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(possibleConfigFilePath));
+                    return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(possibleConfigFilePath), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
                 }
 
                 currentDir = currentDir.Parent;
