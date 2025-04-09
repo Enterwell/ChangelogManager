@@ -1,6 +1,6 @@
 {
   "name": "@enterwell/changelog-create",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Helps developers make easy notes on changes made to their codebase",
   "author": "enterwell",
   "license": "MIT",
