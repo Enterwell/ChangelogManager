@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
 
-import { changesDirectoryName, configurationName } from '../constants';
+import { changelogName, changesDirectoryName, configurationName } from '../constants';
 
 /**
  * Determines the user's workspace folder in which to generate a change file.
@@ -43,7 +43,8 @@ export function loadConfiguration(workspaceFolderPath: string): { categories: st
     return null;
   }
 
-  const possibleConfigFilePath = path.join(workspaceFolderPath, configurationName);
+  const changelogPath = findNearestChangelogPath(workspaceFolderPath);
+  const possibleConfigFilePath = path.join(changelogPath, configurationName);
 
   // If the file exists, parse it
   if (fs.existsSync(possibleConfigFilePath)) {
@@ -79,6 +80,30 @@ export function constructFileName(type: string, category: string, description: s
 }
 
 /**
+ * Tries to find the nearest `CHANGELOG.md` file.
+ *
+ * @param workspaceFolderPath User's workspace folder path
+ */
+export function findNearestChangelogPath(workspaceFolderPath: string) {
+  let currentDir = path.resolve(workspaceFolderPath);
+  let parentDir = path.dirname(currentDir);
+
+  while (currentDir !== parentDir) {
+    const possibleChangelogFilePath = path.join(currentDir, changelogName);
+
+    // If the file exists, return the containing path
+    if (fs.existsSync(possibleChangelogFilePath)) {
+      return currentDir;
+    }
+
+    currentDir = parentDir;
+    parentDir = path.dirname(currentDir);
+  }
+
+  return workspaceFolderPath;
+}
+
+/**
  * Ensures that the changes directory exists. If it does not exist, the directory is created.
  *
  * @param workspaceFolderPath User's workspace folder path
@@ -97,7 +122,7 @@ export function ensureChangesDirectoryExists(workspaceFolderPath: string) {
  * @param workspaceFolderPath User's workspace folder path
  * @param fileName Name of the change file
  */
-export function createFile(workspaceFolderPath: string, fileName: string) {
+export function createChangeFile(workspaceFolderPath: string, fileName: string) {
   const changesDirectoryPath = path.join(workspaceFolderPath, changesDirectoryName);
 
   fs.writeFileSync(path.join(changesDirectoryPath, fileName), '');
