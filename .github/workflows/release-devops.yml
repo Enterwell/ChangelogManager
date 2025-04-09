@@ -13,12 +13,23 @@ on:
         required: true
 
 jobs:
+  # Check for changes
+  check-changes:
+    uses: './.github/workflows/check-changes.yml'
+    with:
+      ROOT_PATH: Enterwell.CI.Changelog.DevOpsExtension
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
+
+  # Release
   release:
     name: Release Azure DevOps extension
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ env.ROOT_PATH }}
+    needs: check-changes
+    if: needs.check-changes.outputs.has_changes == 'true'
 
     steps:
       # Checkout

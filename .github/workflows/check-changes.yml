@@ -1,0 +1,43 @@
+name: Check for changes
+
+on:
+  workflow_call:
+    inputs:
+      ROOT_PATH:
+        required: true
+        type: string
+        description: Root path of the directory to check for changes
+    secrets:
+      GH_PAT:
+        required: true
+    outputs:
+      has_changes:
+        description: "Whether changes directory exists"
+        value: ${{ jobs.check-changes.outputs.has_changes }}
+
+jobs:
+  check-changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check.outputs.has_changes }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.ROOT_PATH }}
+    
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # Check if changes directory exists
+      - name: Check if changes directory exists
+        id: check
+        run: |
+          if [ -d "changes" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
