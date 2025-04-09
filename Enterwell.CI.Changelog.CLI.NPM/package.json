@@ -4,6 +4,9 @@
   "description": "Helps developers make easy notes on changes made to their codebase",
   "author": "enterwell",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "cc": "index.js"
   }

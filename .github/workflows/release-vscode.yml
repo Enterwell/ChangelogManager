@@ -27,12 +27,6 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      # Defining what .NET SDK to use
-      - name: Use .NET 6.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 6.0.x
-
       # Defining what Node.js version to use
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
