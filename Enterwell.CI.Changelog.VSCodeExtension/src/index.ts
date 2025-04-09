@@ -3,8 +3,9 @@ import * as vscode from 'vscode';
 import { allowedTypes } from './constants';
 import {
   constructFileName,
-  createFile,
+  createChangeFile,
   ensureChangesDirectoryExists,
+  findNearestChangelogPath,
   getWorkspaceFolder,
   loadConfiguration
 } from './helpers/FileSystemHelper';
@@ -82,10 +83,11 @@ const handleCommand = async () => {
     return terminate();
   }
 
-  ensureChangesDirectoryExists(workspaceFolder.uri.fsPath);
+  const changelogPath = findNearestChangelogPath(workspaceFolder.uri.fsPath);
+  ensureChangesDirectoryExists(changelogPath);
 
   try {
-    createFile(workspaceFolder.uri.fsPath, fileName);
+    createChangeFile(changelogPath, fileName);
     return vscode.window.showInformationMessage('Change added successfully!');
   } catch (err) {
     return terminate();
