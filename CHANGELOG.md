@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2025-04-14
+### Added
+- [CLI] 'List changes' subcommand for listing created changes
+- [CLI] 'Add' subcommand for adding a change
+- [CLI] 'List categories' subcommand for listing categories allowed by the configuration
+
 ## [3.3.0] - 2025-04-08
 ### Added
 - [CoreApp] New 'merge-changelog' CLI option for optionally skipping the merge changelog step
