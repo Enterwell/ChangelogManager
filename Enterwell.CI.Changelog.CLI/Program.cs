@@ -92,25 +92,12 @@ namespace Enterwell.CI.Changelog.CLI
                 // Manually validate the category in the case it was not assigned, but should have been assigned and format it correctly.
                 var formattedCategory = this.ValidateAndFormatCategory(this.Category?.Trim());
 
-                var changesDirectory = FileSystemHelper.FindNearestChangesFolder();
-
-                if (string.IsNullOrWhiteSpace(changesDirectory))
-                {
-                    FileSystemHelper.EnsureChangesDirectoryExists(Directory.GetCurrentDirectory());
-                }
+                var changesDirectory = FileSystemHelper.FindNearestChangesFolder(Directory.GetCurrentDirectory());
 
                 string inputType = this.FormatTypeCorrectly(this.Type);
                 string fileName = FileSystemHelper.ConstructFileName(inputType, formattedCategory, this.Description);
 
-                string filePath;
-                if (!string.IsNullOrWhiteSpace(changesDirectory))
-                {
-                    filePath = Path.Combine(changesDirectory, fileName);
-                }
-                else
-                {
-                    filePath = Path.Combine(Directory.GetCurrentDirectory(), FileSystemHelper.ChangeDirectoryName, fileName);
-                }
+                string filePath = Path.Combine(changesDirectory, fileName);
 
                 (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(filePath);
 
@@ -182,21 +169,19 @@ namespace Enterwell.CI.Changelog.CLI
             {
                 private void OnExecute()
                 {
-                    var changesDirectory = FileSystemHelper.FindNearestChangesFolder();
+                    var changesDirectory = FileSystemHelper.FindNearestChangesFolder(Directory.GetCurrentDirectory());
 
-                    if (!string.IsNullOrWhiteSpace(changesDirectory))
+                    var changes = Directory.GetFiles(changesDirectory);
+                    if (changes.Length == 0)
                     {
-                        var changes = Directory.GetFiles(changesDirectory);
-
-                        foreach (var changeFile in changes)
-                        {
-                            ConsoleLogger.LogSuccess(Path.GetFileName(changeFile));
-                        }
-
+                        ConsoleLogger.LogSuccess("There are no new changes");
                         return;
                     }
 
-                    ConsoleLogger.LogError("Could not find the 'changes' directory");
+                    foreach (var changeFile in changes)
+                    {
+                        ConsoleLogger.LogSuccess(Path.GetFileName(changeFile));
+                    }
                 }
             }
 

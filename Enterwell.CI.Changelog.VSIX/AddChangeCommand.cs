@@ -107,8 +107,8 @@ namespace Enterwell.CI.Changelog.VSIX
                 return;
             }
 
-            FileSystemHelper.EnsureChangesDirectoryExists(solutionPath);
-            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(solutionPath, FileSystemHelper.ChangeDirectoryName, fileName));
+            var changesDirectoryPath = FileSystemHelper.FindNearestChangesFolder(solutionPath);
+            (bool isSuccessful, string reason) = FileSystemHelper.CreateFile(Path.Combine(changesDirectoryPath, fileName));
 
             await StatusBarLogAsync(isSuccessful, reason);
         }
@@ -158,8 +158,7 @@ namespace Enterwell.CI.Changelog.VSIX
 
             if (result.HasValue && result.Value)
             {
-                return FileSystemHelper.ConstructFileName(dialog.ChangeType, dialog.ChangeCategory,
-                    dialog.ChangeDescription);
+                return FileSystemHelper.ConstructFileName(dialog.ChangeType, dialog.ChangeCategory, dialog.ChangeDescription);
             }
 
             return string.Empty;

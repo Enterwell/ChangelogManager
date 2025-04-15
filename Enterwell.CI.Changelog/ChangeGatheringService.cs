@@ -19,7 +19,7 @@ namespace Enterwell.CI.Changelog
         private const string ChangelogFileName = "Changelog.md";
         private const string ConfigurationFileName = ".changelog.json";
 
-        private readonly string[] acceptableChanges = { "added", "changed", "deprecated", "removed", "fixed", "security" };
+        private readonly string[] acceptableChanges = ["added", "changed", "deprecated", "removed", "fixed", "security"];
 
         /// <summary>
         /// Gathers the current application version information that includes the current semantic version number and a dictionary of changes being made.
@@ -48,7 +48,7 @@ namespace Enterwell.CI.Changelog
             if (string.IsNullOrWhiteSpace(changelogLocation))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
 
-            // Correctly-cased path for a changelog file 
+            // Correctly-cased path for a changelog file
             var changelogFilePath = FileSystemHelper.GetFilePathCaseInsensitive(Path.Combine(changelogLocation, ChangelogFileName));
 
             if (!File.Exists(changelogFilePath))
@@ -146,7 +146,7 @@ namespace Enterwell.CI.Changelog
             if (string.IsNullOrWhiteSpace(changelogLocation))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(changelogLocation));
 
-            var configurationFilePath = Path.Combine(changelogLocation, ConfigurationFileName);
+            var configurationFilePath = FileSystemHelper.GetFilePathCaseInsensitive(Path.Combine(changelogLocation, ConfigurationFileName));
 
             // First check to see if the configuration file exists.
             if (File.Exists(configurationFilePath))

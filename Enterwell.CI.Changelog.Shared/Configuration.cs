@@ -67,19 +67,18 @@ namespace Enterwell.CI.Changelog.Shared
             if (string.IsNullOrWhiteSpace(directoryPath))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(directoryPath));
 
-            var currentDir = new DirectoryInfo(directoryPath);
-            while (currentDir != null)
-            {
-                var possibleConfigFilePath = Path.Combine(currentDir.FullName, ConfigurationName);
-                if (File.Exists(possibleConfigFilePath))
-                {
-                    return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(possibleConfigFilePath), new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
+            var changelogDirectoryPath = FileSystemHelper.FindNearestChangelogDirectoryPath(directoryPath);
+            var changelogDirectory = new DirectoryInfo(changelogDirectoryPath);
 
-                currentDir = currentDir.Parent;
+            var configFileInfo = changelogDirectory.EnumerateFiles()
+                .FirstOrDefault(f => f.Name.Equals(ConfigurationName, StringComparison.OrdinalIgnoreCase));
+
+            if (configFileInfo != null)
+            {
+                return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFileInfo.FullName), new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
             }
 
             return null;

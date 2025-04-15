@@ -12,18 +12,28 @@ namespace Enterwell.CI.Changelog.Shared
     public static class FileSystemHelper
     {
         public static string ChangeDirectoryName = "changes";
+        public static string ChangelogFileName = "CHANGELOG.md";
 
         /// <summary>
         /// Used to ensure that the changes directory exists. If it does not exist, the directory is created.
         /// </summary>
-        public static void EnsureChangesDirectoryExists(string directoryPath)
+        /// <returns><see cref="string"/> representing the path to case-insensitive changes directory.</returns>
+        public static string EnsureChangesDirectoryExists(string directoryPath)
         {
-            var changesDirectoryPath = Path.Combine(directoryPath, ChangeDirectoryName);
+            var currentDir = new DirectoryInfo(directoryPath);
 
-            if (!Directory.Exists(changesDirectoryPath))
+            var changesDirectoryPath = currentDir.EnumerateDirectories()
+                .FirstOrDefault(d => d.Name.Equals(ChangeDirectoryName, StringComparison.OrdinalIgnoreCase));
+
+            if (changesDirectoryPath is not { Exists: true })
             {
-                Directory.CreateDirectory(changesDirectoryPath);
+                var newChangesDirectoryPath = Path.Combine(currentDir.FullName, ChangeDirectoryName);
+                Directory.CreateDirectory(newChangesDirectoryPath);
+
+                return newChangesDirectoryPath;
             }
+
+            return changesDirectoryPath.FullName;
         }
 
         /// <summary>
@@ -77,18 +87,36 @@ namespace Enterwell.CI.Changelog.Shared
         /// <summary>
         /// Tries to find the nearest `changes` folder.
         /// </summary>
-        /// <returns><see cref="string"/> representing the path to the nearest `changes` folder or an empty string is no such folder exists.</returns>
-        public static string FindNearestChangesFolder()
+        /// <returns><see cref="string"/> representing the path to the nearest `changes` folder.</returns>
+        public static string FindNearestChangesFolder(string directoryPath)
         {
-            var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            var changelogPath = FindNearestChangelogDirectoryPath(directoryPath);
+            var changesDirectoryPath = EnsureChangesDirectoryExists(changelogPath);
+
+            return changesDirectoryPath;
+        }
+
+        /// <summary>
+        /// Tries to find the nearest 'CHANGELOG.md' file directory path.
+        /// </summary>
+        /// <returns><see cref="string" /> representing the path to the nearest 'CHANGELOG.md' file.</returns>
+        public static string FindNearestChangelogDirectoryPath(string directoryPath)
+        {
+            var currentDir = new DirectoryInfo(directoryPath);
             while (currentDir != null)
             {
-                if (currentDir.EnumerateDirectories("changes").Any())
-                    return Path.Combine(currentDir.FullName, "changes");
+                var changelogFileInfo = currentDir.EnumerateFiles()
+                    .FirstOrDefault(f => f.Name.Equals(ChangelogFileName, StringComparison.OrdinalIgnoreCase));
+
+                if (changelogFileInfo != null)
+                {
+                    return currentDir.FullName;
+                }
+
                 currentDir = currentDir.Parent;
             }
 
-            return string.Empty;
+            return directoryPath;
         }
 
         /// <summary>
