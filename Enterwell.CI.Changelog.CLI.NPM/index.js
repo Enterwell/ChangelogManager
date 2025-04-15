@@ -27,7 +27,7 @@ if (process.platform !== 'win32') {
 // Ignoring 'node' and the name of the script
 const argsToForward = process.argv.slice(2);
 
-const childProcess = spawn(binaryPath, argsToForward, { stdio: 'inherit', shell: process.platform === 'win32' });
+const childProcess = spawn(binaryPath, argsToForward, { stdio: 'inherit' });
 
 childProcess.on("exit", (code) => {
   process.exit(code);
