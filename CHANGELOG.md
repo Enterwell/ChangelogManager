@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [CoreApp] Case-insensitive file and folder names
 - [CLI] Case-insensitive file and folder names
-- [VSIX] Case-insensitive file and folder names
 
 ## [3.4.0] - 2025-04-14
 ### Added
@@ -60,7 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - [CLI] Removing excess whitespace from the entered change description and category
-- [VSIX] Removing excess whitespace from the entered change description and category
 
 ## [2.1.0] - 2022-04-11
 ### Added
@@ -74,7 +72,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [CLI] Using .NET 6
 - [CoreApp] Using .NET 6
-- [VSIX] Version bumped to correspond to other Changelog projects
 
 ### Deprecated
 - [CoreApp] Explicit bumped version input
@@ -83,13 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [CLI] --version option
 - [CLI] 'changes' folder discovery
-- [VSIX] VS 2022 support
-
-### Fixed
-- [VSIX] Category not cleared when opening another solution
 
 ## [1.0.0] - 2021-03-17
 ### Added
 - [CLI] Initial version
 - [CoreApp] Core logic implemented
-- [VSIX] Initial version

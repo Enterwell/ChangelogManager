@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [
+    "source control",
+    "team development",
+    "scaffolding"
+  ],
+  "identity": {
+    "internalName": "ChangelogCreate"
+  },
+  "overview": "README.md",
+  "priceCategory": "free",
+  "publisher": "Enterwell",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX"
+}

@@ -15,12 +15,19 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
+  # Release Visual Studio extension
+  release-vs:
+    uses: './.github/workflows/release-vs.yml'
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
   # Release Azure DevOps extension
   release-devops:
     uses: './.github/workflows/release-devops.yml'
     secrets:
       GH_PAT: ${{ secrets.GH_PAT }}
-      VS_MARKETPLACE_TOKEN: ${{ secrets.VSCE_PAT }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
   # Release NPM package
   release-npm:

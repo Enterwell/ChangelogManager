@@ -9,7 +9,7 @@ on:
     secrets:
       GH_PAT:
         required: true
-      VS_MARKETPLACE_TOKEN:
+      VSCE_PAT:
         required: true
 
 jobs:
@@ -85,7 +85,7 @@ jobs:
       
       # Once all tasks have been processed, publish the extension
       - name: Publishing the extension
-        run: tfx extension publish --token ${{ secrets.VS_MARKETPLACE_TOKEN }} --share-with enterwell tehnozavod --rev-version
+        run: tfx extension publish --token ${{ secrets.VSCE_PAT }} --share-with enterwell tehnozavod --rev-version
 
       # Commit new changes
       - name: Commit changelog changes
