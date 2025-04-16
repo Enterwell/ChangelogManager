@@ -90,14 +90,14 @@ Options:
     + Currently supported version formats that will be bumped:
     
 
-    | Version format                         | Example |
-|--------------------------------------------------|--------------------------------------------------------------|
-| JSON `"version": "x.y.z"`                        | `"version": "1.2.3"`                                         |
-| XML `<Version>x.y.z</Version>`                   | `<Version>1.2.3</Version>`                                   |
-| XML `<PackageVersion>x.y.z</PackageVersion>`     | `<PackageVersion>1.2.3</PackageVersion>`                     |
-| YAML / text `Version: x.y.z`               | `Version: 1.2.3`                                             |
-| C# Assembly `[assembly: AssemblyVersion("x.y.z")]` | `[assembly: AssemblyVersion("1.2.3")]`                      |
-| XML VSIX manifest `<Identity ... Version="x.y.z" />` | `<Identity Id="..." Version="1.2.3" ... />`                  |
+      | Version format                         | Example |
+      |--------------------------------------------------|--------------------------------------------------------------|
+      | JSON `"version": "x.y.z"`                        | `"version": "1.2.3"`                                         |
+      | XML `<Version>x.y.z</Version>`                   | `<Version>1.2.3</Version>`                                   |
+      | XML `<PackageVersion>x.y.z</PackageVersion>`     | `<PackageVersion>1.2.3</PackageVersion>`                     |
+      | YAML / text `Version: x.y.z`               | `Version: 1.2.3`                                             |
+      | C# Assembly `[assembly: AssemblyVersion("x.y.z")]` | `[assembly: AssemblyVersion("1.2.3")]`                      |
+      | XML VSIX manifest `<Identity ... Version="x.y.z" />` | `<Identity Id="..." Version="1.2.3" ... />`                  |
 + -r | --revision:
   + If the revision number is provided, 4 number long versions will be supported.
   + This is write-only, which means the revision number will not be bumped automatically, but only replaced if provided
