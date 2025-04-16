@@ -6,7 +6,7 @@
     "scaffolding"
   ],
   "identity": {
-    "internalName": "ChangelogCreate"
+    "internalName": "ChangelogManager"
   },
   "overview": "README.md",
   "priceCategory": "free",
