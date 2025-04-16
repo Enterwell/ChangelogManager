@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2025-04-16
+### Added
+- [CoreApp] VsixManifest project file versioning format
+
+### Changed
+- [CoreApp] Case-insensitive file and folder names
+- [CLI] Case-insensitive file and folder names
+- [VSIX] Case-insensitive file and folder names
+
 ## [3.4.0] - 2025-04-14
 ### Added
 - [CLI] 'List changes' subcommand for listing created changes
