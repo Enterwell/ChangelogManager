@@ -1,8 +1,7 @@
 {
   "categories": [
     "CoreApp",
-    "CLI",
-    "VSIX"
+    "CLI"
   ],
   "bumpingRule": {
     "major": [],

@@ -1,3 +1,5 @@
+name: Release rest of the repository
+
 # Variables
 env:
   ROOT_PATH: ./

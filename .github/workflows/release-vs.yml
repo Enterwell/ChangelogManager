@@ -1,0 +1,78 @@
+name: Release Visual Studio extension
+
+# Variables
+env:
+  ROOT_PATH: Enterwell.CI.Changelog.VSIX
+
+on:
+  workflow_call:
+    secrets:
+      GH_PAT:
+        required: true
+      VSCE_PAT:
+        required: true
+
+jobs:
+  # Check for changes
+  check-changes:
+    name: Check for changes
+    uses: './.github/workflows/check-changes.yml'
+    with:
+      ROOT_PATH: Enterwell.CI.Changelog.VSIX
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
+
+  # Release
+  release:
+    name: Release Visual Studio extension
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ${{ env.ROOT_PATH }}
+    needs: check-changes
+    if: needs.check-changes.outputs.has_changes == 'true'
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      # Bump version and update changelog
+      - name: Changelog
+        id: version-bump
+        uses: Enterwell/ChangelogManager-GitHub-Action@v3
+        with:
+          should-bump-version: true
+          changelog-location: ${{ env.ROOT_PATH }}
+          changes-location: ${{ env.ROOT_PATH }}/changes
+          path-to-project-file: ${{ env.ROOT_PATH }}/source.extension.vsixmanifest
+
+      # Adding MSBuild to the PATH
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      # Restore the project packages
+      - name: Restoring packages
+        run: dotnet restore
+
+      # Package the extension
+      - name: Packaging the extension
+        run: msbuild ${{ env.ROOT_PATH }}.csproj -property:Configuration=Release
+
+      # Publish the extension
+      - name: Publishing the extension
+        uses: cezarypiatek/VsixPublisherAction@1.1
+        with:
+          extension-file: ${{ env.ROOT_PATH }}\bin\Release\${{ env.ROOT_PATH }}.vsix
+          publish-manifest-file: ${{ env.ROOT_PATH }}\publishManifest.json
+          personal-access-code: ${{ secrets.VSCE_PAT }}
+
+      # Commit new changes
+      - name: Commit changelog changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          pull: '--rebase --autostash'
+          default_author: github_actions
+          message: "[skip ci] [version-bump] [vs] Automated commit for version ${{ steps.version-bump.outputs.bumped-semantic-version }}"
