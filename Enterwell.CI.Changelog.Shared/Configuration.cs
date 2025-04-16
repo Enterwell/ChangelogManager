@@ -75,10 +75,17 @@ namespace Enterwell.CI.Changelog.Shared
 
             if (configFileInfo != null)
             {
-                return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFileInfo.FullName), new JsonSerializerOptions
+                try
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    return JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFileInfo.FullName), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             return null;

@@ -1057,6 +1057,102 @@ namespace Enterwell.CI.Changelog.Tests
         }
 
         /// <summary>
+        /// Testing the application when a manifest file with version is explicitly set for version bumping.
+        /// Test should not throw any exception, 'changes' directory should be emptied and 'Changelog.md' file should contain new version section and the file's version should be bumped.
+        /// </summary>
+        [Fact]
+        public async Task FillingChangelogService_ExplicitVsixManifestFile_BumpsVersionCorrectly()
+        {
+            // Arrange
+            var invalidFileNames = new[]
+            {
+                "    s  aDDEd [Api] this should not be accepted",
+                "This should not be accepted as change",
+                " s",
+                "a ",
+                "-"
+            };
+            var validFileNames = new[]
+            {
+                "   Added [API] Added example 1",
+                "Fixed [BE] Fixed example 1",
+                "Security [API] Security example 1"
+            };
+            var fileNames = validFileNames.Concat(invalidFileNames).ToArray();
+
+            const int initialMajor = 1;
+            const int initialMinor = 2;
+            const int initialPatch = 3;
+
+            CreateChanges(fileNames);
+            CreateChangelog(initialMajor, initialMinor, initialPatch);
+
+            var configuration = new Configuration
+            {
+                BumpingRule = new BumpingRule
+                {
+                    Major = ["Deprecated"],
+                    Minor = ["Removed"],
+                    Patch = ["Fixed"]
+                }
+            };
+            CreateConfiguration(configuration);
+
+            var subFolderPath = Path.Combine(this.TestFolderPath, "subfolder");
+            Directory.CreateDirectory(subFolderPath);
+
+            var manifestFilePath = Path.Combine(subFolderPath, "test.vsixmanifest");
+            var manifestFileContent = $"""
+                                 <?xml version="1.0" ?>
+                                 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+                                     <Metadata>
+                                         <Identity Id="SomethingSomething" Version="{initialMajor}.{initialMinor}.{initialPatch}" Language="en-US" Publisher="Something" />
+                                         <DisplayName>Changelog Create</DisplayName>
+                                     </Metadata>
+                                     <Installation>
+                                         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
+                                         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)" >
+                                             <ProductArchitecture>amd64</ProductArchitecture>
+                                         </InstallationTarget>
+                                     </Installation>
+                                     <Dependencies>
+                                     </Dependencies>
+                                     <Prerequisites>
+                                         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,)" DisplayName="Visual Studio core editor" />
+                                     </Prerequisites>
+                                     <Assets>
+                                         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+                                     </Assets>
+                                 </PackageManifest>
+                                 """;
+            CreateProjectFile(manifestFilePath, manifestFileContent);
+
+            const int shouldBePatch = initialPatch + 1;
+
+            var expectedVersion = $"{initialMajor}.{initialMinor}.{shouldBePatch}";
+            var expectedHeading = $"## [{expectedVersion}] - {DateTime.Now:yyyy-MM-dd}";
+
+            // Act
+            this.changelogService.SetVersion = (true, manifestFilePath);
+            Func<Task> act = () => this.changelogService.OnExecute();
+
+            // Assert
+            await act.Should().NotThrowAsync();
+
+            var changeFilesRemaining = Directory.GetFiles(this.ChangesFolderPath);
+
+            changeFilesRemaining.Should().NotBeEmpty();
+            changeFilesRemaining.Should().HaveCount(invalidFileNames.Length);
+
+            var changelogText = await File.ReadAllLinesAsync(this.ChangelogFilePath);
+            changelogText.Should().Contain(expectedHeading);
+
+            var fileText = await File.ReadAllTextAsync(this.ProjectFilePath);
+            fileText.Should().Contain("2.0.0");
+            fileText.Should().Contain(expectedVersion);
+        }
+
+        /// <summary>
         /// Testing the application when an assembly info file is explicitly set for version bumping and there is no explicit revision number given.
         /// Test should not throw any exception, 'changes' directory should be emptied, 'Changelog.md' file should contain new version section and the assembly info's version should be bumped with revision number unchanged.
         /// </summary>

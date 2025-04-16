@@ -78,7 +78,7 @@ namespace Enterwell.CI.Changelog
             // Handle the file contents
             var fileContent = await File.ReadAllTextAsync(projectFilePath);
 
-            var universalVersionPattern = """(?<=("version"\s*:\s*"|<Version>|<PackageVersion>|Version:\s*|\[assembly:\s*AssemblyVersion\("))(\d+\.\d+\.\d+)(?:\.(\d+))?""";
+            var universalVersionPattern = """(?<=("version"\s*:\s*"|<Version>|<PackageVersion>|Version:\s*|\[assembly:\s*AssemblyVersion\("|<Identity[^>]*\sVersion="))(\d+\.\d+\.\d+)(?:\.(\d+))?""";
             var patternRegex = new Regex(universalVersionPattern, RegexOptions.IgnoreCase);
 
             var updatedContent = patternRegex.Replace(fileContent, match =>
