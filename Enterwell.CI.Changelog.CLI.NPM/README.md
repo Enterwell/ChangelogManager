@@ -51,7 +51,6 @@ These files are then used with our [Changelog Manager tool](https://github.com/E
 + 🌱 [Introduction](#-introduction)
 + 📝 [Usage](#-usage)
 + ⚙️ [Configuration file](#-configuration-file)
-+ 🏗 [Development](#-development)
 + ☎️ [Support](#-support)
 + 🪪 [License](#-license)
 
