@@ -34,10 +34,11 @@ Acceptable entries for the `<change_type>` are:
 This decision was inspired by following the [principles](https://keepachangelog.com/en/1.0.0/#how) for keeping a good changelog.
 
 To avoid incorrect file naming and to ease file creation process on the developer, this CLI tool was made for general usage alongside our other helpers:
- + [Visual Studio extension](../Enterwell.CI.Changelog.VSIX)
- + [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension)
+  + [NPM helper](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.CLI.NPM)
+  + [Visual Studio extension](../Enterwell.CI.Changelog.VSIX)
+  + [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension)
 
-These files are then used with our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) to compile changes and insert a new changelog sections and thus versioning the application. 
+These files are then processed using our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) to aggregate changes, generate a new changelog section, and update the application version accordingly.
 
 **For the convenience of using this tool to manage a changelog in an automated CI/CD environment we made a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) and an [Azure DevOps extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.DevOpsExtension).**
 
@@ -146,7 +147,7 @@ dotnet publish -c release -r linux-x64
 ```
 
 ## ☎ Support
-If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[CC]).
+If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[cli]).
 
 ## 🪪 License
 This project is licensed with the [MIT License](../LICENSE).
