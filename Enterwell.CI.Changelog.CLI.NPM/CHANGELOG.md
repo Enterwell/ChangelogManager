@@ -1,5 +1,12 @@
 _NOTE: This is an automatically generated file. Do not modify contents of this file manually._
 
+## [0.3.0] - 2025-04-17
+### Changed
+- Using ChangelogCreate v3.5.0 binaries
+
+### Fixed
+- Links in the README to point to the correct GitHub repository paths
+
 ## [0.2.1] - 2025-04-16
 ### Fixed
 - Properly forwarding and escaping multi-word arguments
