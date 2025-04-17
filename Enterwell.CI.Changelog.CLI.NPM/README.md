@@ -15,7 +15,7 @@
 </div>
 
 ## 🌱 Introduction
-This is the *CLI* alternative to a [Visual Studio](../Enterwell.CI.Changelog.VSIX) and [Visual Studio Code](../Enterwell.CI.Changelog.VSCodeExtension) extensions developed for the convenience of creating special *change* files that are used to manage a [changelog](https://keepachangelog.com/en/1.1.0/).
+This is the *CLI* alternative to a [Visual Studio](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX) and [Visual Studio Code](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSCodeExtension) extensions developed for the convenience of creating special *change* files that are used to manage a [changelog](https://keepachangelog.com/en/1.1.0/).
 
 #### What are the *change* files? 🤔
 
@@ -37,10 +37,11 @@ Acceptable entries for the `<change_type>` are:
 This decision was inspired by following the [principles](https://keepachangelog.com/en/1.0.0/#how) for keeping a good changelog.
 
 To avoid incorrect file naming and to ease file creation process on the developer, this CLI tool was made for general usage alongside our other helpers:
- + [Visual Studio extension](../Enterwell.CI.Changelog.VSIX)
- + [Visual Studio Code extension](../Enterwell.CI.Changelog.VSCodeExtension)
+  + [CLI helper](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.CLI)
+  + [Visual Studio extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSIX)
+  + [Visual Studio Code extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.VSCodeExtension)
 
-These files are then used with our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) to compile changes and insert a new changelog sections and thus versioning the application. 
+These files are then processed using our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) to aggregate changes, generate a new changelog section, and update the application version accordingly.
 
 **For the convenience of using this tool to manage a changelog in an automated CI/CD environment we made a [GitHub Action](https://github.com/Enterwell/ChangelogManager-GitHub-Action) and an [Azure DevOps extension](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog.DevOpsExtension).**
 
@@ -117,7 +118,7 @@ Changes in the **changes** directory are just files with the following naming sc
 
 And that's it! You should now have a new file created inside the **changes** folder in your workspace directory! 🎉
 
-You can now let this folder accumulate change entries which will be bundled up into your `CHANGELOG.md` when you want to create a new application release using our [Changelog Manager tool](../Enterwell.CI.Changelog) or one of our CI/CD tasks mentioned in the [introduction section](#-introduction).
+You can now let this folder accumulate change entries which will be bundled up into your `CHANGELOG.md` when you want to create a new application release using our [Changelog Manager tool](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog) or one of our CI/CD tasks mentioned in the [introduction section](#-introduction).
 
 ## ⚙ Configuration file
 `.changelog.json` is a [JSON file](https://www.json.org/json-en.html) that is optional. Configuration specifies which change categories are allowed in your project. File needs to be located in the same directory alongside the appropriate `CHANGELOG.md` file.
@@ -136,10 +137,10 @@ If we wanted to allow only 3 different change categories: `API`, `FE` (Frontend)
 
 If the configuration exists, helper will deny the creation of change files which ignore every change in the **changes** directory that does not concur to it. On the other hand, if the configuration file does not exist, every change will be accepted and written to the `CHANGELOG.md`.
 
-For more features that can be configured using the configuration file, see the [Changelog Manager's README](../Enterwell.CI.Changelog/README.md/#configuration-file).
+For more features that can be configured using the configuration file, see the [Changelog Manager's README](https://github.com/Enterwell/ChangelogManager/tree/main/Enterwell.CI.Changelog#-configuration-file).
 
 ## ☎ Support
 If you are having problems, please let us know by [raising a new issue](https://github.com/Enterwell/ChangelogManager/issues/new?title=[npm]).
 
 ## 🪪 License
-This project is licensed with the [MIT License](../LICENSE).
+This project is licensed with the [MIT License](https://github.com/Enterwell/ChangelogManager/blob/main/LICENSE).
