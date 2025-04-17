@@ -1,5 +1,9 @@
 _NOTE: This is an automatically generated file. Do not modify contents of this file manually._
 
+## [0.3.1] - 2025-04-17
+### Fixed
+- Links in the README to point to the correct GitHub repository paths
+
 ## [0.3.0] - 2025-04-14
 ### Added
 - Traversing upwards to find nearest CHANGELOG file
